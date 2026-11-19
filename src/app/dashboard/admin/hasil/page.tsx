@@ -7,10 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { GameController, Plus, Trophy, Medal } from '@phosphor-icons/react';
+import { GameController, Plus } from '@phosphor-icons/react';
 
 export default function AdminHasilPage() {
   const { matchResults, competitions, addMatchResult } = useAppStore();
@@ -23,6 +24,7 @@ export default function AdminHasilPage() {
   const [position, setPosition] = useState(1);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ export default function AdminHasilPage() {
       setModalOpen(false);
       setParticipantName('');
       setNotes('');
-      alert('Hasil turnamen e-sport berhasil diinput dan dipublikasikan!');
+      setAlertSuccess('Hasil turnamen e-sport berhasil diinput dan dipublikasikan ke leaderboard!');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan hasil';
       alert(message);
@@ -48,52 +50,58 @@ export default function AdminHasilPage() {
   };
 
   return (
-    <DashboardLayout 
-      title="Input Hasil Pertandingan E-Sport (PES & ML)" 
+    <DashboardLayout
+      title="Input Hasil Pertandingan E-Sport (PES & ML)"
       subtitle="Pencatatan hasil turnamen e-sport non-akademik ke sistem klasemen dan pengumuman juara resmi."
       actions={
-        <Button size="sm" variant="primary" leftIcon={<Plus size={16} weight="bold" />} onClick={() => setModalOpen(true)}>
+        <Button size="sm" variant="primary" leftIcon={<Plus className="w-4 h-4" weight="bold" />} onClick={() => setModalOpen(true)}>
           + Input Juara / Skor Baru
         </Button>
       }
     >
       <div className="space-y-6">
-        
-        <Card>
+        {alertSuccess && (
+          <Alert variant="success" onClose={() => setAlertSuccess(null)}>
+            <AlertTitle>Hasil Berhasil Disimpan</AlertTitle>
+            <AlertDescription>{alertSuccess}</AlertDescription>
+          </Alert>
+        )}
+
+        <Card className="border-[var(--border)] bg-[var(--card)]">
           <CardHeader>
             <CardTitle>Hasil Pertandingan yang Telah Divalidasi</CardTitle>
-            <p className="text-xs text-muted-foreground">Data peringkat juara e-sport yang tampil di leaderboard publik</p>
+            <p className="text-xs text-[var(--muted-foreground)]">Data peringkat juara e-sport yang tampil di leaderboard publik</p>
           </CardHeader>
           <CardContent>
             {matchResults.length === 0 ? (
               <EmptyState
-                icon={<GameController size={28} weight="duotone" className="text-primary" />}
+                icon={<GameController className="w-7 h-7 text-[var(--primary)]" weight="duotone" />}
                 title="Belum Ada Hasil Pertandingan"
                 description="Turnamen e-sport PES atau Mobile Legends belum memiliki input rekapitulasi juara. Klik tombol di atas untuk menambah entri."
               />
             ) : (
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-[var(--border)]">
                 {matchResults.map((m) => {
                   const comp = competitions.find((c) => c.id === m.competition_id);
 
                   return (
                     <div key={m.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[var(--brand-gold)]/15 border border-[var(--brand-gold)]/30 text-[var(--brand-gold-soft)] flex items-center justify-center font-bold font-mono text-sm shrink-0">
+                        <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--brand-gold)]/15 border border-[var(--brand-gold)]/30 text-[var(--brand-gold-soft)] flex items-center justify-center font-bold font-mono text-sm shrink-0">
                           #{m.position}
                         </div>
                         <div className="space-y-0.5">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h4 className="text-sm font-bold text-foreground font-[family-name:var(--font-bricolage)]">
+                            <h4 className="text-sm font-bold text-[var(--foreground)] font-[family-name:var(--font-bricolage)]">
                               {m.participant_name}
                             </h4>
                             <Badge variant="primary">{comp?.name || 'Turnamen E-Sport'}</Badge>
                           </div>
-                          {m.notes && <p className="text-xs text-muted-foreground">{m.notes}</p>}
+                          {m.notes && <p className="text-xs text-[var(--muted-foreground)]">{m.notes}</p>}
                         </div>
                       </div>
 
-                      <div className="text-left sm:text-right text-xs text-muted-foreground font-mono shrink-0">
+                      <div className="text-left sm:text-right text-xs text-[var(--muted-foreground)] font-mono shrink-0">
                         Dicatat: {formatDateShort(m.created_at)}
                       </div>
                     </div>
@@ -103,7 +111,6 @@ export default function AdminHasilPage() {
             )}
           </CardContent>
         </Card>
-
       </div>
 
       {/* Modal Input Hasil Turnamen E-Sport */}
@@ -115,14 +122,14 @@ export default function AdminHasilPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1.5">
-              Cabang Turnamen E-Sport <span className="text-destructive">*</span>
+            <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
+              Cabang Turnamen E-Sport <span className="text-[var(--destructive-text)]">*</span>
             </label>
             <select
               required
               value={selectedCompId}
               onChange={(e) => setSelectedCompId(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary min-h-[44px]"
+              className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3.5 py-2.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[44px]"
             >
               {esportComps.map((c) => (
                 <option key={c.id} value={c.id}>{c.name} ({c.participation_type})</option>
@@ -139,13 +146,13 @@ export default function AdminHasilPage() {
           />
 
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1.5">
-              Posisi Peringkat / Gelar <span className="text-destructive">*</span>
+            <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
+              Posisi Peringkat / Gelar <span className="text-[var(--destructive-text)]">*</span>
             </label>
             <select
               value={position}
               onChange={(e) => setPosition(Number(e.target.value))}
-              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary min-h-[44px]"
+              className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3.5 py-2.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[44px]"
             >
               <option value={1}>Peringkat #1 (Juara 1)</option>
               <option value={2}>Peringkat #2 (Juara 2)</option>
@@ -155,7 +162,7 @@ export default function AdminHasilPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1.5">
+            <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
               Catatan Skor / Informasi Babak (Opsional)
             </label>
             <input
@@ -163,11 +170,11 @@ export default function AdminHasilPage() {
               placeholder="Contoh: Menang Final Score 3 - 1"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary min-h-[44px]"
+              className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3.5 py-2.5 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[44px]"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border)]">
             <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
               Batal
             </Button>

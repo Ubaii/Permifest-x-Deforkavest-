@@ -2,137 +2,233 @@
 
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { EmptyState } from '@/components/dashboard/EmptyState';
+import { DataTable, Column } from '@/components/dashboard/DataTable';
+import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { DownloadSimple, MagnifyingGlass, Users } from '@phosphor-icons/react';
+import { Registration } from '@/lib/types';
+import { User, Users, Envelope, Buildings, CalendarBlank, IdentificationCard, ShieldCheck } from '@phosphor-icons/react';
 
 export default function AdminPesertaPage() {
   const { registrations, competitions } = useAppStore();
-  const [searchTerm, setSearchTerm] = useState('');
   const [compFilter, setCompFilter] = useState('all');
+  const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
 
-  const filtered = registrations.filter((reg) => {
-    const matchesSearch = 
-      reg.user?.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.user?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.user?.institution?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesComp = compFilter === 'all' || reg.competition_id === compFilter;
-    return matchesSearch && matchesComp;
+  const filteredRegistrations = registrations.filter((reg) => {
+    return compFilter === 'all' || reg.competition_id === compFilter;
   });
 
-  const exportCSV = () => {
-    const headers = ['ID', 'Nama', 'Email', 'Institusi', 'Kompetisi', 'Status', 'Tgl Daftar'];
-    const rows = filtered.map((r) => [
-      r.id,
-      `"${r.user?.full_name || ''}"`,
-      `"${r.user?.email || ''}"`,
-      `"${r.user?.institution || ''}"`,
-      `"${r.competition?.name || ''}"`,
-      r.status,
-      r.registered_at,
-    ]);
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `peserta_permifest_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const columns: Column<Registration & Record<string, unknown>>[] = [
+    {
+      key: 'user',
+      header: 'Peserta & Kontak',
+      sortable: true,
+      accessor: (r) => r.user?.full_name || '',
+      cell: (r) => (
+        <div>
+          <div className="font-bold text-[var(--foreground)]">{r.user?.full_name}</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] font-mono">{r.user?.email}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'institution',
+      header: 'Instansi / Kampus',
+      sortable: true,
+      accessor: (r) => r.user?.institution || '',
+      cell: (r) => (
+        <span className="text-[var(--muted-foreground)] font-medium">
+          {r.user?.institution || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'competition',
+      header: 'Kompetisi',
+      sortable: true,
+      accessor: (r) => r.competition?.name || '',
+      cell: (r) => (
+        <Badge variant="primary">{r.competition?.name}</Badge>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      sortable: true,
+      cell: (r) => <StatusBadge status={r.status} domain="registration" />,
+    },
+    {
+      key: 'registered_at',
+      header: 'Tanggal Daftar',
+      sortable: true,
+      cell: (r) => (
+        <span className="text-[var(--muted-foreground)] font-mono text-[11px]">
+          {formatDateShort(r.registered_at)}
+        </span>
+      ),
+    },
+    {
+      key: 'action',
+      header: 'Aksi',
+      className: 'text-right',
+      cell: (r) => (
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedReg(r);
+            }}
+          >
+            Detail
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <DashboardLayout 
-      title="Manajemen Peserta & Pendaftaran" 
+    <DashboardLayout
+      title="Manajemen Peserta & Pendaftaran"
       subtitle="Basis data seluruh pendaftar, instansi asal, dan status kelengkapan administrasi."
-      actions={
-        <Button size="sm" variant="secondary" leftIcon={<DownloadSimple size={16} weight="bold" />} onClick={exportCSV}>
-          Ekspor CSV
-        </Button>
-      }
     >
       <div className="space-y-6">
-        
-        {/* Search & Filter Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-card border border-border">
-          <div className="relative w-full sm:w-80">
-            <MagnifyingGlass size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Cari nama, email, kampus..."
-              className="w-full bg-background border border-border rounded-lg pl-10 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary min-h-[40px]"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+        <DataTable
+          data={filteredRegistrations as (Registration & Record<string, unknown>)[]}
+          columns={columns}
+          keyExtractor={(item) => item.id}
+          searchPlaceholder="Cari nama, email, kampus..."
+          searchableKeys={['id', 'status', 'registered_at']}
+          exportFilename="peserta_permifest_deforkafest"
+          onRowClick={(item) => setSelectedReg(item as Registration)}
+          actionSlot={
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--muted-foreground)] shrink-0 font-medium">Filter Lomba:</span>
+              <select
+                value={compFilter}
+                onChange={(e) => setCompFilter(e.target.value)}
+                aria-label="Filter cabang lomba"
+                className="bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[40px]"
+              >
+                <option value="all">Semua Cabang Lomba</option>
+                {competitions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          }
+        />
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs text-muted-foreground shrink-0 font-medium">Filter Lomba:</span>
-            <select
-              value={compFilter}
-              onChange={(e) => setCompFilter(e.target.value)}
-              className="bg-background border border-border rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary min-h-[40px]"
-            >
-              <option value="all">Semua Cabang Lomba</option>
-              {competitions.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        {/* Slide-over Detail Drawer */}
+        <Drawer
+          isOpen={!!selectedReg}
+          onClose={() => setSelectedReg(null)}
+          size="lg"
+        >
+          {selectedReg && (
+            <>
+              <DrawerHeader>
+                <div className="flex items-center gap-2">
+                  <DrawerTitle>{selectedReg.user?.full_name}</DrawerTitle>
+                  <StatusBadge status={selectedReg.status} domain="registration" />
+                </div>
+                <DrawerDescription>ID Pendaftaran: {selectedReg.id}</DrawerDescription>
+              </DrawerHeader>
 
-        {/* Tabel Data Peserta */}
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/60 border-b border-border text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">
-                <tr>
-                  <th className="p-4">Peserta &amp; Kontak</th>
-                  <th className="p-4">Instansi</th>
-                  <th className="p-4">Kompetisi</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4">Tanggal Daftar</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                      Tidak ditemukan peserta dengan kata kunci atau filter tersebut.
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((reg) => (
-                    <tr key={reg.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-4">
-                        <div className="font-bold text-foreground">{reg.user?.full_name}</div>
-                        <div className="text-[11px] text-muted-foreground font-mono">{reg.user?.email}</div>
-                      </td>
-                      <td className="p-4 text-muted-foreground font-medium">
-                        {reg.user?.institution || '-'}
-                      </td>
-                      <td className="p-4">
-                        <Badge variant="primary">{reg.competition?.name}</Badge>
-                      </td>
-                      <td className="p-4">
-                        <StatusBadge status={reg.status} domain="registration" />
-                      </td>
-                      <td className="p-4 text-muted-foreground font-mono text-[11px]">
-                        {formatDateShort(reg.registered_at)}
-                      </td>
-                    </tr>
-                  ))
+              <DrawerContent className="space-y-6">
+                {/* Informasi Peserta */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-[var(--primary)]" />
+                    Profil Peserta
+                  </h4>
+                  <div className="bg-[var(--accent)]/30 border border-[var(--border)] rounded-[var(--radius-md)] p-4 space-y-2.5 text-xs">
+                    <div className="flex justify-between items-center py-1 border-b border-[var(--border)]/50">
+                      <span className="text-[var(--muted-foreground)] flex items-center gap-1.5">
+                        <IdentificationCard className="w-3.5 h-3.5" /> Nama Lengkap
+                      </span>
+                      <span className="font-semibold text-[var(--foreground)]">{selectedReg.user?.full_name}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1 border-b border-[var(--border)]/50">
+                      <span className="text-[var(--muted-foreground)] flex items-center gap-1.5">
+                        <Envelope className="w-3.5 h-3.5" /> Email
+                      </span>
+                      <span className="font-mono text-[var(--foreground)]">{selectedReg.user?.email}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-[var(--muted-foreground)] flex items-center gap-1.5">
+                        <Buildings className="w-3.5 h-3.5" /> Institusi
+                      </span>
+                      <span className="font-medium text-[var(--foreground)]">{selectedReg.user?.institution || '-'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cabang Lomba */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
+                    Cabang Kompetisi
+                  </h4>
+                  <div className="bg-[var(--accent)]/30 border border-[var(--border)] rounded-[var(--radius-md)] p-4 space-y-2.5 text-xs">
+                    <div className="flex justify-between items-center py-1 border-b border-[var(--border)]/50">
+                      <span className="text-[var(--muted-foreground)]">Nama Lomba</span>
+                      <span className="font-bold text-[var(--foreground)]">{selectedReg.competition?.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1 border-b border-[var(--border)]/50">
+                      <span className="text-[var(--muted-foreground)]">Kategori</span>
+                      <span className="uppercase text-[11px] font-semibold text-[var(--primary)]">
+                        {selectedReg.competition?.category}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-[var(--muted-foreground)] flex items-center gap-1.5">
+                        <CalendarBlank className="w-3.5 h-3.5" /> Waktu Mendaftar
+                      </span>
+                      <span className="font-mono text-[var(--muted-foreground)]">
+                        {formatDateShort(selectedReg.registered_at)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Info Tim */}
+                {selectedReg.team && (
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-[var(--primary)]" />
+                      Detail Tim
+                    </h4>
+                    <div className="bg-[var(--accent)]/30 border border-[var(--border)] rounded-[var(--radius-md)] p-4 space-y-2 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[var(--muted-foreground)]">Nama Tim</span>
+                        <span className="font-bold text-[var(--foreground)]">{selectedReg.team.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[var(--muted-foreground)]">Kode Undangan</span>
+                        <span className="font-mono font-bold bg-[var(--card)] px-2 py-0.5 rounded border border-[var(--border)]">
+                          {selectedReg.team.invite_code}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+              </DrawerContent>
 
+              <DrawerFooter>
+                <Button variant="outline" size="sm" onClick={() => setSelectedReg(null)}>
+                  Tutup
+                </Button>
+              </DrawerFooter>
+            </>
+          )}
+        </Drawer>
       </div>
     </DashboardLayout>
   );

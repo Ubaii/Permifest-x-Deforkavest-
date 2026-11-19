@@ -7,6 +7,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ### Added
 - Paket dokumentasi agentic: `AGENTS.md`, `docs/ARCHITECTURE.md`, `SITEMAP_RBAC.md`, `SCHEMA.md`, `SECURITY.md`, `DESIGN_SYSTEM.md`, `UI_KIT.md`, `TESTING.md`, `TASKS.md`, `DECISIONS.md`.
 - UI Kit visual (publik, peserta, panel admin/juri).
+- Komponen UI atomik baru: `Modal` (compound + `ConfirmDialog`), `Drawer` (slide-over detail), `Alert` (semantic variants), `Pagination`, `Section` (`PageHeader`, `SectionHeader`, `SectionCard`), `Tabs`, dan `DataTable` (generic dengan search, sorting, pagination).
+- Integrasi `DataTable` dan `Drawer` detail pada modul admin peserta dan pembayaran.
 
 ### Changed
 - Keputusan desain: panel admin dan juri mendukung terang/gelap; publik dan peserta dark only (ADR-009).

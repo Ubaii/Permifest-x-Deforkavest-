@@ -8,17 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateWIB } from '@/lib/utils';
-import { 
-  UploadSimple, 
-  FileText, 
-  Link as LinkIcon, 
-  Clock, 
+import {
+  UploadSimple,
+  FileText,
+  Link as LinkIcon,
+  Clock,
   ArrowSquareOut,
-  Sparkle,
-  Info
 } from '@phosphor-icons/react';
 
 export default function PesertaSubmissionPage() {
@@ -32,12 +31,13 @@ export default function PesertaSubmissionPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
   const [activeStageId, setActiveStageId] = useState<string | null>(null);
-  
+
   const [fileName, setFileName] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [figmaLink, setFigmaLink] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [successBanner, setSuccessBanner] = useState<string | null>(null);
 
   const selectedReg = registrations.find((r) => r.id === activeRegId);
   const isFigmaRequired = selectedReg?.competition?.submission_config.allowedTypes.includes('figma_url');
@@ -66,7 +66,7 @@ export default function PesertaSubmissionPage() {
       });
 
       setModalOpen(false);
-      alert('Karya Anda berhasil dikumpulkan! Anda dapat memperbarui berkas sebelum deadline berakhir.');
+      setSuccessBanner('Karya Anda berhasil dikumpulkan! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
       alert(message);
@@ -76,17 +76,23 @@ export default function PesertaSubmissionPage() {
   };
 
   return (
-    <DashboardLayout 
-      title="Pengumpulan Karya (Submission)" 
+    <DashboardLayout
+      title="Pengumpulan Karya (Submission)"
       subtitle="Kumpulkan dokumen proposal, berkas karya, atau tautan Figma sesuai ketentuan cabang lomba."
     >
       <div className="space-y-6">
-        
+        {successBanner && (
+          <Alert variant="success" onClose={() => setSuccessBanner(null)}>
+            <AlertTitle>Pengumpulan Berhasil</AlertTitle>
+            <AlertDescription>{successBanner}</AlertDescription>
+          </Alert>
+        )}
+
         {myAcademicRegistrations.length === 0 ? (
           <EmptyState
-            icon={<FileText size={28} weight="duotone" className="text-primary" />}
+            icon={<FileText className="w-7 h-7 text-[var(--primary)]" weight="duotone" />}
             title="Tidak Ada Kompetisi Berbasis Karya"
-            description="Anda belum mendaftar di cabang lomba akademik (Esai, UI/UX, IT Architecture). Lomba e-sport (PES & Mobile Legends) tidak memerlukan pengumpulan berkas."
+            description="Anda belum mendaftar di cabang lomba akademik (Esai, UI/UX, IT Architecture). Lomba e-sport (PES & Mobile Legends) tidak memerlukan pengumpulan berkas karya."
           />
         ) : (
           myAcademicRegistrations.map((reg) => {
@@ -94,42 +100,44 @@ export default function PesertaSubmissionPage() {
             const currentSubmissions = submissions.filter((s) => s.registration_id === reg.id);
 
             return (
-              <Card key={reg.id} className="overflow-hidden">
-                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3">
+              <Card key={reg.id} className="overflow-hidden border-[var(--border)] bg-[var(--card)]">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <CardTitle className="text-base">{comp?.name}</CardTitle>
+                      <CardTitle className="text-base font-bold text-[var(--foreground)]">{comp?.name}</CardTitle>
                       <Badge variant="primary">{comp?.category.toUpperCase()}</Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">Tema: <strong className="text-foreground">{comp?.theme}</strong></p>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                      Tema: <strong className="text-[var(--foreground)]">{comp?.theme}</strong>
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-mono">Status Bayar:</span>
+                    <span className="text-xs text-[var(--muted-foreground)] font-mono">Status Bayar:</span>
                     <StatusBadge status={reg.payment?.status || reg.status} domain="payment" />
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4 pt-2">
+                <CardContent className="space-y-4 pt-4">
                   {/* Tahapan Lomba (Penyisihan / Final) */}
                   <div className="space-y-3">
                     {comp?.stages.map((stage) => {
                       const stageSub = currentSubmissions.find((s) => s.stage_id === stage.id && s.is_latest);
 
                       return (
-                        <div key={stage.id} className="p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+                        <div key={stage.id} className="p-4 rounded-[var(--radius-lg)] bg-[var(--accent)]/30 border border-[var(--border)] space-y-3">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                               <div className="flex items-center gap-2">
-                                <h4 className="text-sm font-bold text-foreground">Tahap: {stage.name}</h4>
+                                <h4 className="text-sm font-bold text-[var(--foreground)]">Tahap: {stage.name}</h4>
                                 {stage.is_active ? (
                                   <Badge variant="success" size="sm">Tahap Berjalan</Badge>
                                 ) : (
                                   <Badge variant="neutral" size="sm">Belum Dibuka</Badge>
                                 )}
                               </div>
-                              <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1 font-mono">
-                                <Clock size={14} className="text-primary" />
+                              <div className="text-xs text-[var(--muted-foreground)] flex items-center gap-1.5 mt-1 font-mono">
+                                <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
                                 <span>Batas Pengumpulan: {formatDateWIB(stage.submission_close_at)}</span>
                               </div>
                             </div>
@@ -138,7 +146,7 @@ export default function PesertaSubmissionPage() {
                               <Button
                                 size="sm"
                                 variant="primary"
-                                leftIcon={<UploadSimple size={16} weight="bold" />}
+                                leftIcon={<UploadSimple className="w-4 h-4" weight="bold" />}
                                 onClick={() => openSubmitModal(reg.id, stage.id)}
                               >
                                 {stageSub ? `Unggah Versi Baru (v${stageSub.version + 1})` : 'Kumpul Karya'}
@@ -148,16 +156,20 @@ export default function PesertaSubmissionPage() {
 
                           {/* Detail Berkas Terakhir yang Diserahkan */}
                           {stageSub ? (
-                            <div className="p-3.5 rounded-xl bg-card border border-primary/30 space-y-2">
+                            <div className="p-3.5 rounded-[var(--radius-md)] bg-[var(--card)] border border-[var(--border)] space-y-2">
                               <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-                                  {stageSub.link_url ? <LinkIcon size={16} className="text-primary" /> : <FileText size={16} className="text-primary" />}
+                                <div className="flex items-center gap-2 text-xs font-semibold text-[var(--foreground)]">
+                                  {stageSub.link_url ? (
+                                    <LinkIcon className="w-4 h-4 text-[var(--primary)]" />
+                                  ) : (
+                                    <FileText className="w-4 h-4 text-[var(--primary)]" />
+                                  )}
                                   <span>
                                     {stageSub.link_url ? 'Tautan Desain Figma' : stageSub.file_name}
                                   </span>
                                   <Badge variant="primary" size="sm">v{stageSub.version}</Badge>
                                 </div>
-                                <span className="text-[11px] text-muted-foreground font-mono">
+                                <span className="text-[11px] text-[var(--muted-foreground)] font-mono">
                                   Diunggah: {formatDateWIB(stageSub.submitted_at)}
                                 </span>
                               </div>
@@ -167,21 +179,21 @@ export default function PesertaSubmissionPage() {
                                   href={stageSub.link_url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-xs text-primary hover:underline flex items-center gap-1 break-all font-mono"
+                                  className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1 break-all font-mono"
                                 >
                                   <span>{stageSub.link_url}</span>
-                                  <ArrowSquareOut size={14} className="shrink-0" />
+                                  <ArrowSquareOut className="w-3.5 h-3.5 shrink-0" />
                                 </a>
                               )}
 
                               {stageSub.notes && (
-                                <p className="text-xs text-muted-foreground italic">
+                                <p className="text-xs text-[var(--muted-foreground)] italic">
                                   Catatan pengantar: &quot;{stageSub.notes}&quot;
                                 </p>
                               )}
                             </div>
                           ) : (
-                            <div className="text-xs text-muted-foreground italic p-3 rounded-lg bg-card/60 border border-border">
+                            <div className="text-xs text-[var(--muted-foreground)] italic p-3 rounded-[var(--radius-md)] bg-[var(--card)]/60 border border-[var(--border)]">
                               Belum ada berkas karya yang dikumpulkan untuk tahap ini.
                             </div>
                           )}
@@ -194,7 +206,6 @@ export default function PesertaSubmissionPage() {
             );
           })
         )}
-
       </div>
 
       {/* Modal Form Submission */}
@@ -205,7 +216,6 @@ export default function PesertaSubmissionPage() {
         description="Pastikan karya mematuhi batasan format, ukuran berkas, dan kaidah orisinalitas."
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          
           {isFigmaRequired ? (
             <Input
               label="Tautan Berkas Figma (Public Viewable)"
@@ -230,32 +240,32 @@ export default function PesertaSubmissionPage() {
                 placeholder="https://... (atau biarkan default untuk demo)"
                 value={fileUrl}
                 onChange={(e) => setFileUrl(e.target.value)}
-                helperText="Ukuran maksimal 15-25 MB. Server memvalidasi tanda tangan berkas secara otomatis."
+                helperText="Ukuran maksimal 15-25 MB. Berkas diunggah lewat secure signed URL."
               />
             </>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-foreground mb-1.5">
+            <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
               Catatan Pengantar untuk Dewan Juri (Opsional)
             </label>
             <textarea
               rows={3}
-              className="w-full bg-card border border-border rounded-xl p-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
+              className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] p-3 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] resize-none"
               placeholder="Jelaskan ringkasan pendekatan metodologi atau lampiran diagram sistem..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
 
-          <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-xs text-muted-foreground flex items-start gap-2">
-            <Info size={16} className="text-primary shrink-0 mt-0.5" />
-            <p>
+          <Alert variant="info">
+            <AlertTitle>Ketentuan Versi</AlertTitle>
+            <AlertDescription>
               Peserta dapat mengunggah ulang versi terbaru kapan saja sebelum batas waktu penutupan. Versi terakhir yang akan dinilai juri.
-            </p>
-          </div>
+            </AlertDescription>
+          </Alert>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border)]">
             <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
               Batal
             </Button>
