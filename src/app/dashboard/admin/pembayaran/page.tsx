@@ -6,17 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { ReasonDialog } from '@/components/ui/reason-dialog';
+import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
-import { formatCurrency, formatDateShort, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
+import { formatCurrency, formatDateShort } from '@/lib/utils';
 import { 
   CreditCard, 
-  CheckCircle as CheckCircle2, 
+  CheckCircle, 
   XCircle, 
-  ArrowSquareOut as ExternalLink, 
-  WarningCircle as AlertCircle, 
   Eye, 
-  Funnel as Filter,
-  FileText as FileCheck
+  Funnel,
+  WarningCircle,
+  Receipt
 } from '@phosphor-icons/react';
 
 export default function AdminPembayaranPage() {
@@ -24,38 +26,34 @@ export default function AdminPembayaranPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewImgUrl, setPreviewImgUrl] = useState('');
 
-  const registrationsWithPayment = registrations.filter(r => r.payment);
+  const registrationsWithPayment = registrations.filter((r) => r.payment);
 
-  const filtered = registrationsWithPayment.filter(r => {
+  const filtered = registrationsWithPayment.filter((r) => {
     if (filterStatus === 'all') return true;
     return r.payment?.status === filterStatus;
   });
 
   const handleApprove = async (regId: string) => {
-    if (confirm('Konfirmasi menyetujui bukti pembayaran ini?')) {
+    if (confirm('Konfirmasi untuk MENYETUJUI bukti pembayaran ini? Status pendaftaran peserta akan otomatis menjadi Terverifikasi.')) {
       await verifyPayment(regId, 'verified');
       alert('Pembayaran berhasil disetujui! Status peserta kini Terverifikasi.');
     }
   };
 
-  const openRejectModal = (regId: string) => {
+  const openRejectDialog = (regId: string) => {
     setActiveRegId(regId);
-    setRejectReason('Nominal transfer tidak sesuai atau gambar resi tidak terbaca.');
-    setRejectModalOpen(true);
+    setRejectDialogOpen(true);
   };
 
-  const handleConfirmReject = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleConfirmReject = async (reason: string) => {
     if (!activeRegId) return;
-    await verifyPayment(activeRegId, 'rejected', rejectReason);
-    setRejectModalOpen(false);
+    await verifyPayment(activeRegId, 'rejected', reason);
     setActiveRegId(null);
-    alert('Pembayaran ditolak. Alasan penolakan telah dikirimkan ke dashboard peserta.');
+    alert('Pembayaran telah ditolak. Alasan penolakan telah tercatat dan dikirimkan ke dashboard peserta.');
   };
 
   const openPreview = (url: string) => {
@@ -66,182 +64,192 @@ export default function AdminPembayaranPage() {
   return (
     <DashboardLayout 
       title="Verifikasi Pembayaran Peserta" 
-      subtitle="Periksa keabsahan transfer dana, mutasi bank, dan scan QRIS pendaftar lomba."
+      subtitle="Periksa keabsahan transfer dana, resi QRIS, dan mutasi biaya pendaftaran kompetisi."
     >
       <div className="space-y-6">
         
-        {/* Filters bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-cyan-400" />
-            <span className="text-xs font-semibold text-slate-300">Filter Status:</span>
-            <div className="flex flex-wrap gap-1.5 ml-2">
-              {['all', 'uploaded', 'verified', 'rejected', 'pending'].map((st) => (
+        {/* Filter Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-card border border-border">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mr-1">
+              <Funnel size={16} className="text-primary" />
+              <span>Status Bukti:</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: 'all', label: 'Semua' },
+                { id: 'uploaded', label: 'Perlu Review' },
+                { id: 'verified', label: 'Terverifikasi' },
+                { id: 'rejected', label: 'Ditolak' },
+                { id: 'pending', label: 'Belum Unggah' },
+              ].map((st) => (
                 <button
-                  key={st}
-                  onClick={() => setFilterStatus(st)}
-                  className={`px-3 py-1 rounded text-xs transition-colors ${
-                    filterStatus === st 
-                      ? 'bg-cyan-500 text-slate-950 font-semibold' 
-                      : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-white'
+                  key={st.id}
+                  type="button"
+                  onClick={() => setFilterStatus(st.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors min-h-[32px] ${
+                    filterStatus === st.id 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
+                      : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border'
                   }`}
                 >
-                  {st === 'all' ? 'Semua' : getStatusLabel(st)}
+                  {st.label}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="text-xs text-slate-400 font-mono">
-            Total Ditampilkan: <strong className="text-cyan-400">{filtered.length}</strong> transaksi
+          <div className="text-xs text-muted-foreground font-mono">
+            Total Transaksi: <strong className="text-foreground">{filtered.length}</strong> entri
           </div>
         </div>
 
-        {/* Payments Table / List */}
-        <div className="space-y-4">
-          {filtered.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center text-xs text-slate-400">
-                Tidak ada data pembayaran dengan status ini.
-              </CardContent>
-            </Card>
-          ) : (
-            filtered.map((reg) => {
-              const pay = reg.payment;
-              const isUploaded = pay?.status === 'uploaded';
-              const isVerified = pay?.status === 'verified';
-              const isRejected = pay?.status === 'rejected';
+        {/* Daftar Transaksi Pembayaran */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Antrean Verifikasi Transaksi</CardTitle>
+            <p className="text-xs text-muted-foreground">Panitia memvalidasi kesesuaian nominal dan bukti transfer</p>
+          </CardHeader>
+          <CardContent>
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={<Receipt size={28} weight="duotone" className="text-primary" />}
+                title="Tidak Ada Data Transaksi"
+                description="Tidak ditemukan pembayaran pendaftaran dengan kriteria filter yang Anda pilih."
+              />
+            ) : (
+              <div className="divide-y divide-border">
+                {filtered.map((reg) => {
+                  const payment = reg.payment!;
+                  const isUploaded = payment.status === 'uploaded';
+                  const isVerified = payment.status === 'verified';
+                  const isRejected = payment.status === 'rejected';
 
-              return (
-                <Card key={reg.id} className="overflow-hidden">
-                  <div className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={getStatusBadgeVariant(pay?.status || 'pending')}>
-                          {getStatusLabel(pay?.status || 'pending')}
-                        </Badge>
-                        <h4 className="text-sm font-bold text-slate-100">{reg.user?.full_name}</h4>
-                        <span className="text-xs text-slate-400">({reg.user?.institution || 'Peserta'})</span>
-                      </div>
-
-                      <div className="text-xs text-slate-400 flex flex-wrap items-center gap-3 mt-1">
-                        <span>Lomba: <strong className="text-cyan-400">{reg.competition?.name}</strong></span>
-                        <span>•</span>
-                        <span>Tagihan: <strong className="text-slate-200 font-mono">{formatCurrency(pay?.amount || 0)}</strong></span>
-                        <span>•</span>
-                        <span>Tgl Daftar: {formatDateShort(reg.registered_at)}</span>
-                      </div>
-
-                      {isRejected && pay?.rejection_reason && (
-                        <div className="text-xs text-rose-400 bg-rose-500/10 p-2 rounded mt-2 border border-rose-500/20">
-                          Alasan Penolakan: {pay.rejection_reason}
+                  return (
+                    <div key={reg.id} className="py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      
+                      {/* Informasi Pendaftar & Nominal */}
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-sm font-bold text-foreground">
+                            {reg.user?.full_name || 'Peserta Terdaftar'}
+                          </h4>
+                          <StatusBadge status={payment.status} domain="payment" />
+                          <Badge variant="primary">{reg.competition?.name}</Badge>
                         </div>
-                      )}
+
+                        <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+                          <span>Instansi: <strong className="text-foreground">{reg.user?.institution || '-'}</strong></span>
+                          <span>•</span>
+                          <span>Email: <span className="font-mono">{reg.user?.email}</span></span>
+                          <span>•</span>
+                          <span>WA: <span className="font-mono">{reg.user?.phone || '-'}</span></span>
+                        </div>
+
+                        <div className="text-xs flex items-center gap-2 pt-0.5">
+                          <span className="text-muted-foreground">Nominal Tagihan:</span>
+                          <span className="font-mono font-bold text-foreground text-sm tabular-nums">
+                            {formatCurrency(payment.amount)}
+                          </span>
+                        </div>
+
+                        {/* Tampilkan Alasan jika ditolak */}
+                        {isRejected && payment.rejection_reason && (
+                          <div className="mt-2 p-2.5 rounded-lg bg-destructive/15 border border-destructive/30 text-xs text-destructive flex items-center gap-2">
+                            <WarningCircle size={15} weight="fill" className="shrink-0" />
+                            <span>Alasan Penolakan: &quot;{payment.rejection_reason}&quot;</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Aksi Panitia */}
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        {payment.proof_url ? (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            leftIcon={<Eye size={16} />}
+                            onClick={() => openPreview(payment.proof_url!)}
+                          >
+                            Lihat Resi
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground italic px-2">
+                            Belum ada bukti
+                          </span>
+                        )}
+
+                        {!isVerified && (
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            leftIcon={<CheckCircle size={16} weight="bold" />}
+                            onClick={() => handleApprove(reg.id)}
+                            disabled={!payment.proof_url}
+                          >
+                            Setujui
+                          </Button>
+                        )}
+
+                        {!isRejected && !isVerified && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            leftIcon={<XCircle size={16} weight="bold" />}
+                            onClick={() => openRejectDialog(reg.id)}
+                          >
+                            Tolak
+                          </Button>
+                        )}
+                      </div>
+
                     </div>
-
-                    {/* Actions and Proof preview */}
-                    <div className="flex items-center gap-3 shrink-0">
-                      {pay?.proof_url ? (
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          leftIcon={<Eye className="w-4 h-4" />}
-                          onClick={() => openPreview(pay.proof_url!)}
-                        >
-                          Lihat Bukti ({pay.proof_name || 'Struk'})
-                        </Button>
-                      ) : (
-                        <span className="text-xs text-slate-500 italic">Belum unggah bukti</span>
-                      )}
-
-                      {!isVerified && (
-                        <Button
-                          size="sm"
-                          variant="primary"
-                          leftIcon={<CheckCircle2 className="w-4 h-4" />}
-                          onClick={() => handleApprove(reg.id)}
-                        >
-                          Approve
-                        </Button>
-                      )}
-
-                      {!isRejected && (
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          leftIcon={<XCircle className="w-4 h-4" />}
-                          onClick={() => openRejectModal(reg.id)}
-                        >
-                          Tolak
-                        </Button>
-                      )}
-                    </div>
-
-                  </div>
-                </Card>
-              );
-            })
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
       </div>
 
-      {/* Reject with reason modal */}
-      <Modal
-        isOpen={rejectModalOpen}
-        onClose={() => setRejectModalOpen(false)}
-        title="Tolak Bukti Pembayaran"
-        description="Berikan penjelasan penolakan agar peserta dapat melakukan perbaikan."
-      >
-        <form onSubmit={handleConfirmReject} className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Alasan Penolakan <span className="text-rose-400">*</span>
-            </label>
-            <textarea
-              required
-              rows={3}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-100 focus:outline-none focus:border-rose-500"
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-            <Button type="button" variant="ghost" onClick={() => setRejectModalOpen(false)}>
-              Batal
-            </Button>
-            <Button type="submit" variant="danger">
-              Konfirmasi Tolak
-            </Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Proof Image Preview Modal */}
+      {/* Modal Pratinjau Resi Bukti Transfer */}
       <Modal
         isOpen={previewModalOpen}
         onClose={() => setPreviewModalOpen(false)}
         title="Pratinjau Bukti Pembayaran"
+        description="Periksa stempel tanggal, nama pemilik rekening, dan nominal transfer."
         maxWidth="lg"
       >
-        <div className="space-y-4 text-center">
-          <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden max-h-[60vh]">
-            <img 
-              src={previewImgUrl} 
-              alt="Bukti Transfer" 
-              className="max-h-full max-w-full object-contain rounded"
+        <div className="space-y-4">
+          <div className="max-h-[60vh] overflow-auto rounded-xl border border-border bg-muted/40 p-2 flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewImgUrl}
+              alt="Bukti Transfer Peserta"
+              className="max-w-full h-auto rounded-lg object-contain shadow-sm"
             />
           </div>
-          <div className="flex justify-end">
-            <Button variant="secondary" onClick={() => setPreviewModalOpen(false)}>
+
+          <div className="flex items-center justify-end">
+            <Button size="sm" variant="secondary" onClick={() => setPreviewModalOpen(false)}>
               Tutup Pratinjau
             </Button>
           </div>
         </div>
       </Modal>
 
+      {/* Dialog Alasan Penolakan Wajib (ReasonDialog) */}
+      <ReasonDialog
+        isOpen={rejectDialogOpen}
+        onClose={() => setRejectDialogOpen(false)}
+        onConfirm={handleConfirmReject}
+        title="Konfirmasi Penolakan Bukti Pembayaran"
+        description="Sesuai SOP, alasan penolakan wajib dituliskan (minimal 10 karakter) agar peserta dapat memperbaiki bukti transfernya."
+        confirmLabel="Tolak Bukti Transfer"
+        placeholder="Contoh: Nominal transfer kurang dari tagihan resmi, atau bukti transfer blur/tidak terbaca..."
+        isDestructive={true}
+      />
     </DashboardLayout>
   );
 }

@@ -4,69 +4,85 @@ import React from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { ClockCounterClockwise as History, CheckCircle as CheckCircle2, Lock, Scales as Scale } from '@phosphor-icons/react';
+import { ClockCounterClockwise, Lock, CheckCircle } from '@phosphor-icons/react';
 
 export default function JuriRiwayatPage() {
   const { judgeAssignments } = useAppStore();
-  const completed = judgeAssignments.filter(a => a.status === 'completed');
+  const completed = judgeAssignments.filter((a) => a.status === 'completed');
 
   return (
     <DashboardLayout 
       title="Riwayat Penilaian Dewan Juri" 
-      subtitle="Arsip nilai karya peserta yang telah selesai dihitung dan diserahkan ke panitia."
+      subtitle="Arsip nilai dan catatan evaluasi karya yang telah selesai dihitung dan diserahkan ke panitia."
     >
       <div className="space-y-6">
         
         <Card>
           <CardHeader>
-            <CardTitle>Daftar Penilaian Tersimpan</CardTitle>
+            <CardTitle>Daftar Penilaian yang Telah Dikirim</CardTitle>
+            <p className="text-xs text-muted-foreground">Nilai terhitung otomatis berdasarkan bobot rubrik</p>
           </CardHeader>
           <CardContent>
             {completed.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-500">
-                Belum ada penilaian yang diselesaikan.
-              </div>
+              <EmptyState
+                icon={<ClockCounterClockwise size={28} weight="duotone" className="text-primary" />}
+                title="Belum Ada Riwayat Penilaian"
+                description="Anda belum menyelesaikan penilaian untuk karya yang ditugaskan. Buka menu 'Karya Ditugaskan' untuk mulai mengisi skor rubrik."
+              />
             ) : (
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-border">
                 {completed.map((item) => {
                   const sub = item.submission;
                   const comp = sub?.registration?.competition;
+                  const isLocked = item.scores?.some((s) => s.is_locked);
 
                   return (
-                    <div key={item.id} className="py-4 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-slate-100">
-                              {sub?.file_name || (sub?.link_url ? 'Figma Design' : 'Karya')}
+                    <div key={item.id} className="py-5 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-sm font-bold text-foreground">
+                              {sub?.file_name || (sub?.link_url ? 'Figma Design' : 'Karya Peserta')}
                             </h4>
-                            <Badge variant="success" size="sm">Terkunci</Badge>
-                            <Badge variant="cyber" size="sm">{comp?.name}</Badge>
+                            <Badge variant="success" size="sm">Selesai</Badge>
+                            {isLocked && (
+                              <Badge variant="neutral" size="sm" className="gap-1">
+                                <Lock size={12} weight="bold" />
+                                Nilai Terkunci
+                              </Badge>
+                            )}
+                            <Badge variant="primary" size="sm">{comp?.name}</Badge>
                           </div>
-                          <div className="text-xs text-slate-400 mt-1">
-                            Peserta: <strong className="text-slate-300">{sub?.registration?.user?.full_name}</strong>
-                            {' '}• Selesai: {formatDateShort(item.completed_at)}
+                          <div className="text-xs text-muted-foreground">
+                            Peserta: <strong className="text-foreground">{sub?.registration?.user?.full_name}</strong>
+                            {' '}• Diserahkan: {formatDateShort(item.completed_at)}
                           </div>
                         </div>
 
-                        <div className="text-right">
-                          <span className="text-[10px] text-slate-500 block">Nilai Terhitung:</span>
-                          <span className="text-lg font-bold font-mono text-cyan-400">
-                            {sub?.final_score} / 100
+                        <div className="text-left sm:text-right shrink-0">
+                          <span className="text-[10px] text-muted-foreground block uppercase font-mono">Nilai Akhir Terbobot:</span>
+                          <span className="text-xl font-bold font-mono text-primary tabular-nums">
+                            {sub?.final_score || 0} <span className="text-xs text-muted-foreground font-normal">/ 100</span>
                           </span>
                         </div>
                       </div>
 
-                      {/* Criteria breakdown */}
+                      {/* Rincian Skor per Kriteria */}
                       {item.scores && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1">
                           {item.scores.map((sc) => (
-                            <div key={sc.id} className="p-2.5 rounded-lg bg-slate-950 border border-slate-800/80 text-[11px]">
-                              <div className="text-slate-400 truncate">{sc.rubric_criteria?.name || 'Kriteria'}</div>
-                              <div className="font-bold font-mono text-cyan-400 text-xs mt-0.5">{sc.score} / 100</div>
-                              {sc.comment && <div className="text-slate-500 text-[10px] mt-1 italic truncate">&quot;{sc.comment}&quot;</div>}
+                            <div key={sc.id} className="p-3 rounded-xl bg-muted/40 border border-border text-xs space-y-1">
+                              <div className="text-muted-foreground font-medium truncate">{sc.rubric_criteria?.name || 'Kriteria'}</div>
+                              <div className="font-bold font-mono text-foreground text-sm tabular-nums">{sc.score} / 100</div>
+                              {sc.comment && (
+                                <div className="text-muted-foreground text-[11px] italic truncate">
+                                  &quot;{sc.comment}&quot;
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

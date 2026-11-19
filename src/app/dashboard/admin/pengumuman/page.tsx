@@ -2,14 +2,15 @@
 
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Bell, Plus, Megaphone, Trash as Trash2 } from '@phosphor-icons/react';
+import { Megaphone, Plus, Bell } from '@phosphor-icons/react';
 
 export default function AdminPengumumanPage() {
   const { announcements, competitions, createAnnouncement, currentUser } = useAppStore();
@@ -25,7 +26,7 @@ export default function AdminPengumumanPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const comp = competitions.find(c => c.id === selectedCompId);
+      const comp = competitions.find((c) => c.id === selectedCompId);
       await createAnnouncement({
         title,
         excerpt,
@@ -41,9 +42,10 @@ export default function AdminPengumumanPage() {
       setExcerpt('');
       setContent('');
       setSelectedCompId('');
-      alert('Pengumuman berhasil diterbitkan!');
-    } catch (err: any) {
-      alert(err.message || 'Gagal menerbitkan pengumuman');
+      alert('Pengumuman resmi panitia berhasil diterbitkan!');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal menerbitkan pengumuman';
+      alert(message);
     } finally {
       setSubmitting(false);
     }
@@ -52,61 +54,69 @@ export default function AdminPengumumanPage() {
   return (
     <DashboardLayout 
       title="Manajemen Pengumuman Resmi" 
-      subtitle="Publikasikan informasi umum atau spesifik per cabang lomba ke peserta."
+      subtitle="Publikasikan siaran informasi umum atau berita spesifik per cabang perlombaan."
       actions={
-        <Button size="sm" variant="primary" leftIcon={<Plus className="w-4 h-4" />} onClick={() => setModalOpen(true)}>
+        <Button size="sm" variant="primary" leftIcon={<Plus size={16} weight="bold" />} onClick={() => setModalOpen(true)}>
           + Buat Pengumuman Baru
         </Button>
       }
     >
       <div className="space-y-6">
         
-        <div className="space-y-4">
-          {announcements.map((ann) => (
-            <Card key={ann.id} className="p-5">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Badge variant={ann.competition_name ? 'info' : 'cyber'}>
-                      {ann.competition_name || 'Pengumuman Umum'}
-                    </Badge>
-                    <span className="text-[11px] text-slate-500 font-mono">
-                      {formatDateShort(ann.published_at)}
-                    </span>
+        {announcements.length === 0 ? (
+          <EmptyState
+            icon={<Megaphone size={28} weight="duotone" className="text-primary" />}
+            title="Belum Ada Pengumuman"
+            description="Panitia belum menerbitkan siaran pengumuman. Klik tombol di atas untuk membuat siaran baru."
+          />
+        ) : (
+          <div className="space-y-4">
+            {announcements.map((ann) => (
+              <Card key={ann.id} className="p-5">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant={ann.competition_name ? 'primary' : 'neutral'}>
+                        {ann.competition_name || 'Pengumuman Umum'}
+                      </Badge>
+                      <span className="text-[11px] text-muted-foreground font-mono">
+                        {formatDateShort(ann.published_at)}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-foreground font-[family-name:var(--font-bricolage)]">{ann.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{ann.excerpt || ann.content}</p>
                   </div>
-                  <h3 className="text-base font-bold text-slate-100">{ann.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1">{ann.excerpt}</p>
-                </div>
 
-                <div className="text-right text-xs text-slate-500 shrink-0">
-                  Oleh: <strong className="text-slate-300">{ann.author_name}</strong>
+                  <div className="text-left sm:text-right text-xs text-muted-foreground shrink-0 font-mono">
+                    Oleh: <strong className="text-foreground">{ann.author_name}</strong>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
       </div>
 
-      {/* Create Modal */}
+      {/* Modal Buat Pengumuman Baru */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Buat Pengumuman Baru"
-        description="Pengumuman ini akan langsung terlihat di website publik dan dashboard peserta."
+        title="Buat Pengumuman Resmi Baru"
+        description="Pengumuman ini akan langsung tampil di portal publik dan dashboard peserta terkait."
         maxWidth="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Target Kompetisi
+            <label className="block text-xs font-medium text-foreground mb-1.5">
+              Target Cabang Lomba
             </label>
             <select
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
               value={selectedCompId}
               onChange={(e) => setSelectedCompId(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary min-h-[44px]"
             >
-              <option value="">Pengumuman Umum (Semua Peserta & Publik)</option>
+              <option value="">Pengumuman Global (Seluruh Cabang &amp; Publik)</option>
               {competitions.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -115,40 +125,40 @@ export default function AdminPengumumanPage() {
 
           <Input
             label="Judul Pengumuman"
-            placeholder="Contoh: Perpanjangan Deadline Pengumpulan Esai"
+            placeholder="Contoh: Perpanjangan Batas Waktu Pengumpulan Karya Babak Penyisihan"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
 
           <Input
-            label="Ringkasan Pendek (Excerpt)"
-            placeholder="Ringkasan 1-2 kalimat untuk pratinjau kartu..."
+            label="Ringkasan Singkat (Excerpt)"
+            placeholder="Ringkasan 1-2 kalimat yang tampil di kartu pengumuman..."
             required
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
           />
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Isi Konten Lengkap <span className="text-cyan-400">*</span>
+            <label className="block text-xs font-medium text-foreground mb-1.5">
+              Isi Konten Lengkap <span className="text-destructive">*</span>
             </label>
             <textarea
               required
               rows={5}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
-              placeholder="Tuliskan detail pengumuman resmi..."
+              placeholder="Tuliskan isi pengumuman, ketentuan teknis, atau jadwal yang diperbarui secara lengkap..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl p-3.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-            <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
               Batal
             </Button>
-            <Button type="submit" variant="primary" isLoading={submitting}>
-              Terbitkan Sekarang
+            <Button type="submit" variant="primary" size="sm" isLoading={submitting}>
+              Publikasikan Sekarang
             </Button>
           </div>
         </form>

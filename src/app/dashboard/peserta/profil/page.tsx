@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { ROLE_LABELS } from '@/lib/constants';
-import { User, EnvelopeSimple as Mail, Buildings as Building, Phone, ShieldCheck, Key as KeyRound } from '@phosphor-icons/react';
+import { CheckCircle, ShieldCheck } from '@phosphor-icons/react';
 
 export default function PesertaProfilPage() {
   const { currentUser, setCurrentUser } = useAppStore();
@@ -27,32 +27,33 @@ export default function PesertaProfilPage() {
       phone: phone,
     });
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => setSaved(false), 2500);
   };
 
   return (
     <DashboardLayout 
       title="Profil & Pengaturan Akun" 
-      subtitle="Kelola informasi identitas akun peserta dan kontak verifikasi."
+      subtitle="Kelola informasi identitas akun peserta, instansi asal, dan nomor kontak aktif."
     >
       <div className="max-w-2xl space-y-6">
         
         <Card>
           <CardHeader>
-            <CardTitle>Informasi Pribadi</CardTitle>
+            <CardTitle>Informasi Profil Peserta</CardTitle>
+            <p className="text-xs text-muted-foreground">Data ini akan dicantumkan pada sertifikat keikutsertaan dan rekapitulasi lomba</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSave} className="space-y-4">
               
-              <div className="flex items-center gap-4 pb-4 border-b border-slate-800">
-                <div className="w-16 h-16 rounded-full bg-cyan-950 border border-cyan-500/40 text-cyan-400 font-bold text-2xl flex items-center justify-center">
+              <div className="flex items-center gap-4 pb-4 border-b border-border">
+                <div className="w-16 h-16 rounded-full bg-primary/20 border border-primary/40 text-primary font-bold text-2xl flex items-center justify-center">
                   {currentUser.full_name.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-slate-100">{currentUser.full_name}</h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="cyber">{ROLE_LABELS[currentUser.role]}</Badge>
-                    <span className="text-xs text-slate-400 font-mono">{currentUser.email}</span>
+                  <h4 className="text-base font-bold text-foreground font-[family-name:var(--font-bricolage)]">{currentUser.full_name}</h4>
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                    <Badge variant="primary">{ROLE_LABELS[currentUser.role]}</Badge>
+                    <span className="text-xs text-muted-foreground font-mono">{currentUser.email}</span>
                   </div>
                 </div>
               </div>
@@ -62,18 +63,19 @@ export default function PesertaProfilPage() {
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                helperText="Pastikan nama sesuai dengan identitas resmi untuk keperluan sertifikat."
               />
 
               <Input
                 label="Alamat Email (Akun Utama)"
                 disabled
                 value={currentUser.email}
-                helperText="Email tidak dapat diubah setelah terdaftar demi integritas sertifikat dan data perlombaan."
+                helperText="Email tidak dapat diubah setelah terdaftar demi integritas data kompetisi."
               />
 
               <Input
                 label="Asal Sekolah / Universitas / Instansi"
-                placeholder="Contoh: Institut Teknologi Bandung"
+                placeholder="Contoh: Universitas Gadjah Mada / SMK Negeri 2 Yogyakarta"
                 value={institution}
                 onChange={(e) => setInstitution(e.target.value)}
               />
@@ -83,12 +85,14 @@ export default function PesertaProfilPage() {
                 placeholder="Contoh: 081234567890"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                helperText="Digunakan panitia untuk koordinasi teknis pertandingan atau pengumuman darurat."
               />
 
               <div className="pt-2 flex items-center justify-between">
                 {saved && (
-                  <span className="text-xs text-emerald-400 font-semibold">
-                    ✓ Profil berhasil diperbarui!
+                  <span className="text-xs text-[var(--success)] font-semibold flex items-center gap-1">
+                    <CheckCircle size={16} weight="fill" />
+                    Profil berhasil disimpan!
                   </span>
                 )}
                 <Button type="submit" variant="primary" className="ml-auto">
@@ -100,21 +104,18 @@ export default function PesertaProfilPage() {
           </CardContent>
         </Card>
 
-        {/* Security / Password section */}
+        {/* Status Verifikasi Identitas */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-cyan-400" />
-              <span>Keamanan & Password</span>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <ShieldCheck size={18} className="text-primary" />
+              <span>Verifikasi Identitas &amp; Keamanan</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-xs text-slate-400">
+          <CardContent className="space-y-3 text-xs text-muted-foreground">
             <p>
-              Kata sandi Anda dilindungi menggunakan hashing argon2/bcrypt berstandar industri dengan proteksi CSRF dan rate limiting.
+              Akun Anda berstatus <strong className="text-[var(--success)]">Terotentikasi</strong>. Verifikasi identitas peserta (KTM / Kartu Pelajar) bersifat opsional dan hanya diperlukan jika diminta khusus oleh dewan juri cabang lomba terkait.
             </p>
-            <Button variant="secondary" size="sm" onClick={() => alert('Link tautan reset sandi telah dikirim ke email terdaftar.')}>
-              Kirim Tautan Reset Password ke Email
-            </Button>
           </CardContent>
         </Card>
 
