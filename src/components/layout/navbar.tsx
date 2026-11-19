@@ -2,19 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ROLE_LABELS } from '@/lib/constants';
-import { UserRole } from '@/lib/types';
-import { Shield, Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Terminal } from 'lucide-react';
+import { Shield, Menu, X, LayoutDashboard, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
-  const { currentUser, switchRole } = useAppStore();
+  const router = useRouter();
+  const { currentUser, isLoggedIn, logout } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const navLinks = [
     { href: '/', label: 'Beranda' },
@@ -24,7 +23,17 @@ export function Navbar() {
     { href: '/informasi', label: 'Informasi Event' },
   ];
 
-  const roles: UserRole[] = ['peserta', 'panitia', 'juri', 'super_admin'];
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    router.push('/login');
+  };
+
+  const getDashboardUrl = () => {
+    if (!currentUser) return '/login';
+    return `/dashboard/${currentUser.role === 'super_admin' ? 'admin' : currentUser.role}`;
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
@@ -65,50 +74,72 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right Section: Role Switcher Demo & Dashboard Button */}
+        {/* Right Section: Auth Buttons / Logged-in User Profile */}
         <div className="hidden md:flex items-center gap-3">
-          
-          {/* Quick Role Switcher for Demo evaluation */}
-          <div className="relative">
-            <button
-              onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-slate-300 transition-colors cursor-pointer"
-            >
-              <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Role: <strong className="text-cyan-300 capitalize">{ROLE_LABELS[currentUser.role]}</strong></span>
-              <ChevronDown className="w-3 h-3 text-slate-500" />
-            </button>
+          {isLoggedIn ? (
+            <div className="flex items-center gap-2">
+              <Link href={getDashboardUrl()}>
+                <Button size="sm" variant="primary" leftIcon={<LayoutDashboard className="w-4 h-4" />}>
+                  Dashboard ({ROLE_LABELS[currentUser.role]})
+                </Button>
+              </Link>
 
-            {roleMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl py-1 z-50">
-                <div className="px-3 py-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-800">
-                  Ganti Role (Demo)
-                </div>
-                {roles.map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => {
-                      switchRole(r);
-                      setRoleMenuOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-800 transition-colors ${
-                      currentUser.role === r ? 'text-cyan-400 font-semibold bg-cyan-950/20' : 'text-slate-300'
-                    }`}
-                  >
-                    <span>{ROLE_LABELS[r]}</span>
-                    {currentUser.role === r && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
-                  </button>
-                ))}
+              {/* User Dropdown / Logout */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 transition-colors cursor-pointer"
+                >
+                  <div className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-[10px]">
+                    {currentUser.full_name?.charAt(0) || 'U'}
+                  </div>
+                  <span className="max-w-[120px] truncate">{currentUser.full_name}</span>
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-800 rounded-lg shadow-xl py-1.5 z-50">
+                    <div className="px-3 py-2 border-b border-slate-800">
+                      <p className="text-xs font-semibold text-white truncate">{currentUser.full_name}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{currentUser.email}</p>
+                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-400 border border-cyan-800">
+                        {ROLE_LABELS[currentUser.role]}
+                      </span>
+                    </div>
+
+                    <Link
+                      href={getDashboardUrl()}
+                      onClick={() => setUserMenuOpen(false)}
+                      className="px-3 py-2 text-xs flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Buka Dashboard</span>
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 text-rose-400 hover:bg-rose-950/20 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Keluar (Logout)</span>
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-
-          {/* Go to Dashboard */}
-          <Link href={`/dashboard/${currentUser.role === 'super_admin' ? 'admin' : currentUser.role}`}>
-            <Button size="sm" variant="primary" leftIcon={<LayoutDashboard className="w-4 h-4" />}>
-              Dashboard
-            </Button>
-          </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/login">
+                <Button size="sm" variant="ghost" leftIcon={<LogIn className="w-4 h-4" />}>
+                  Masuk
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" variant="primary" leftIcon={<UserPlus className="w-4 h-4" />}>
+                  Daftar
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -140,31 +171,43 @@ export function Navbar() {
           </div>
 
           <div className="pt-3 border-t border-slate-800 space-y-2">
-            <div className="text-xs text-slate-400 font-medium">Pilih Role Pengguna:</div>
-            <div className="grid grid-cols-2 gap-2">
-              {roles.map((r) => (
-                <button
-                  key={r}
-                  onClick={() => {
-                    switchRole(r);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`px-2.5 py-1.5 rounded-md text-xs text-center border ${
-                    currentUser.role === r
-                      ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold'
-                      : 'bg-slate-900 border-slate-800 text-slate-400'
-                  }`}
-                >
-                  {ROLE_LABELS[r]}
-                </button>
-              ))}
-            </div>
+            {isLoggedIn ? (
+              <div className="space-y-2">
+                <div className="px-3 py-2 rounded-md bg-slate-900 border border-slate-800">
+                  <div className="text-xs font-semibold text-white">{currentUser.full_name}</div>
+                  <div className="text-[11px] text-slate-400">{currentUser.email}</div>
+                  <div className="text-[10px] text-cyan-400 mt-1">Role: {ROLE_LABELS[currentUser.role]}</div>
+                </div>
 
-            <Link href={`/dashboard/${currentUser.role === 'super_admin' ? 'admin' : currentUser.role}`} className="block pt-2">
-              <Button size="md" variant="primary" className="w-full">
-                Buka Dashboard ({ROLE_LABELS[currentUser.role]})
-              </Button>
-            </Link>
+                <Link href={getDashboardUrl()} onClick={() => setMobileMenuOpen(false)} className="block">
+                  <Button size="md" variant="primary" className="w-full">
+                    Buka Dashboard
+                  </Button>
+                </Link>
+
+                <Button
+                  size="md"
+                  variant="outline"
+                  className="w-full text-rose-400 border-rose-900/50 hover:bg-rose-950/20"
+                  onClick={handleLogout}
+                >
+                  Keluar (Logout)
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button size="md" variant="outline" className="w-full">
+                    Masuk
+                  </Button>
+                </Link>
+                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button size="md" variant="primary" className="w-full">
+                    Daftar
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
