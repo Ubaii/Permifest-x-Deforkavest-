@@ -32,6 +32,7 @@ const defaultFormData: AnnouncementFormData = {
 export default function AdminPengumumanPage() {
   const { announcements, competitions, createAnnouncement, updateAnnouncement, deleteAnnouncement, currentUser } = useAppStore();
 
+  const [filterComp, setFilterComp] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAnnId, setEditingAnnId] = useState<string | null>(null);
   const [formData, setFormData] = useState<AnnouncementFormData>(defaultFormData);
@@ -104,6 +105,12 @@ export default function AdminPengumumanPage() {
     setDeleteConfirmAnn(null);
   };
 
+  const filteredAnnouncements = announcements.filter((ann) => {
+    if (filterComp === 'all') return true;
+    if (filterComp === 'global') return !ann.competition_id;
+    return ann.competition_id === filterComp;
+  });
+
   return (
     <DashboardLayout
       title="Manajemen Pengumuman Resmi"
@@ -122,11 +129,34 @@ export default function AdminPengumumanPage() {
           </Alert>
         )}
 
-        {announcements.length === 0 ? (
+        {/* Filter Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 p-3.5 bg-[var(--card)] rounded-xl border border-[var(--border)]">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[var(--muted-foreground)] font-semibold">Filter Pengumuman:</span>
+            <select
+              value={filterComp}
+              onChange={(e) => setFilterComp(e.target.value)}
+              className="bg-[var(--card)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
+            >
+              <option value="all">Semua Pengumuman</option>
+              <option value="global">Khusus Pengumuman Umum</option>
+              {competitions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <span className="text-xs text-[var(--muted-foreground)] font-mono">
+            Total: <strong className="text-[var(--foreground)]">{filteredAnnouncements.length}</strong> rilis
+          </span>
+        </div>
+
+        {filteredAnnouncements.length === 0 ? (
           <EmptyState
             icon={<Megaphone className="w-7 h-7 text-[var(--primary)]" weight="duotone" />}
             title="Belum Ada Pengumuman"
-            description="Panitia belum menerbitkan siaran pengumuman. Klik tombol di atas untuk membuat siaran baru."
+            description="Tidak ada pengumuman yang sesuai dengan filter. Klik tombol di atas untuk membuat siaran baru."
             action={
               <Button size="sm" variant="primary" onClick={openCreateModal}>
                 Buat Pengumuman
@@ -135,7 +165,7 @@ export default function AdminPengumumanPage() {
           />
         ) : (
           <div className="space-y-4">
-            {announcements.map((ann) => (
+            {filteredAnnouncements.map((ann) => (
               <Card key={ann.id} className="p-5 border-[var(--border)] bg-[var(--card)]">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="space-y-1.5 flex-1 min-w-0">

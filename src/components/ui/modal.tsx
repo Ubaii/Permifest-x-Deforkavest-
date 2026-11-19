@@ -25,8 +25,10 @@ export interface ModalProps {
   title?: React.ReactNode;
   description?: React.ReactNode;
   children: React.ReactNode;
+  footer?: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
   className?: string;
+  noPadding?: boolean;
 }
 
 export function Modal({
@@ -35,8 +37,10 @@ export function Modal({
   title,
   description,
   children,
+  footer,
   maxWidth = 'md',
   className,
+  noPadding = false,
 }: ModalProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,7 +71,7 @@ export function Modal({
   return (
     <ModalContext.Provider value={{ onClose }}>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
         role="dialog"
         aria-modal="true"
         onClick={(e) => {
@@ -76,7 +80,7 @@ export function Modal({
       >
         <div
           className={cn(
-            'w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]',
+            'w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]',
             maxWidths[maxWidth],
             className
           )}
@@ -89,7 +93,16 @@ export function Modal({
               </div>
             </ModalHeader>
           ) : null}
-          {children}
+
+          {noPadding ? (
+            children
+          ) : (
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 text-sm text-[var(--foreground)]">
+              {children}
+            </div>
+          )}
+
+          {footer ? <ModalFooter>{footer}</ModalFooter> : null}
         </div>
       </div>
     </ModalContext.Provider>
@@ -169,11 +182,13 @@ export function ModalContent({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn('p-5 overflow-y-auto flex-1 space-y-4 text-sm text-[var(--foreground)]', className)}>
+    <div className={cn('p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 text-sm text-[var(--foreground)]', className)}>
       {children}
     </div>
   );
 }
+
+export const ModalBody = ModalContent;
 
 export function ModalFooter({
   className,
@@ -185,7 +200,7 @@ export function ModalFooter({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-end gap-3 p-4 border-t border-[var(--border)] bg-[var(--accent)]/30 shrink-0',
+        'flex flex-wrap items-center justify-end gap-3 px-5 sm:px-6 py-4 border-t border-[var(--border)] bg-[var(--muted)]/40 shrink-0',
         className
       )}
     >

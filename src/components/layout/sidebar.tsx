@@ -74,6 +74,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
               { label: 'Overview Penugasan', href: '/dashboard/juri', icon: House },
               { label: 'Karya Ditugaskan', href: '/dashboard/juri/penugasan', icon: ClipboardText },
               { label: 'Riwayat Penilaian', href: '/dashboard/juri/riwayat', icon: ClockCounterClockwise },
+              { label: 'Profil Saya', href: '/dashboard/juri/profil', icon: User },
             ],
           },
         ];
@@ -87,6 +88,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
             groupTitle: 'Operasional Harian',
             items: [
               { label: 'Overview', href: '/dashboard/admin', icon: House },
+              { label: 'Profil Saya', href: '/dashboard/admin/profil', icon: User },
               { label: 'Verifikasi Pembayaran', href: '/dashboard/admin/pembayaran', icon: CreditCard },
               { label: 'Pendaftaran & Tim', href: '/dashboard/admin/peserta', icon: Users },
             ],

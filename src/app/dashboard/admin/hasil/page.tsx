@@ -20,7 +20,13 @@ export default function AdminHasilPage() {
 
   const esportComps = competitions.filter((c) => c.type === 'non_academic');
 
+  const [filterGame, setFilterGame] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
+
+  const filteredMatches = matchResults.filter((m) => {
+    if (filterGame === 'all') return true;
+    return m.competition_id === filterGame;
+  });
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
   const [selectedCompId, setSelectedCompId] = useState(esportComps[0]?.id || '');
   const [participantName, setParticipantName] = useState('');
@@ -108,17 +114,46 @@ export default function AdminHasilPage() {
           </Alert>
         )}
 
+        {/* Filter Tab Game */}
+        <div className="flex items-center gap-2 p-1 bg-[var(--muted)] rounded-lg w-fit border border-[var(--border)]">
+          <button
+            type="button"
+            onClick={() => setFilterGame('all')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              filterGame === 'all'
+                ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+            }`}
+          >
+            Semua Game
+          </button>
+          {esportComps.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setFilterGame(c.id)}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+                filterGame === c.id
+                  ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs'
+                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+              }`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+
         <Card className="border-[var(--border)] bg-[var(--card)]">
           <CardHeader>
             <CardTitle>Hasil Pertandingan yang Telah Divalidasi</CardTitle>
             <p className="text-xs text-[var(--muted-foreground)]">Data peringkat juara e-sport yang tampil di leaderboard publik</p>
           </CardHeader>
           <CardContent>
-            {matchResults.length === 0 ? (
+            {filteredMatches.length === 0 ? (
               <EmptyState
                 icon={<GameController className="w-7 h-7 text-[var(--primary)]" weight="duotone" />}
                 title="Belum Ada Hasil Pertandingan"
-                description="Turnamen e-sport PES atau Mobile Legends belum memiliki input rekapitulasi juara. Klik tombol di atas untuk menambah entri."
+                description="Turnamen e-sport belum memiliki input rekapitulasi juara untuk kategori ini. Klik tombol di atas untuk menambah entri."
                 action={
                   <Button size="sm" variant="primary" onClick={openCreateModal}>
                     Input Juara
@@ -127,7 +162,7 @@ export default function AdminHasilPage() {
               />
             ) : (
               <div className="divide-y divide-[var(--border)]">
-                {matchResults.map((m) => {
+                {filteredMatches.map((m) => {
                   const comp = competitions.find((c) => c.id === m.competition_id);
 
                   return (

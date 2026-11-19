@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,9 +24,13 @@ import {
   CheckCircle,
   Trophy,
   ClipboardText,
+  WarningOctagon,
 } from '@phosphor-icons/react';
 
-export default function AdminPenilaianPage() {
+function AdminPenilaianContent() {
+  const searchParams = useSearchParams();
+  const subIdParam = searchParams.get('sub_id');
+
   const {
     submissions,
     availableUsers,
@@ -36,13 +42,19 @@ export default function AdminPenilaianPage() {
   } = useAppStore();
 
   const [compFilter, setCompFilter] = useState('all');
-  const [activeSubId, setActiveSubId] = useState<string | null>(null);
+  const [activeSubId, setActiveSubId] = useState<string | null>(subIdParam);
   const [selectedJudgeId, setSelectedJudgeId] = useState<string>('');
   const [assigning, setAssigning] = useState(false);
   const [confirmLockSub, setConfirmLockSub] = useState<Submission | null>(null);
   const [deleteAssignTarget, setDeleteAssignTarget] = useState<JudgeAssignment | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (subIdParam) {
+      setActiveSubId(subIdParam);
+    }
+  }, [subIdParam]);
 
   const judgesList = availableUsers.filter(
     (u) => u.role === 'juri' || u.role === 'panitia' || u.role === 'super_admin'
@@ -97,6 +109,13 @@ export default function AdminPenilaianPage() {
     <DashboardLayout
       title="Penilaian Karya, Penugasan Juri &amp; Kunci Nilai"
       subtitle="Distribusikan karya ke dewan juri, pantau matriks penilaian rubrik, dan sahkan skor akhir perlombaan."
+      actions={
+        <Link href="/dashboard/admin/koreksi-darurat">
+          <Button size="sm" variant="outline" leftIcon={<WarningOctagon className="w-4 h-4 text-primary" />}>
+            Menu Koreksi Darurat Nilai
+          </Button>
+        </Link>
+      }
     >
       <div className="space-y-6">
         {alertSuccess && (
@@ -339,5 +358,13 @@ export default function AdminPenilaianPage() {
         variant="destructive"
       />
     </DashboardLayout>
+  );
+}
+
+export default function AdminPenilaianPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Memuat data penilaian juri...</div>}>
+      <AdminPenilaianContent />
+    </Suspense>
   );
 }

@@ -120,6 +120,12 @@ export default function AdminSubmissionPage() {
             </a>
           ) : null}
 
+          <Link href={`/dashboard/admin/penilaian?sub_id=${s.id}`}>
+            <Button size="sm" variant="secondary" className="text-xs">
+              Penilaian &rarr;
+            </Button>
+          </Link>
+
           <Button
             size="sm"
             variant="ghost"
