@@ -130,7 +130,6 @@ export function DashboardLayout({
 
             {/* RBAC Role Indicator */}
             <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-border">
-              <span className="text-xs text-muted-foreground font-mono">Role:</span>
               <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold bg-primary/15 border border-primary/30 text-primary">
                 {ROLE_LABELS[currentUser.role]}
               </span>

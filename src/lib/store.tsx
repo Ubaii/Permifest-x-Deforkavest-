@@ -6,12 +6,15 @@ import {
   UserRole, 
   Competition, 
   Registration, 
+  RegistrationStatus,
   Submission, 
   JudgeAssignment, 
   Announcement, 
   AuditLog, 
   MatchResult,
-  RubricCriteria
+  RubricCriteria,
+  SystemSettings,
+  ScoreChange,
 } from './types';
 import { 
   MOCK_USERS, 
@@ -24,6 +27,18 @@ import {
   MOCK_RUBRIC_CRITERIA
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
+
+const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
+  event_name: 'Permifest x Deforkafest 2026',
+  registration_open: true,
+  maintenance_mode: false,
+  bank_name: 'BCA (Bank Central Asia)',
+  bank_account_number: '8820 1928 37',
+  bank_account_holder: 'Panitia Permifest x Deforkafest',
+  qris_nmid: 'ID10293847561',
+  whatsapp_helpdesk: '0812-3456-7890',
+  email_helpdesk: 'helpdesk@permifest.id',
+};
 
 interface AppContextType {
   currentUser: User;
@@ -38,9 +53,13 @@ interface AppContextType {
   announcements: Announcement[];
   auditLogs: AuditLog[];
   matchResults: MatchResult[];
+  systemSettings: SystemSettings;
+  scoreChanges: ScoreChange[];
   
   // Actions - Pendaftaran & Pembayaran
   registerCompetition: (competitionId: string, formData: Record<string, unknown>) => Promise<Registration>;
+  addRegistrationManual: (data: { userId: string; competitionId: string; status: RegistrationStatus; teamName?: string }) => Promise<Registration>;
+  updateRegistrationStatus: (registrationId: string, status: RegistrationStatus) => Promise<void>;
   uploadPaymentProof: (registrationId: string, proofUrl: string, proofName: string) => Promise<void>;
   verifyPayment: (registrationId: string, status: 'verified' | 'rejected', reason?: string) => Promise<void>;
   updatePaymentAmount: (registrationId: string, amount: number) => Promise<void>;
@@ -48,16 +67,24 @@ interface AppContextType {
 
   // Actions - Karya & Penilaian
   submitWork: (registrationId: string, stageId: string, data: { fileUrl?: string; fileName?: string; linkUrl?: string; notes?: string }) => Promise<void>;
+  deleteSubmission: (submissionId: string) => Promise<void>;
   assignJudge: (submissionId: string, judgeId: string) => Promise<void>;
   removeJudgeAssignment: (assignmentId: string) => Promise<void>;
   submitJudgeScore: (assignmentId: string, scores: { criteriaId: string; score: number; comment?: string }[]) => Promise<void>;
+  toggleLockSubmissionScore: (submissionId: string, locked: boolean) => Promise<void>;
+  overrideScore: (submissionId: string, newScore: number, reason: string) => Promise<void>;
+
+  // Actions - Rubrik Penilaian CRUD
+  addRubricCriteria: (criteria: Omit<RubricCriteria, 'id'>) => Promise<RubricCriteria>;
+  updateRubricCriteria: (id: string, updates: Partial<RubricCriteria>) => Promise<void>;
+  deleteRubricCriteria: (id: string) => Promise<void>;
 
   // Actions - Kompetisi CRUD
   addCompetition: (comp: Omit<Competition, 'id' | 'registered_count'>) => Promise<Competition>;
   updateCompetition: (id: string, updates: Partial<Competition>) => Promise<void>;
   deleteCompetition: (id: string) => Promise<void>;
 
-  // Actions - Pengguna CRUD (Peserta, Juri, Panitia, Admin)
+  // Actions - Pengguna CRUD
   addUser: (user: Omit<User, 'id'>) => Promise<User>;
   updateUser: (id: string, updates: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
@@ -71,6 +98,9 @@ interface AppContextType {
   addMatchResult: (result: Omit<MatchResult, 'id' | 'created_at'>) => Promise<void>;
   updateMatchResult: (id: string, updates: Partial<MatchResult>) => Promise<void>;
   deleteMatchResult: (id: string) => Promise<void>;
+
+  // Actions - Pengaturan Sistem
+  updateSystemSettings: (updates: Partial<SystemSettings>) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -82,10 +112,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [registrations, setRegistrations] = useState<Registration[]>(MOCK_REGISTRATIONS);
   const [submissions, setSubmissions] = useState<Submission[]>(MOCK_SUBMISSIONS);
   const [judgeAssignments, setJudgeAssignments] = useState<JudgeAssignment[]>(MOCK_JUDGE_ASSIGNMENTS);
-  const [rubricCriteria] = useState<RubricCriteria[]>(MOCK_RUBRIC_CRITERIA);
+  const [rubricCriteria, setRubricCriteria] = useState<RubricCriteria[]>(MOCK_RUBRIC_CRITERIA);
   const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(MOCK_AUDIT_LOGS);
   const [matchResults, setMatchResults] = useState<MatchResult[]>(MOCK_MATCH_RESULTS);
+  const [systemSettings, setSystemSettings] = useState<SystemSettings>(DEFAULT_SYSTEM_SETTINGS);
+  const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
@@ -138,6 +170,47 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCompetitions(prev => prev.map(c => c.id === competitionId ? { ...c, registered_count: c.registered_count + 1 } : c));
     logAudit('REGISTER_COMPETITION', 'registration', newReg.id, { competition: comp.name });
     return newReg;
+  };
+
+  const addRegistrationManual = async (data: { userId: string; competitionId: string; status: RegistrationStatus; teamName?: string }): Promise<Registration> => {
+    const comp = competitions.find(c => c.id === data.competitionId);
+    const user = availableUsers.find(u => u.id === data.userId);
+    if (!comp || !user) throw new Error('Kompetisi atau Pengguna tidak ditemukan');
+
+    const newReg: Registration = {
+      id: `reg-${Date.now()}`,
+      user_id: data.userId,
+      competition_id: data.competitionId,
+      competition: comp,
+      user: user,
+      form_data: { full_name: user.full_name, institution: user.institution },
+      status: data.status,
+      registered_at: new Date().toISOString(),
+      team: data.teamName ? {
+        id: `team-${Date.now()}`,
+        competition_id: data.competitionId,
+        name: data.teamName,
+        captain_id: user.id,
+        invite_code: `INV-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+        members: [{ id: `tm-1`, team_id: `team-${Date.now()}`, user_id: user.id, role: 'captain', joined_at: new Date().toISOString() }],
+      } : undefined,
+      payment: comp.registration_fee > 0 ? {
+        id: `pay-${Date.now()}`,
+        registration_id: `reg-${Date.now()}`,
+        amount: comp.registration_fee,
+        status: data.status === 'verified' ? 'verified' : 'pending',
+      } : undefined,
+    };
+
+    setRegistrations(prev => [newReg, ...prev]);
+    setCompetitions(prev => prev.map(c => c.id === data.competitionId ? { ...c, registered_count: c.registered_count + 1 } : c));
+    logAudit('ADD_REGISTRATION_MANUAL', 'registration', newReg.id, { user: user.full_name, competition: comp.name });
+    return newReg;
+  };
+
+  const updateRegistrationStatus = async (registrationId: string, status: RegistrationStatus) => {
+    setRegistrations(prev => prev.map(r => r.id === registrationId ? { ...r, status } : r));
+    logAudit('UPDATE_REGISTRATION_STATUS', 'registration', registrationId, { status });
   };
 
   const uploadPaymentProof = async (registrationId: string, proofUrl: string, proofName: string) => {
@@ -239,6 +312,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('SUBMIT_WORK', 'submission', newSub.id, { version, fileName: data.fileName || data.linkUrl });
   };
 
+  const deleteSubmission = async (submissionId: string) => {
+    setSubmissions(prev => prev.filter(s => s.id !== submissionId));
+    logAudit('DELETE_SUBMISSION', 'submission', submissionId, {});
+  };
+
   const assignJudge = async (submissionId: string, judgeId: string) => {
     const judge = availableUsers.find(u => u.id === judgeId);
     const sub = submissions.find(s => s.id === submissionId);
@@ -306,6 +384,73 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('SUBMIT_JUDGE_SCORE', 'score', assignmentId, { totalWeighted });
   };
 
+  const toggleLockSubmissionScore = async (submissionId: string, locked: boolean) => {
+    setJudgeAssignments(prev => prev.map(a => {
+      if (a.submission_id === submissionId && a.scores) {
+        return {
+          ...a,
+          scores: a.scores.map(s => ({ ...s, is_locked: locked }))
+        };
+      }
+      return a;
+    }));
+    logAudit('TOGGLE_LOCK_SCORE', 'submission', submissionId, { locked });
+  };
+
+  // --- Break-glass emergency score override ---
+  const overrideScore = async (submissionId: string, newScore: number, reason: string) => {
+    const targetSub = submissions.find(s => s.id === submissionId);
+    const oldScore = targetSub?.final_score || 0;
+
+    const changeEntry: ScoreChange = {
+      id: `sc-${Date.now()}`,
+      submission_id: submissionId,
+      old_score: oldScore,
+      new_score: newScore,
+      reason,
+      changed_by: currentUser.email,
+      created_at: new Date().toISOString(),
+    };
+
+    setScoreChanges(prev => [changeEntry, ...prev]);
+
+    setSubmissions(prev => prev.map(s => {
+      if (s.id === submissionId) {
+        return { ...s, final_score: newScore };
+      }
+      return s;
+    }));
+
+    logAudit('EMERGENCY_SCORE_OVERRIDE', 'submission', submissionId, {
+      oldScore,
+      newScore,
+      reason,
+      authorised_by: currentUser.email,
+    });
+  };
+
+  // --- CRUD Rubrik Penilaian ---
+  const addRubricCriteria = async (criteria: Omit<RubricCriteria, 'id'>): Promise<RubricCriteria> => {
+    const newCrit: RubricCriteria = {
+      ...criteria,
+      id: `crit-${Date.now()}`,
+    };
+    setRubricCriteria(prev => [...prev, newCrit]);
+    logAudit('CREATE_RUBRIC_CRITERIA', 'rubric_criteria', newCrit.id, { name: newCrit.name, weight: newCrit.weight });
+    return newCrit;
+  };
+
+  const updateRubricCriteria = async (id: string, updates: Partial<RubricCriteria>) => {
+    setRubricCriteria(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+    logAudit('UPDATE_RUBRIC_CRITERIA', 'rubric_criteria', id, updates as Record<string, unknown>);
+  };
+
+  const deleteRubricCriteria = async (id: string) => {
+    const crit = rubricCriteria.find(c => c.id === id);
+    setRubricCriteria(prev => prev.filter(c => c.id !== id));
+    logAudit('DELETE_RUBRIC_CRITERIA', 'rubric_criteria', id, { name: crit?.name });
+  };
+
   // --- CRUD Kompetisi ---
   const addCompetition = async (compData: Omit<Competition, 'id' | 'registered_count'>): Promise<Competition> => {
     const newComp: Competition = {
@@ -329,7 +474,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('DELETE_COMPETITION', 'competition', id, { name: comp?.name });
   };
 
-  // --- CRUD Pengguna (Peserta, Juri, Panitia, Admin) ---
+  // --- CRUD Pengguna ---
   const addUser = async (userData: Omit<User, 'id'>): Promise<User> => {
     const newUser: User = {
       ...userData,
@@ -399,6 +544,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('DELETE_MATCH_RESULT', 'match_result', id, { participant: match?.participant_name });
   };
 
+  // --- Pengaturan Sistem ---
+  const updateSystemSettings = async (updates: Partial<SystemSettings>) => {
+    setSystemSettings(prev => ({ ...prev, ...updates }));
+    logAudit('UPDATE_SYSTEM_SETTINGS', 'system_settings', 'global', updates as Record<string, unknown>);
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -413,15 +564,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       announcements,
       auditLogs,
       matchResults,
+      systemSettings,
+      scoreChanges,
       registerCompetition,
+      addRegistrationManual,
+      updateRegistrationStatus,
       uploadPaymentProof,
       verifyPayment,
       updatePaymentAmount,
       deleteRegistration,
       submitWork,
+      deleteSubmission,
       assignJudge,
       removeJudgeAssignment,
       submitJudgeScore,
+      toggleLockSubmissionScore,
+      overrideScore,
+      addRubricCriteria,
+      updateRubricCriteria,
+      deleteRubricCriteria,
       addCompetition,
       updateCompetition,
       deleteCompetition,
@@ -434,6 +595,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addMatchResult,
       updateMatchResult,
       deleteMatchResult,
+      updateSystemSettings,
     }}>
       {children}
     </AppContext.Provider>

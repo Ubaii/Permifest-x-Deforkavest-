@@ -240,3 +240,26 @@ export interface LeaderboardEntry {
   score?: number;
   notes?: string;
 }
+
+export interface SystemSettings {
+  event_name: string;
+  registration_open: boolean;
+  maintenance_mode: boolean;
+  bank_name: string;
+  bank_account_number: string;
+  bank_account_holder: string;
+  qris_nmid: string;
+  whatsapp_helpdesk: string;
+  email_helpdesk: string;
+}
+
+export interface ScoreChange {
+  id: string;
+  submission_id: string;
+  old_score: number;
+  new_score: number;
+  reason: string;
+  changed_by: string;
+  created_at: string;
+}
+
