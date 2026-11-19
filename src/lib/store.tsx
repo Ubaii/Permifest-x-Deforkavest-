@@ -15,6 +15,7 @@ import {
   RubricCriteria,
   SystemSettings,
   ScoreChange,
+  TimelineEvent,
 } from './types';
 import { 
   MOCK_USERS, 
@@ -27,6 +28,7 @@ import {
   MOCK_RUBRIC_CRITERIA
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
+import { getTimelineEvents } from './landing-data';
 
 const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   event_name: 'Permifest x Deforkafest 2026',
@@ -56,6 +58,7 @@ interface AppContextType {
   matchResults: MatchResult[];
   systemSettings: SystemSettings;
   scoreChanges: ScoreChange[];
+  timelineEvents: TimelineEvent[];
   
   // Actions - Pendaftaran & Pembayaran
   registerCompetition: (competitionId: string, formData: Record<string, unknown>) => Promise<Registration>;
@@ -102,6 +105,12 @@ interface AppContextType {
 
   // Actions - Pengaturan Sistem
   updateSystemSettings: (updates: Partial<SystemSettings>) => Promise<void>;
+
+  // Actions - Timeline & Kalender Event CRUD & Auto-detect
+  addTimelineEvent: (event: Omit<TimelineEvent, 'id'>) => Promise<TimelineEvent>;
+  updateTimelineEvent: (id: string, updates: Partial<TimelineEvent>) => Promise<void>;
+  deleteTimelineEvent: (id: string) => Promise<void>;
+  syncTimelineFromCompetitions: () => Promise<{ addedCount: number }>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -119,6 +128,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [matchResults, setMatchResults] = useState<MatchResult[]>(MOCK_MATCH_RESULTS);
   const [systemSettings, setSystemSettings] = useState<SystemSettings>(DEFAULT_SYSTEM_SETTINGS);
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>(() => getTimelineEvents());
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
@@ -551,6 +561,145 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('UPDATE_SYSTEM_SETTINGS', 'system_settings', 'global', updates as Record<string, unknown>);
   };
 
+  // --- Timeline & Kalender Actions ---
+  const addTimelineEvent = async (eventData: Omit<TimelineEvent, 'id'>): Promise<TimelineEvent> => {
+    const newEvent: TimelineEvent = {
+      ...eventData,
+      id: `tl-${Date.now()}`,
+    };
+    setTimelineEvents(prev => [...prev, newEvent].sort((a, b) => a.tanggal_mulai.localeCompare(b.tanggal_mulai)));
+    logAudit('CREATE_TIMELINE_EVENT', 'timeline', newEvent.id, { judul: newEvent.judul, tanggal: newEvent.tanggal_mulai });
+    return newEvent;
+  };
+
+  const updateTimelineEvent = async (id: string, updates: Partial<TimelineEvent>) => {
+    setTimelineEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, ...updates } : ev)).sort((a, b) => a.tanggal_mulai.localeCompare(b.tanggal_mulai)));
+    logAudit('UPDATE_TIMELINE_EVENT', 'timeline', id, updates as Record<string, unknown>);
+  };
+
+  const deleteTimelineEvent = async (id: string) => {
+    setTimelineEvents(prev => prev.filter(ev => ev.id !== id));
+    logAudit('DELETE_TIMELINE_EVENT', 'timeline', id, {});
+  };
+
+  const syncTimelineFromCompetitions = async (): Promise<{ addedCount: number }> => {
+    let count = 0;
+    const newItems: TimelineEvent[] = [];
+
+    competitions.forEach((comp) => {
+      // 1. Pendaftaran Buka
+      if (comp.registration_open_at) {
+        const dateStr = comp.registration_open_at.split('T')[0];
+        const title = `Buka Pendaftaran: ${comp.name}`;
+        const exists = timelineEvents.some(
+          (e) => e.tanggal_mulai === dateStr && e.cabang_id === comp.id && e.jenis === 'daftar' && e.judul.includes('Buka')
+        );
+        if (!exists) {
+          count++;
+          newItems.push({
+            id: `tl-auto-${comp.id}-open`,
+            judul: title,
+            deskripsi: `Pembukaan pendaftaran untuk cabang lomba ${comp.name} (${comp.type === 'academic' ? 'Akademik' : 'E-Sport'}).`,
+            tanggal_mulai: dateStr,
+            jam: '00:00 WIB',
+            jenis: 'daftar',
+            cabang_id: comp.id,
+            cabang_nama: comp.name,
+            lokasi: 'Online Platform',
+          });
+        }
+      }
+
+      // 2. Pendaftaran Tutup
+      if (comp.registration_close_at) {
+        const dateStr = comp.registration_close_at.split('T')[0];
+        const title = `Tutup Pendaftaran & Pembayaran: ${comp.name}`;
+        const exists = timelineEvents.some(
+          (e) => e.tanggal_mulai === dateStr && e.cabang_id === comp.id && e.jenis === 'daftar' && e.is_deadline
+        );
+        if (!exists) {
+          count++;
+          newItems.push({
+            id: `tl-auto-${comp.id}-close`,
+            judul: title,
+            deskripsi: `Batas akhir pendaftaran dan verifikasi bukti pembayaran QRIS untuk lomba ${comp.name}.`,
+            tanggal_mulai: dateStr,
+            jam: '23:59 WIB',
+            jenis: 'daftar',
+            cabang_id: comp.id,
+            cabang_nama: comp.name,
+            lokasi: 'Online Platform',
+            is_deadline: true,
+          });
+        }
+      }
+
+      // 3. Stages / Babak Penyisihan & Final
+      if (comp.stages && comp.stages.length > 0) {
+        comp.stages.forEach((stage) => {
+          if (stage.submission_close_at) {
+            const dateStr = stage.submission_close_at.split('T')[0];
+            const isFinal = stage.name.toLowerCase().includes('final');
+            const title = isFinal 
+              ? `Babak Final & Presentasi: ${comp.name}` 
+              : `Batas Pengumpulan Berkas: ${comp.name} (${stage.name})`;
+            const exists = timelineEvents.some(
+              (e) => e.tanggal_mulai === dateStr && e.cabang_id === comp.id && e.judul.includes(stage.name)
+            );
+            if (!exists) {
+              count++;
+              newItems.push({
+                id: `tl-auto-${comp.id}-${stage.id}`,
+                judul: title,
+                deskripsi: `Jadwal pelaksanaan tahapan ${stage.name} untuk peserta lomba ${comp.name}.`,
+                tanggal_mulai: dateStr,
+                jam: isFinal ? '09:00 WIB' : '23:59 WIB',
+                jenis: isFinal ? 'final' : 'penyisihan',
+                cabang_id: comp.id,
+                cabang_nama: comp.name,
+                lokasi: isFinal ? 'Kampus UST Yogyakarta' : 'Online Platform',
+                is_deadline: !isFinal,
+              });
+            }
+          }
+        });
+      }
+    });
+
+    // 4. Pertandingan E-Sport dari matchResults bila ada
+    matchResults.forEach((match) => {
+      if (match.created_at) {
+        const dateStr = match.created_at.split('T')[0];
+        const comp = competitions.find(c => c.id === match.competition_id);
+        const title = `Laga Pertandingan: ${comp?.name || 'E-Sport'} (${match.participant_name})`;
+        const exists = timelineEvents.some(
+          (e) => e.tanggal_mulai === dateStr && e.judul === title
+        );
+        if (!exists) {
+          count++;
+          newItems.push({
+            id: `tl-auto-match-${match.id}`,
+            judul: title,
+            deskripsi: `Jadwal pertandingan turnamen untuk ${match.participant_name}. Catatan: ${match.notes || 'Sistem gugur (Single Elimination)'}`,
+            tanggal_mulai: dateStr,
+            jam: '13:00 WIB',
+            jenis: 'penyisihan',
+            cabang_id: match.competition_id,
+            cabang_nama: comp?.name,
+            lokasi: 'Online Room / Arena',
+          });
+        }
+      }
+    });
+
+    if (newItems.length > 0) {
+      setTimelineEvents(prev => [...prev, ...newItems].sort((a, b) => a.tanggal_mulai.localeCompare(b.tanggal_mulai)));
+      logAudit('SYNC_TIMELINE', 'timeline', 'competitions', { count: newItems.length });
+    }
+
+    return { addedCount: count };
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -597,6 +746,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateMatchResult,
       deleteMatchResult,
       updateSystemSettings,
+      timelineEvents,
+      addTimelineEvent,
+      updateTimelineEvent,
+      deleteTimelineEvent,
+      syncTimelineFromCompetitions,
     }}>
       {children}
     </AppContext.Provider>

@@ -245,8 +245,7 @@ export default function AdminKompetisiPage() {
   const handleTogglePublish = async (comp: Competition) => {
     await updateCompetition(comp.id, { is_published: !comp.is_published });
     setAlertSuccess(
-      `Status publikasi "${comp.name}" diubah menjadi ${
-        !comp.is_published ? 'Aktif (Published)' : 'Draft (Unpublished)'
+      `Status publikasi "${comp.name}" diubah menjadi ${!comp.is_published ? 'Aktif (Published)' : 'Draft (Unpublished)'
       }.`
     );
   };
@@ -350,10 +349,10 @@ export default function AdminKompetisiPage() {
                 size="sm"
                 variant="outline"
                 className="text-xs gap-1 h-8"
-                title="Kelola Rubrik Penilaian Dewan Juri"
+                title="Kelola Rubrik"
               >
                 <ListNumbers className="w-3.5 h-3.5 text-[var(--primary)]" />
-                <span className="hidden sm:inline">Rubrik</span>
+                {/* <span className="hidden sm:inline">Rubrik</span> */}
               </Button>
             </Link>
           )}
@@ -365,7 +364,7 @@ export default function AdminKompetisiPage() {
             className="text-xs h-8"
           >
             <PencilSimple className="w-3.5 h-3.5 sm:mr-1" />
-            <span className="hidden sm:inline">Edit</span>
+            {/* <span className="hidden sm:inline">Edit</span> */}
           </Button>
 
           <Button
@@ -423,11 +422,10 @@ export default function AdminKompetisiPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-[var(--radius-sm)] transition-colors min-h-[32px] ${
-                  activeTab === tab.id
-                    ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]'
-                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
-                }`}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-[var(--radius-sm)] transition-colors min-h-[32px] ${activeTab === tab.id
+                  ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]'
+                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+                  }`}
               >
                 {tab.label}
               </button>
@@ -473,33 +471,30 @@ export default function AdminKompetisiPage() {
               <button
                 type="button"
                 onClick={() => setModalTab('info')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${
-                  modalTab === 'info'
-                    ? 'bg-[var(--primary)] text-white'
-                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'info'
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                  }`}
               >
                 1. Informasi Dasar
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('biaya')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${
-                  modalTab === 'biaya'
-                    ? 'bg-[var(--primary)] text-white'
-                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'biaya'
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                  }`}
               >
                 2. Biaya &amp; Kuota
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('berkas')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${
-                  modalTab === 'berkas'
-                    ? 'bg-[var(--primary)] text-white'
-                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                }`}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'berkas'
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                  }`}
               >
                 3. Berkas &amp; QRIS
               </button>

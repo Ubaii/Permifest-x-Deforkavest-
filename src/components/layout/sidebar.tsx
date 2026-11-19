@@ -29,6 +29,7 @@ import {
   WarningOctagon,
   ListNumbers,
   UserGear,
+  Calendar,
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -101,6 +102,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
           {
             groupTitle: 'Konten & Publikasi',
             items: [
+              { label: 'Timeline & Kalender', href: '/dashboard/admin/timeline', icon: Calendar },
               { label: 'Pengumuman Resmi', href: '/dashboard/admin/pengumuman', icon: Bell },
             ],
           },

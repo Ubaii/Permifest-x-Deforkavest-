@@ -264,3 +264,25 @@ export interface ScoreChange {
   created_at: string;
 }
 
+export type TimelineEventType =
+  | 'daftar'
+  | 'technical-meeting'
+  | 'penyisihan'
+  | 'final'
+  | 'pengumuman';
+
+export interface TimelineEvent {
+  id: string;
+  judul: string;
+  deskripsi: string;
+  tanggal_mulai: string; // ISO String: YYYY-MM-DD
+  tanggal_selesai?: string;
+  jam?: string;
+  jenis: TimelineEventType;
+  cabang_id?: string;
+  cabang_nama?: string;
+  lokasi?: string;
+  is_deadline?: boolean;
+}
+
+
