@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { KeyRound, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Key, ArrowLeft, CheckCircle } from '@phosphor-icons/react';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
         <Card className="w-full max-w-md border-cyan-500/30 glow-cyan">
           <CardHeader className="text-center pb-2">
             <div className="w-12 h-12 rounded-xl bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center mx-auto mb-3">
-              <KeyRound className="w-6 h-6" />
+              <Key size={24} />
             </div>
             <CardTitle className="justify-center text-xl">Lupa Kata Sandi?</CardTitle>
             <CardDescription>
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
           <CardContent className="pt-4">
             {submitted ? (
               <div className="p-6 text-center space-y-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+                <CheckCircle size={48} className="text-emerald-400 mx-auto" weight="fill" />
                 <h4 className="text-base font-bold text-white">Tautan Terkirim!</h4>
                 <p className="text-xs text-slate-400">
                   Periksa kotak masuk (inbox) atau spam email <strong className="text-cyan-400">{email}</strong> untuk mengatur ulang kata sandi Anda.
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
 
                 <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
                   <Link href="/login" className="inline-flex items-center gap-1.5 text-cyan-400 hover:underline">
-                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <ArrowLeft size={14} />
                     <span>Kembali ke Halaman Masuk</span>
                   </Link>
                 </div>

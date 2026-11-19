@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
-import { Shield, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Shield, ArrowRight, CheckCircle } from '@phosphor-icons/react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -67,7 +67,7 @@ export default function RegisterPage() {
           <CardContent className="pt-4">
             {isSuccess ? (
               <div className="p-6 text-center space-y-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+                <CheckCircle size={48} className="text-emerald-400 mx-auto" weight="fill" />
                 <h4 className="text-base font-bold text-white">Akun Berhasil Didaftarkan!</h4>
                 <p className="text-xs text-slate-400">
                   Mengalihkan Anda secara otomatis ke Dashboard Peserta...

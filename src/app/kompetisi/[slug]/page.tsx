@@ -17,13 +17,13 @@ import {
   ArrowLeft, 
   Clock, 
   Users, 
-  CheckCircle2, 
-  FileCheck, 
-  AlertCircle, 
+  CheckCircle as CheckCircle2, 
+  FileText as FileCheck, 
+  WarningCircle as AlertCircle, 
   QrCode, 
-  ChevronRight,
-  Send
-} from 'lucide-react';
+  CaretRight as ChevronRight,
+  PaperPlaneRight as Send
+} from '@phosphor-icons/react';
 
 function DetailKompetisiContent() {
   const params = useParams();
@@ -33,7 +33,7 @@ function DetailKompetisiContent() {
 
   const comp = competitions.find(c => c.slug === slug);
   const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
 
@@ -57,7 +57,7 @@ function DetailKompetisiContent() {
   // Check if current user already registered for this competition
   const existingRegistration = registrations.find(r => r.competition_id === comp.id && r.user_id === currentUser.id);
 
-  const handleInputChange = (fieldId: string, value: any) => {
+  const handleInputChange = (fieldId: string, value: unknown) => {
     setFormData(prev => ({ ...prev, [fieldId]: value }));
   };
 
@@ -71,8 +71,9 @@ function DetailKompetisiContent() {
         setModalOpen(false);
         router.push('/dashboard/peserta/pembayaran');
       }, 1500);
-    } catch (err: any) {
-      alert(err.message || 'Gagal mendaftar');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal mendaftar';
+      alert(message);
     } finally {
       setSubmitting(false);
     }
@@ -123,7 +124,7 @@ function DetailKompetisiContent() {
               <CardContent className="space-y-4 text-sm text-slate-300 leading-relaxed">
                 <p>{comp.description}</p>
                 <p>
-                  Kompetisi ini diselenggarakan untuk mengasah pemahaman konseptual dan kapabilitas teknis para peserta dalam ekosistem keamanan siber terpadu, sejalan dengan visi Permifest dan Devorkafest 2026.
+                  Kompetisi ini diselenggarakan untuk mengasah pemahaman konseptual dan kapabilitas teknis para peserta dalam ekosistem teknologi informasi dan keamanan siber terpadu, sejalan dengan visi Permifest x Deforkafest 2026.
                 </p>
               </CardContent>
             </Card>
@@ -252,7 +253,7 @@ function DetailKompetisiContent() {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={`Form Pendaftaran — ${comp.name}`}
+        title={`Form Pendaftaran: ${comp.name}`}
         description="Lengkapi data pendaftaran berikut dengan benar."
         maxWidth="lg"
       >
@@ -283,9 +284,9 @@ function DetailKompetisiContent() {
                     </label>
                     <select
                       required={field.required}
-                      value={formData[field.id] || ''}
+                      value={(formData[field.id] as string) || ''}
                       onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500"
+                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3.5 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
                     >
                       <option value="">Pilih Opsi...</option>
                       {field.options?.map((opt) => (
@@ -299,7 +300,7 @@ function DetailKompetisiContent() {
                     type={field.type}
                     placeholder={field.placeholder}
                     required={field.required}
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                   />
                 )}

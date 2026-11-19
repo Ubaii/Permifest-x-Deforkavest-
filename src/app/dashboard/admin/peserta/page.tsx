@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
-import { Users, Download, Search, Filter, Mail, Phone } from 'lucide-react';
+import { DownloadSimple as Download, MagnifyingGlass as Search } from '@phosphor-icons/react';
 
 export default function AdminPesertaPage() {
   const { registrations, competitions } = useAppStore();

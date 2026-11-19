@@ -9,15 +9,15 @@ import { Modal } from '@/components/ui/modal';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
 import { 
-  FileCheck2, 
+  FileText as FileCheck2, 
   UserPlus, 
-  Download, 
-  ExternalLink, 
-  Scale, 
+  DownloadSimple as Download, 
+  ArrowSquareOut as ExternalLink, 
+  Scales as Scale, 
   Users,
-  CheckCircle2,
+  CheckCircle as CheckCircle2,
   Clock
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 export default function AdminSubmissionPage() {
   const { submissions, availableUsers, judgeAssignments, assignJudge } = useAppStore();

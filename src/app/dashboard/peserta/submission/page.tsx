@@ -10,15 +10,15 @@ import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort, formatDateWIB } from '@/lib/utils';
 import { 
-  UploadCloud, 
+  CloudArrowUp as UploadCloud, 
   FileText, 
   Link as LinkIcon, 
-  CheckCircle2, 
+  CheckCircle as CheckCircle2, 
   Clock, 
-  ExternalLink,
-  History,
-  AlertCircle
-} from 'lucide-react';
+  ArrowSquareOut as ExternalLink,
+  ClockCounterClockwise as History,
+  WarningCircle as AlertCircle
+} from '@phosphor-icons/react';
 
 export default function PesertaSubmissionPage() {
   const { currentUser, registrations, submissions, submitWork } = useAppStore();
@@ -66,8 +66,9 @@ export default function PesertaSubmissionPage() {
 
       setModalOpen(false);
       alert('Karya Anda berhasil dikumpulkan! Anda dapat memperbarui berkas sebelum deadline berakhir.');
-    } catch (err: any) {
-      alert(err.message || 'Gagal mengirimkan karya');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
+      alert(message);
     } finally {
       setSubmitting(false);
     }

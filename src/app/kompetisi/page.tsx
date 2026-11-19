@@ -12,16 +12,16 @@ import { formatCurrency } from '@/lib/utils';
 import { 
   FileText, 
   Palette, 
-  Server, 
-  Gamepad2, 
+  HardDrives as Server, 
+  GameController as Gamepad2, 
   Trophy, 
   ArrowRight, 
   Users, 
   Calendar, 
-  ShieldCheck,
-  CheckCircle,
-  Filter
-} from 'lucide-react';
+  ShieldCheck, 
+  CheckCircle, 
+  Funnel as Filter 
+} from '@phosphor-icons/react';
 
 export default function KompetisiPage() {
   const { competitions } = useAppStore();

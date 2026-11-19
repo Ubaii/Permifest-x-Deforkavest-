@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Bell, Calendar, User, ChevronDown, ChevronUp, Megaphone } from 'lucide-react';
+import { Bell, Calendar, User, CaretDown as ChevronDown, CaretUp as ChevronUp, Megaphone } from '@phosphor-icons/react';
 
 export default function PengumumanPage() {
   const { announcements } = useAppStore();

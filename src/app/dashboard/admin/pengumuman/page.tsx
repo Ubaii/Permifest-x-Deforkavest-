@@ -9,7 +9,7 @@ import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Bell, Plus, Megaphone, Trash2 } from 'lucide-react';
+import { Bell, Plus, Megaphone, Trash as Trash2 } from '@phosphor-icons/react';
 
 export default function AdminPengumumanPage() {
   const { announcements, competitions, createAnnouncement, currentUser } = useAppStore();

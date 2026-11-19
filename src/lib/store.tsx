@@ -40,7 +40,7 @@ interface AppContextType {
   matchResults: MatchResult[];
   
   // Actions
-  registerCompetition: (competitionId: string, formData: Record<string, any>) => Promise<Registration>;
+  registerCompetition: (competitionId: string, formData: Record<string, unknown>) => Promise<Registration>;
   uploadPaymentProof: (registrationId: string, proofUrl: string, proofName: string) => Promise<void>;
   verifyPayment: (registrationId: string, status: 'verified' | 'rejected', reason?: string) => Promise<void>;
   submitWork: (registrationId: string, stageId: string, data: { fileUrl?: string; fileName?: string; linkUrl?: string; notes?: string }) => Promise<void>;
@@ -75,7 +75,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(userForRole);
   };
 
-  const logAudit = (action: string, entity_type: string, entity_id: string, details: Record<string, any>) => {
+  const logAudit = (action: string, entity_type: string, entity_id: string, details: Record<string, unknown>) => {
     const newLog: AuditLog = {
       id: `log-${Date.now()}`,
       user_email: currentUser.email,
@@ -88,7 +88,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
-  const registerCompetition = async (competitionId: string, formData: Record<string, any>): Promise<Registration> => {
+  const registerCompetition = async (competitionId: string, formData: Record<string, unknown>): Promise<Registration> => {
     const comp = competitions.find(c => c.id === competitionId);
     if (!comp) throw new Error('Kompetisi tidak ditemukan');
 

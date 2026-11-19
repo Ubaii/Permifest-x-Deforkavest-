@@ -4,7 +4,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
+  variant?: 'primary' | 'brand' | 'secondary' | 'outline' | 'danger' | 'destructive' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -13,20 +13,22 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, leftIcon, rightIcon, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98] cursor-pointer';
+    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-[var(--radius-md)] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--ring)] disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98] cursor-pointer min-h-[44px]';
 
     const variants = {
-      primary: 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-semibold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30',
-      secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600',
-      outline: 'bg-transparent border border-cyan-500/50 hover:border-cyan-400 text-cyan-400 hover:bg-cyan-500/10',
-      danger: 'bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 text-red-400',
-      ghost: 'bg-transparent hover:bg-slate-800/60 text-slate-300 hover:text-white',
+      primary: 'bg-[var(--primary)] hover:opacity-90 text-[var(--primary-foreground)] font-semibold shadow-sm',
+      brand: 'bg-[image:var(--gradient-brand)] hover:opacity-95 text-white font-semibold shadow-sm',
+      secondary: 'bg-[var(--muted)] hover:bg-[var(--accent)] text-[var(--foreground)] border border-[var(--border)]',
+      outline: 'bg-transparent border border-[var(--border)] hover:border-[var(--primary)] text-[var(--foreground)] hover:bg-[var(--accent)]',
+      danger: 'bg-[var(--destructive)]/15 border border-[var(--destructive)]/30 hover:bg-[var(--destructive)]/25 text-[var(--destructive)]',
+      destructive: 'bg-[var(--destructive)]/15 border border-[var(--destructive)]/30 hover:bg-[var(--destructive)]/25 text-[var(--destructive)]',
+      ghost: 'bg-transparent hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]',
     };
 
     const sizes = {
-      sm: 'text-xs px-3 py-1.5 gap-1.5',
-      md: 'text-sm px-4 py-2 gap-2',
-      lg: 'text-base px-6 py-2.5 gap-2.5',
+      sm: 'text-xs px-3 py-1.5 gap-1.5 min-h-[36px]',
+      md: 'text-sm px-4 py-2 gap-2 min-h-[44px]',
+      lg: 'text-base px-6 py-2.5 gap-2.5 min-h-[48px]',
     };
 
     return (

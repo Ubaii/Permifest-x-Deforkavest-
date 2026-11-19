@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateShort, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
-import { Trophy, ArrowRight, UploadCloud, CreditCard, ExternalLink } from 'lucide-react';
+import { Trophy, ArrowRight, CloudArrowUp as UploadCloud, CreditCard, ArrowSquareOut as ExternalLink } from '@phosphor-icons/react';
 
 export default function PesertaKompetisiPage() {
   const { currentUser, registrations } = useAppStore();

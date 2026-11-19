@@ -8,16 +8,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   BookOpen, 
-  HelpCircle, 
-  Mail, 
+  Question as HelpCircle, 
+  EnvelopeSimple as Mail, 
   Phone, 
-  Download, 
-  ChevronDown, 
-  ChevronUp, 
+  DownloadSimple as Download, 
+  CaretDown as ChevronDown, 
+  CaretUp as ChevronUp, 
   FileText,
   MapPin,
-  ExternalLink
-} from 'lucide-react';
+  ArrowSquareOut as ExternalLink
+} from '@phosphor-icons/react';
 
 export default function InformasiPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);

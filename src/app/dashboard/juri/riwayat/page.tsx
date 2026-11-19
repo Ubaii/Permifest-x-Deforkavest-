@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { History, CheckCircle2, Lock, Scale } from 'lucide-react';
+import { ClockCounterClockwise as History, CheckCircle as CheckCircle2, Lock, Scales as Scale } from '@phosphor-icons/react';
 
 export default function JuriRiwayatPage() {
   const { judgeAssignments } = useAppStore();

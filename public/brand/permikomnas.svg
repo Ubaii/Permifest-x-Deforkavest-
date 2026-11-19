@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" fill="none" role="img" aria-label="Permikomnas Yogyakarta Logo">
+  <rect width="160" height="48" rx="8" fill="#140D33"/>
+  <circle cx="24" cy="24" r="14" fill="#7C4DDB" fill-opacity="0.2" stroke="#9B6BF2" stroke-width="1.5"/>
+  <path d="M18 20L24 16L30 20V28L24 32L18 28V20Z" stroke="#C4F15A" stroke-width="1.75" stroke-linejoin="round"/>
+  <path d="M24 16V32M18 20L30 28M30 20L18 28" stroke="#C4F15A" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="46" y="22" fill="#F5F2FF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="0.5">PERMIKOMNAS</text>
+  <text x="46" y="34" fill="#A99FD1" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" letter-spacing="0.2">WILAYAH YOGYAKARTA</text>
+</svg>

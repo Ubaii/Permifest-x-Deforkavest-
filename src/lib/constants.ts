@@ -1,7 +1,7 @@
 import { Competition, UserRole } from './types';
 
-export const APP_NAME = 'Permifest × Devorkafest';
-export const APP_DESCRIPTION = 'Platform Manajemen Lomba Terpadu — Cybersecurity Edition';
+export const APP_NAME = 'Permifest x Deforkafest';
+export const APP_DESCRIPTION = 'Platform Manajemen Lomba Terpadu: Permifest x Deforkafest';
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   peserta: 'Peserta',

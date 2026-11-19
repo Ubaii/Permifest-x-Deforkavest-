@@ -1,0 +1,368 @@
+/**
+ * Data helper untuk Landing Page Permifest x Deforkafest
+ *
+ * Semua data dinamis disiapkan di sini sebagai placeholder realistis
+ * sehingga nanti sangat mudah dialihkan ke query Supabase langsung.
+ * Ditandai jelas dengan [PLACEHOLDER] untuk hal-hal yang butuh data asli.
+ */
+
+import { INITIAL_COMPETITIONS } from './constants';
+import type { Competition, CompetitionType } from './types';
+
+export type CompetitionStatus = 'buka' | 'hampir_penuh' | 'penuh' | 'segera';
+
+export interface LandingCompetition extends Competition {
+  status: CompetitionStatus;
+  fillPercent: number;
+}
+
+export type TimelineEventType =
+  | 'daftar'
+  | 'technical-meeting'
+  | 'penyisihan'
+  | 'final'
+  | 'pengumuman';
+
+export interface TimelineEvent {
+  id: string;
+  judul: string;
+  deskripsi: string;
+  tanggal_mulai: string; // ISO String: YYYY-MM-DD
+  tanggal_selesai?: string;
+  jam?: string;
+  jenis: TimelineEventType;
+  cabang_id?: string;
+  cabang_nama?: string;
+  lokasi?: string;
+  is_deadline?: boolean;
+}
+
+export interface FaqItem {
+  id: string;
+  pertanyaan: string;
+  jawaban: string;
+  kategori: 'pendaftaran' | 'kompetisi' | 'pembayaran' | 'teknis';
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  nama: string;
+  instansi: string;
+  skor: number;
+  cabang_id: string;
+  cabang_nama: string;
+}
+
+export interface OrganizerInfo {
+  name: string;
+  role: string;
+  isPlaceholder: boolean;
+  logoUrl?: string;
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+function computeStatus(comp: Competition): CompetitionStatus {
+  const quota = comp.quota ?? 0;
+  const registered = comp.registered_count ?? 0;
+  if (quota === 0) return 'segera';
+  if (registered >= quota) return 'penuh';
+  if (registered / quota > 0.8) return 'hampir_penuh';
+  return 'buka';
+}
+
+function computeFillPercent(comp: Competition): number {
+  if (!comp.quota || comp.quota === 0) return 0;
+  return Math.min(100, Math.round((comp.registered_count / comp.quota) * 100));
+}
+
+export function formatDateId(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta',
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
+// ─── Competitions ──────────────────────────────────────────────────────────
+
+/**
+ * [PLACEHOLDER] Data kompetisi contoh
+ * Meliputi kategori akademik (Esai, UI/UX, IT Arch) dan non-akademik (PES, Mobile Legends / Machine Learning)
+ */
+export function getLandingCompetitions(): LandingCompetition[] {
+  return INITIAL_COMPETITIONS.filter((c) => c.is_published).map((c) => ({
+    ...c,
+    status: computeStatus(c),
+    fillPercent: computeFillPercent(c),
+  }));
+}
+
+export function filterCompetitions(
+  competitions: LandingCompetition[],
+  filter: 'semua' | CompetitionType
+): LandingCompetition[] {
+  if (filter === 'semua') return competitions;
+  return competitions.filter((c) => c.type === filter);
+}
+
+// ─── Deadlines & Countdown ─────────────────────────────────────────────────
+
+export interface NearestDeadline {
+  id: string;
+  label: string;
+  date: string;
+  dateFormatted: string;
+  isDeadline: boolean;
+}
+
+export function getNextDeadline(referenceIso = '2026-11-01T00:00:00Z'): NearestDeadline | null {
+  const comps = getLandingCompetitions();
+  const deadlines: NearestDeadline[] = [];
+
+  for (const c of comps) {
+    if (c.registration_close_at && c.registration_close_at > referenceIso) {
+      deadlines.push({
+        id: `${c.id}-close`,
+        label: `Deadline pendaftaran ${c.name}`,
+        date: c.registration_close_at,
+        dateFormatted: formatDateId(c.registration_close_at),
+        isDeadline: true,
+      });
+    }
+  }
+
+  deadlines.sort((a, b) => (a.date > b.date ? 1 : -1));
+  return deadlines[0] ?? null;
+}
+
+export function getNearestRegistrationClose(): NearestDeadline | null {
+  return getNextDeadline();
+}
+
+// ─── Timeline Events (Playful Calendar & List) ─────────────────────────────
+
+/**
+ * [PLACEHOLDER] Agenda timeline realistis untuk event
+ * Dinamis dan terstruktur, mencakup tahap pendaftaran, TM, penyisihan, dan final
+ */
+export function getTimelineEvents(): TimelineEvent[] {
+  return [
+    {
+      id: 'tl-1',
+      judul: 'Pembukaan Pendaftaran Gelombang 1',
+      deskripsi: 'Pendaftaran seluruh cabang lomba dibuka secara online di platform.',
+      tanggal_mulai: '2026-11-01',
+      tanggal_selesai: '2026-11-20',
+      jam: '00:00 WIB',
+      jenis: 'daftar',
+      lokasi: 'Online',
+    },
+    {
+      id: 'tl-2',
+      judul: 'Batas Pendaftaran & Pembayaran',
+      deskripsi: 'Penutupan submit formulir & verifikasi bukti bayar QRIS.',
+      tanggal_mulai: '2026-12-10',
+      jam: '23:59 WIB',
+      jenis: 'daftar',
+      lokasi: 'Online',
+      is_deadline: true,
+    },
+    {
+      id: 'tl-3',
+      judul: 'Technical Meeting Seluruh Cabang',
+      deskripsi: 'Pengarahan teknis pelaksanaan penyisihan dan aturan tanding.',
+      tanggal_mulai: '2026-12-13',
+      jam: '19:30 WIB',
+      jenis: 'technical-meeting',
+      lokasi: 'Online (Platform Room)',
+    },
+    {
+      id: 'tl-4',
+      judul: 'Batas Pengumpulan Karya Esai & UI/UX',
+      deskripsi: 'Unggah naskah esai (.pdf) dan tautan prototype Figma ke dashboard.',
+      tanggal_mulai: '2026-12-15',
+      jam: '23:59 WIB',
+      jenis: 'penyisihan',
+      cabang_id: 'comp-1',
+      cabang_nama: 'Esai Ilmiah & UI/UX',
+      lokasi: 'Online Dashboard',
+      is_deadline: true,
+    },
+    {
+      id: 'tl-5',
+      judul: 'Penyisihan Bracket eFootball / PES',
+      deskripsi: 'Babak kualifikasi 1v1 sistem gugur peserta PES.',
+      tanggal_mulai: '2026-12-16',
+      jam: '13:00 WIB',
+      jenis: 'penyisihan',
+      cabang_id: 'comp-4',
+      cabang_nama: 'eFootball / PES',
+      lokasi: 'Online / Room Tanding',
+    },
+    {
+      id: 'tl-6',
+      judul: 'Pengumuman Finalis Cabang Akademik',
+      deskripsi: 'Rilis 5 besar tim dan peserta yang lolos ke babak presentasi final.',
+      tanggal_mulai: '2026-12-22',
+      jam: '15:00 WIB',
+      jenis: 'pengumuman',
+      lokasi: 'Leaderboard Publik',
+    },
+    {
+      id: 'tl-7',
+      judul: 'Grand Final & Pameran Karya',
+      deskripsi: 'Presentasi final cabang akademik dan laga puncak turnamen e-sport.',
+      tanggal_mulai: '2026-12-28',
+      tanggal_selesai: '2026-12-29',
+      jam: '09:00 WIB',
+      jenis: 'final',
+      lokasi: 'Kampus UST Yogyakarta (Offline)',
+    },
+  ];
+}
+
+// ─── Leaderboard Teaser Data ───────────────────────────────────────────────
+
+/**
+ * [PLACEHOLDER] Cuplikan peringkat top 3 per cabang
+ */
+export function getLeaderboardTeaser(): LeaderboardEntry[] {
+  return [
+    {
+      rank: 1,
+      nama: 'Ahmad Faiz & Tim',
+      instansi: 'Universitas Gadjah Mada',
+      skor: 94.5,
+      cabang_id: 'comp-2',
+      cabang_nama: 'UI/UX Design',
+    },
+    {
+      rank: 2,
+      nama: 'Rian Kurniawan',
+      instansi: 'Universitas Sarjanawiyata Tamansiswa',
+      skor: 91.0,
+      cabang_id: 'comp-2',
+      cabang_nama: 'UI/UX Design',
+    },
+    {
+      rank: 3,
+      nama: 'Citra Dewi',
+      instansi: 'Institut Teknologi Bandung',
+      skor: 88.5,
+      cabang_id: 'comp-2',
+      cabang_nama: 'UI/UX Design',
+    },
+    {
+      rank: 1,
+      nama: 'Bima Sakti Squad',
+      instansi: 'UPN Veteran Yogyakarta',
+      skor: 96.0,
+      cabang_id: 'comp-3',
+      cabang_nama: 'IT System Arch',
+    },
+    {
+      rank: 2,
+      nama: 'CloudSentinels',
+      instansi: 'Telkom University',
+      skor: 92.5,
+      cabang_id: 'comp-3',
+      cabang_nama: 'IT System Arch',
+    },
+    {
+      rank: 3,
+      nama: 'ByteVanguard',
+      instansi: 'AMIKOM Yogyakarta',
+      skor: 89.0,
+      cabang_id: 'comp-3',
+      cabang_nama: 'IT System Arch',
+    },
+  ];
+}
+
+// ─── FAQ Items ─────────────────────────────────────────────────────────────
+
+/**
+ * [PLACEHOLDER] FAQ spesifik untuk Permifest x Deforkafest
+ * Tidak menggunakan pertanyaan generik SaaS, langsung relevan untuk mahasiswa & peserta
+ */
+export function getFaqItems(): FaqItem[] {
+  return [
+    {
+      id: 'faq-1',
+      pertanyaan: 'Apakah mahasiswa dari luar D.I. Yogyakarta boleh mendaftar?',
+      jawaban:
+        'Boleh banget! Seluruh cabang kompetisi terbuka untuk mahasiswa aktif D3/D4/S1 dari seluruh perguruan tinggi di Indonesia. Babak penyisihan berlangsung secara online.',
+      kategori: 'pendaftaran',
+    },
+    {
+      id: 'faq-2',
+      pertanyaan: 'Bagaimana cara konfirmasi pembayaran pendaftaran?',
+      jawaban:
+        'Setelah kamu transfer melalui QRIS di platform, unggah bukti transfer ke formulir pendaftaran. Panitia akan memverifikasi dalam waktu maksimal 1x24 jam dan status akunmu otomatis berubah menjadi Terverifikasi.',
+      kategori: 'pembayaran',
+    },
+    {
+      id: 'faq-3',
+      pertanyaan: 'Bolehkah mendaftar lebih dari satu cabang lomba?',
+      jawaban:
+        'Boleh, asalkan jadwal tahapan final tidak bentrok dan kamu mendaftarkan tiap cabang dengan formulir terpisah di akunmu.',
+      kategori: 'kompetisi',
+    },
+    {
+      id: 'faq-4',
+      pertanyaan: 'Apakah anggota tim harus berasal dari kampus yang sama?',
+      jawaban:
+        'Untuk cabang lomba beregu (IT System Architecture dan Mobile Legends), anggota tim diperbolehkan berasal dari jurusan yang berbeda namun tetap dalam satu institusi/kampus yang sama.',
+      kategori: 'kompetisi',
+    },
+    {
+      id: 'faq-5',
+      pertanyaan: 'Di mana babak final diselenggarakan?',
+      jawaban:
+        'Babak final dan penyerahan penghargaan direncanakan berlangsung di kampus Universitas Sarjanawiyata Tamansiswa (UST) Yogyakarta. Finalis yang lolos akan mendapat panduan akomodasi dari panitia.',
+      kategori: 'teknis',
+    },
+    {
+      id: 'faq-6',
+      pertanyaan: 'Bagaimana bila berkas karya saya salah unggah?',
+      jawaban:
+        'Selama periode pengumpulan karya (sebelum deadline berakhir), kamu masih bisa mengubah tautan atau mengunggah ulang berkas revisi langsung dari dashboard peserta.',
+      kategori: 'teknis',
+    },
+    {
+      id: 'faq-7',
+      pertanyaan: 'Apakah setiap peserta akan mendapatkan sertifikat?',
+      jawaban:
+        'Ya, seluruh peserta yang mengumpulkan karya lengkap atau hadir bertanding akan mendapatkan e-sertifikat nasional ber-SK resmi dari Permikomnas DIY & IMPSI UST.',
+      kategori: 'pendaftaran',
+    },
+  ];
+}
+
+// ─── Organizers ────────────────────────────────────────────────────────────
+
+/**
+ * Info penyelenggara resmi
+ * Ditandai bahwa file logo fisik belum tersedia di public/brand/,
+ * sehingga komponen menggunakan visual placeholder tipografi yang rapi.
+ */
+export function getOrganizers(): OrganizerInfo[] {
+  return [
+    {
+      name: 'Permikomnas Wilayah V DIY',
+      role: 'Penyelenggara Bersama',
+      isPlaceholder: true,
+    },
+    {
+      name: 'IMPSI UST Yogyakarta',
+      role: 'Himpunan Mahasiswa Sistem Informasi UST',
+      isPlaceholder: true,
+    },
+  ];
+}

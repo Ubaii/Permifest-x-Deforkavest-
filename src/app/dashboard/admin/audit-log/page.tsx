@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { History, Shield, Lock, Terminal, Activity } from 'lucide-react';
+import { Shield } from '@phosphor-icons/react';
 
 export default function AdminAuditLogPage() {
   const { auditLogs } = useAppStore();

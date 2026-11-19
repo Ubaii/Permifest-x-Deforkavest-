@@ -10,16 +10,16 @@ import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
 import { 
-  ClipboardCheck, 
+  ClipboardText as ClipboardCheck, 
   FileText, 
-  ExternalLink, 
-  Download, 
-  CheckCircle2, 
+  ArrowSquareOut as ExternalLink, 
+  DownloadSimple as Download, 
+  CheckCircle as CheckCircle2, 
   Lock, 
-  Scale, 
-  MessageSquare,
-  Sparkles
-} from 'lucide-react';
+  Scales as Scale, 
+  ChatCenteredText as MessageSquare,
+  Sparkle as Sparkles
+} from '@phosphor-icons/react';
 
 export default function JuriPenugasanPage() {
   const { judgeAssignments, rubricCriteria, submitJudgeScore } = useAppStore();

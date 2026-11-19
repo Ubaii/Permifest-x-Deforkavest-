@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
-import { Shield, Lock, ArrowRight } from 'lucide-react';
+import { Shield, Lock, ArrowRight } from '@phosphor-icons/react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function LoginPage() {
             </div>
             <CardTitle className="justify-center text-xl">Masuk ke Akun Anda</CardTitle>
             <CardDescription>
-              Platform Kompetisi Terpadu Permifest × Devorkafest
+              Platform Kompetisi Terpadu Permifest x Deforkafest
             </CardDescription>
           </CardHeader>
 

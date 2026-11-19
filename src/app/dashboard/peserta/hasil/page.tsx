@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Trophy, Award, CheckCircle2, Megaphone, ArrowRight } from 'lucide-react';
+import { Trophy, Medal as Award, CheckCircle as CheckCircle2, Megaphone, ArrowRight } from '@phosphor-icons/react';
 import { MOCK_LEADERBOARDS } from '@/lib/mock-data';
 
 export default function PesertaHasilPage() {
@@ -74,7 +74,7 @@ export default function PesertaHasilPage() {
                     {matchedEntry ? (
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold text-xs">
                         <Award className="w-4 h-4" />
-                        <span>Peringkat #{matchedEntry.rank} — {matchedEntry.notes || 'Juara'}</span>
+                        <span>Peringkat #{matchedEntry.rank}: {matchedEntry.notes || 'Juara'}</span>
                       </div>
                     ) : (
                       <Badge variant="info">Sedang Dalam Tahap Penjurian</Badge>

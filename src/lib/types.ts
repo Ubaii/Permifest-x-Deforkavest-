@@ -1,5 +1,5 @@
 // ============================================================================
-// Permifest × Devorkafest — Comprehensive Types
+// Permifest x Deforkafest: Comprehensive Types
 // ============================================================================
 
 export type UserRole = 'peserta' | 'juri' | 'panitia' | 'super_admin';
@@ -82,7 +82,7 @@ export interface Registration {
   user?: User;
   team_id?: string;
   team?: Team;
-  form_data: Record<string, any>;
+  form_data: Record<string, unknown>;
   status: RegistrationStatus;
   payment?: Payment;
   registered_at: string;
@@ -201,7 +201,7 @@ export interface MatchResult {
   team_id?: string;
   participant_name: string;
   position: number; // 1, 2, 3, etc.
-  result_data?: Record<string, any>;
+  result_data?: Record<string, unknown>;
   notes?: string;
   input_by?: string;
   created_at: string;
@@ -226,7 +226,7 @@ export interface AuditLog {
   action: string;
   entity_type: string;
   entity_id?: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   ip_address?: string;
   created_at: string;
 }

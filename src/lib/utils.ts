@@ -1,9 +1,24 @@
 /**
- * Utility functions for Permifest × Devorkafest platform
+ * Utility functions for Permifest x Deforkafest platform
  */
 
-export function cn(...inputs: any[]): string {
-  return inputs.filter(Boolean).join(' ');
+export type ClassValue = string | number | boolean | undefined | null | { [key: string]: unknown } | ClassValue[];
+
+export function cn(...inputs: ClassValue[]): string {
+  return inputs
+    .flat(Infinity as 1)
+    .filter(Boolean)
+    .map((item) => {
+      if (typeof item === 'object' && item !== null) {
+        return Object.entries(item)
+          .filter(([, value]) => Boolean(value))
+          .map(([key]) => key)
+          .join(' ');
+      }
+      return String(item);
+    })
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function formatCurrency(amount: number): string {

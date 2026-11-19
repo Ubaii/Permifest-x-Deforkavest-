@@ -52,7 +52,7 @@ export const MOCK_USERS: User[] = [
     id: 'user-admin-1',
     email: 'admin@permifest.id',
     full_name: 'Administrator Utama',
-    institution: 'Devorkafest Committee',
+    institution: 'Deforkafest Committee',
     phone: '089988776655',
     role: 'super_admin',
     email_verified: true,
@@ -141,7 +141,7 @@ export const MOCK_RUBRIC_CRITERIA: RubricCriteria[] = [
   // UI/UX Criteria
   { id: 'rubric-5', competition_id: 'comp-2', name: 'User Research & Problem Definition', description: 'Kejelasan persona dan problem statement keamanan siber', max_score: 100, weight: 0.25, sort_order: 1 },
   { id: 'rubric-6', competition_id: 'comp-2', name: 'Visual Design & Accessibility', description: 'Estetika, tipografi, kontras warna, WCAG compliance', max_score: 100, weight: 0.35, sort_order: 2 },
-  { id: 'rubric-7', competition_id: 'comp-2', name: 'Interaktivitas & Prototype Flow', description: 'Prototipe fungsional dan seamless user journey', max_score: 100, weight: 0.25, sort_order: 3 },
+  { id: 'rubric-7', competition_id: 'comp-2', name: 'Interaktivitas & Prototype Flow', description: 'Prototipe fungsional dengan alur interaksi pengguna yang mulus dan intuitif', max_score: 100, weight: 0.25, sort_order: 3 },
   { id: 'rubric-8', competition_id: 'comp-2', name: 'Security Design Awareness', description: 'Fitur keamanan yang ramah pengguna (2FA, alert, dll)', max_score: 100, weight: 0.15, sort_order: 4 },
 ];
 
@@ -206,11 +206,11 @@ export const MOCK_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'ann-1',
     competition_id: null,
-    title: 'Pendaftaran Permifest × Devorkafest 2026 Resmi Dibuka!',
+    title: 'Pendaftaran Permifest x Deforkafest 2026 Resmi Dibuka!',
     excerpt: 'Pendaftaran untuk seluruh 5 cabang perlombaan telah resmi dibuka hingga 10 Desember 2026.',
     content: `Selamat datang para talenta masa depan!
 
-Panitia Permifest × Devorkafest 2026 mengumumkan bahwa pendaftaran seluruh cabang kompetisi telah dibuka:
+Panitia Permifest x Deforkafest 2026 mengumumkan bahwa pendaftaran seluruh cabang kompetisi telah dibuka:
 1. Esai Ilmiah Cybersecurity
 2. UI/UX Design Challenge
 3. IT System Architecture
@@ -220,7 +220,7 @@ Panitia Permifest × Devorkafest 2026 mengumumkan bahwa pendaftaran seluruh caba
 Silakan pilih lomba yang sesuai dengan minat dan kemampuan Anda, selesaikan pembayaran dan verifikasi, serta persiapkan karya terbaik Anda.
 
 Salam Cyber,
-Panitia Pelaksana Permifest × Devorkafest`,
+Panitia Pelaksana Permifest x Deforkafest`,
     is_published: true,
     published_at: '2026-11-01T08:00:00Z',
     author_name: 'Panitia Pusat',
@@ -284,7 +284,7 @@ export const MOCK_AUDIT_LOGS: AuditLog[] = [
     action: 'CREATE_ANNOUNCEMENT',
     entity_type: 'announcement',
     entity_id: 'ann-1',
-    details: { title: 'Pendaftaran Permifest × Devorkafest 2026 Resmi Dibuka!' },
+    details: { title: 'Pendaftaran Permifest x Deforkafest 2026 Resmi Dibuka!' },
     ip_address: '114.124.2.14',
     created_at: '2026-11-01T08:00:00Z',
   },

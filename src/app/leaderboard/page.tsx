@@ -6,7 +6,7 @@ import { Footer } from '@/components/layout/footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
-import { Trophy, Medal, Award, Flame, CheckCircle, Shield } from 'lucide-react';
+import { CheckCircle } from '@phosphor-icons/react';
 import { MOCK_LEADERBOARDS } from '@/lib/mock-data';
 
 export default function LeaderboardPage() {
@@ -22,19 +22,19 @@ export default function LeaderboardPage() {
       case 1:
         return (
           <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-300 font-bold font-mono text-sm shadow-md shadow-amber-500/20">
-            🥇 1
+            1
           </div>
         );
       case 2:
         return (
           <div className="w-8 h-8 rounded-full bg-slate-400/20 border border-slate-400/50 flex items-center justify-center text-slate-300 font-bold font-mono text-sm">
-            🥈 2
+            2
           </div>
         );
       case 3:
         return (
           <div className="w-8 h-8 rounded-full bg-amber-700/20 border border-amber-700/50 flex items-center justify-center text-amber-500 font-bold font-mono text-sm">
-            🥉 3
+            3
           </div>
         );
       default:
@@ -88,7 +88,7 @@ export default function LeaderboardPage() {
           <div className="p-4 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
             <span>Daftar Pemenang Resmi</span>
             <div className="flex items-center gap-1.5 text-emerald-400">
-              <CheckCircle className="w-3.5 h-3.5" />
+              <CheckCircle size={14} weight="bold" />
               <span>Nilai Final Terverifikasi</span>
             </div>
           </div>

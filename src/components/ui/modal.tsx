@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { X } from '@phosphor-icons/react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -33,21 +33,22 @@ export function Modal({ isOpen, onClose, title, description, children, maxWidth 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
       <div
         className={cn(
-          'w-full bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden animate-scaleUp',
+          'w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-2xl overflow-hidden',
           maxWidths[maxWidth]
         )}
       >
-        <div className="flex items-center justify-between p-5 border-b border-slate-800">
+        <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
           <div>
-            <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
-            {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+            <h3 className="text-lg font-bold text-[var(--foreground)] font-[family-name:var(--font-bricolage)]">{title}</h3>
+            {description && <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{description}</p>}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Tutup modal"
           >
             <X className="w-5 h-5" />
           </button>

@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
     )
     await supabase.auth.getUser()
   } catch {
-    // Graceful fallback — Supabase not connected yet
+    // Graceful fallback: Supabase not connected yet
   }
 
   return response

@@ -8,16 +8,16 @@ import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateShort } from '@/lib/utils';
 import { 
-  Layers, 
-  Settings2, 
+  Stack as Layers, 
+  Gear as Settings2, 
   Plus, 
   Clock, 
   Users, 
-  CheckCircle2, 
-  Edit3, 
+  CheckCircle as CheckCircle2, 
+  PencilSimple as Edit3, 
   FileText,
   Sliders
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 export default function AdminKompetisiPage() {
   const { competitions } = useAppStore();

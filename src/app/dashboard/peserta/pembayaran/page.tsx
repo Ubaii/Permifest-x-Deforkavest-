@@ -12,13 +12,13 @@ import { formatCurrency, formatDateShort, getStatusBadgeVariant, getStatusLabel 
 import { 
   CreditCard, 
   QrCode, 
-  UploadCloud, 
-  CheckCircle2, 
-  AlertCircle, 
-  ExternalLink,
+  CloudArrowUp as UploadCloud, 
+  CheckCircle as CheckCircle2, 
+  WarningCircle as AlertCircle, 
+  ArrowSquareOut as ExternalLink,
   Clock,
-  FileCheck
-} from 'lucide-react';
+  FileText as FileCheck
+} from '@phosphor-icons/react';
 
 export default function PesertaPembayaranPage() {
   const { currentUser, registrations, uploadPaymentProof } = useAppStore();
@@ -68,7 +68,7 @@ export default function PesertaPembayaranPage() {
               <div className="w-52 h-52 mx-auto bg-white p-3 rounded-xl shadow-lg border border-slate-700 flex flex-col items-center justify-center">
                 <div className="w-full h-full bg-slate-900 rounded-lg p-3 flex flex-col items-center justify-center text-center">
                   <QrCode className="w-24 h-24 text-cyan-400 mb-2" />
-                  <span className="text-[10px] font-mono text-cyan-300 font-bold tracking-wider">PERMIFEST × DEVORKA</span>
+                  <span className="text-[10px] font-mono text-cyan-300 font-bold tracking-wider">PERMIFEST x DEFORKA</span>
                   <span className="text-[9px] text-slate-400">NMID: ID10293847561</span>
                 </div>
               </div>

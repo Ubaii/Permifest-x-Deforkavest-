@@ -11,13 +11,13 @@ import { formatCurrency, formatDateShort, getStatusBadgeVariant, getStatusLabel 
 import { 
   Trophy, 
   CreditCard, 
-  UploadCloud, 
-  Award, 
+  CloudArrowUp as UploadCloud, 
+  Medal as Award, 
   ArrowRight, 
-  AlertCircle, 
-  CheckCircle2, 
+  WarningCircle as AlertCircle, 
+  CheckCircle as CheckCircle2, 
   Clock 
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 export default function PesertaOverviewPage() {
   const { currentUser, registrations, submissions, announcements } = useAppStore();

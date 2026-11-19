@@ -1,0 +1,111 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { ArrowRight } from '@phosphor-icons/react';
+
+interface StepItem {
+  num: number;
+  title: string;
+  desc: string;
+}
+
+const STEPS: StepItem[] = [
+  {
+    num: 1,
+    title: 'Buat akun',
+    desc: 'Cukup data dasar, nggak sampai semenit.',
+  },
+  {
+    num: 2,
+    title: 'Pilih lomba',
+    desc: 'Cabangnya ada di atas, tinggal tunjuk yang paling kamu banget.',
+  },
+  {
+    num: 3,
+    title: 'Isi tim dan berkas',
+    desc: 'Syarat berkas muncul sesuai cabang yang kamu pilih.',
+  },
+  {
+    num: 4,
+    title: 'Bayar lewat QRIS',
+    desc: 'Unggah bukti bayar, lalu panitia yang memverifikasi.',
+  },
+];
+
+interface HowToRegisterSectionProps {
+  id?: string;
+}
+
+export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProps) {
+  return (
+    <section
+      id={id}
+      aria-labelledby="how-to-register-heading"
+      className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-2xl mb-10 text-left">
+        <h2
+          id="how-to-register-heading"
+          className="text-3xl sm:text-4xl font-extrabold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight"
+        >
+          Daftar itu gampang,{' '}
+          <span
+            style={{
+              background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            empat langkah
+          </span>
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {STEPS.map((st) => (
+          <div
+            key={st.num}
+            className="flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33] p-6 transition-all hover:border-[#7c4ddb]"
+          >
+            <div>
+              <p
+                className="font-[family-name:var(--font-jetbrains)] font-bold text-4xl leading-none mb-4"
+                style={{
+                  background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {st.num}
+              </p>
+
+              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2">
+                {st.title}
+              </h3>
+
+              <p className="text-sm text-[#A99FD1] leading-relaxed">
+                {st.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-10 text-center">
+        <Link
+          href="/register"
+          className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl font-bold text-sm text-[#0B0720] transition-opacity hover:opacity-90 min-h-[48px]"
+          style={{
+            background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
+          }}
+        >
+          <span>Daftar Sekarang</span>
+          <ArrowRight size={18} weight="bold" />
+        </Link>
+      </div>
+    </section>
+  );
+}

@@ -10,14 +10,14 @@ import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateShort, getStatusBadgeVariant, getStatusLabel } from '@/lib/utils';
 import { 
   CreditCard, 
-  CheckCircle2, 
+  CheckCircle as CheckCircle2, 
   XCircle, 
-  ExternalLink, 
-  AlertCircle, 
+  ArrowSquareOut as ExternalLink, 
+  WarningCircle as AlertCircle, 
   Eye, 
-  Filter,
-  FileCheck
-} from 'lucide-react';
+  Funnel as Filter,
+  FileText as FileCheck
+} from '@phosphor-icons/react';
 
 export default function AdminPembayaranPage() {
   const { registrations, verifyPayment } = useAppStore();

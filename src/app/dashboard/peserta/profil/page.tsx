@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { ROLE_LABELS } from '@/lib/constants';
-import { User, Mail, Building, Phone, ShieldCheck, KeyRound } from 'lucide-react';
+import { User, EnvelopeSimple as Mail, Buildings as Building, Phone, ShieldCheck, Key as KeyRound } from '@phosphor-icons/react';
 
 export default function PesertaProfilPage() {
   const { currentUser, setCurrentUser } = useAppStore();

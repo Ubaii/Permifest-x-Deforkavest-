@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
-import { ClipboardCheck, History, CheckCircle2, Clock, ArrowRight, Shield } from 'lucide-react';
+import { ClipboardText as ClipboardCheck, ClockCounterClockwise as History, CheckCircle as CheckCircle2, Clock, ArrowRight, Shield } from '@phosphor-icons/react';
 
 export default function JuriOverviewPage() {
   const { currentUser, judgeAssignments } = useAppStore();
@@ -18,7 +18,7 @@ export default function JuriOverviewPage() {
 
   return (
     <DashboardLayout 
-      title={`Dashboard Dewan Juri — ${currentUser.full_name}`}
+      title={`Dashboard Dewan Juri: ${currentUser.full_name}`}
       subtitle="Penilaian karya peserta berbasis rubrik terstruktur dan terenkripsi."
     >
       {/* Stats */}

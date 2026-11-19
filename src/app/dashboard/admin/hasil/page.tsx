@@ -9,7 +9,7 @@ import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Gamepad2, Trophy, Plus, CheckCircle, Award } from 'lucide-react';
+import { GameController as Gamepad2, Trophy, Plus, CheckCircle, Medal as Award } from '@phosphor-icons/react';
 
 export default function AdminHasilPage() {
   const { matchResults, competitions, addMatchResult } = useAppStore();
@@ -38,8 +38,9 @@ export default function AdminHasilPage() {
       setParticipantName('');
       setNotes('');
       alert('Hasil turnamen e-sport berhasil diinput dan dipublikasikan!');
-    } catch (err: any) {
-      alert(err.message || 'Gagal menyimpan hasil');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal menyimpan hasil';
+      alert(message);
     } finally {
       setSubmitting(false);
     }
