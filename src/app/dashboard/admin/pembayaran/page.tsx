@@ -4,9 +4,12 @@ import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ReasonDialog } from '@/components/ui/reason-dialog';
 import { ConfirmDialog } from '@/components/ui/modal';
+import { Modal } from '@/components/ui/modal';
+import { Input } from '@/components/ui/input';
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { DataTable, Column } from '@/components/dashboard/DataTable';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -25,16 +28,21 @@ import {
   IdentificationCard,
   Buildings,
   Phone,
-  CalendarBlank,
+  PencilSimple,
+  Trash,
+  CurrencyCircleDollar,
 } from '@phosphor-icons/react';
 
 export default function AdminPembayaranPage() {
-  const { registrations, verifyPayment } = useAppStore();
+  const { registrations, verifyPayment, updatePaymentAmount, deleteRegistration } = useAppStore();
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
   const [reviewDrawerReg, setReviewDrawerReg] = useState<Registration | null>(null);
   const [approveConfirmReg, setApproveConfirmReg] = useState<Registration | null>(null);
+  const [deleteConfirmReg, setDeleteConfirmReg] = useState<Registration | null>(null);
+  const [editAmountReg, setEditAmountReg] = useState<Registration | null>(null);
+  const [newAmountInput, setNewAmountInput] = useState<number>(0);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
 
@@ -45,14 +53,22 @@ export default function AdminPembayaranPage() {
     return r.payment?.status === filterStatus;
   });
 
+  // Statistik ringkasan
+  const pendingCount = registrationsWithPayment.filter((r) => r.payment?.status === 'uploaded').length;
+  const verifiedCount = registrationsWithPayment.filter((r) => r.payment?.status === 'verified').length;
+  const rejectedCount = registrationsWithPayment.filter((r) => r.payment?.status === 'rejected').length;
+  const totalVerifiedAmount = registrationsWithPayment
+    .filter((r) => r.payment?.status === 'verified')
+    .reduce((sum, r) => sum + (r.payment?.amount || 0), 0);
+
   const handleApproveConfirm = async () => {
     if (!approveConfirmReg) return;
     await verifyPayment(approveConfirmReg.id, 'verified');
-    setApproveConfirmReg(null);
+    setAlertSuccess(`Pembayaran ${approveConfirmReg.user?.full_name} berhasil disetujui! Status pendaftaran kini Terverifikasi.`);
     if (reviewDrawerReg?.id === approveConfirmReg.id) {
       setReviewDrawerReg(null);
     }
-    setAlertSuccess(`Pembayaran ${approveConfirmReg.user?.full_name} berhasil disetujui! Status pendaftaran kini Terverifikasi.`);
+    setApproveConfirmReg(null);
   };
 
   const openRejectDialog = (regId: string) => {
@@ -63,14 +79,30 @@ export default function AdminPembayaranPage() {
   const handleConfirmReject = async (reason: string) => {
     if (!activeRegId) return;
     await verifyPayment(activeRegId, 'rejected', reason);
-    setActiveRegId(null);
     if (reviewDrawerReg?.id === activeRegId) {
       setReviewDrawerReg(null);
     }
-    setAlertSuccess('Pembayaran telah ditolak. Alasan penolakan telah tercatat dan dikirimkan ke peserta.');
+    setActiveRegId(null);
+    setAlertSuccess('Pembayaran telah ditolak. Alasan penolakan telah dicatat dan terkirim ke peserta.');
   };
 
-  const pendingReviewCount = registrationsWithPayment.filter((r) => r.payment?.status === 'uploaded').length;
+  const handleSaveAmount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editAmountReg) return;
+    await updatePaymentAmount(editAmountReg.id, newAmountInput);
+    setAlertSuccess(`Nominal tagihan untuk ${editAmountReg.user?.full_name} berhasil diubah menjadi ${formatCurrency(newAmountInput)}.`);
+    setEditAmountReg(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmReg) return;
+    await deleteRegistration(deleteConfirmReg.id);
+    if (reviewDrawerReg?.id === deleteConfirmReg.id) {
+      setReviewDrawerReg(null);
+    }
+    setAlertSuccess(`Data transaksi pembayaran ${deleteConfirmReg.user?.full_name} telah dihapus.`);
+    setDeleteConfirmReg(null);
+  };
 
   const columns: Column<Registration & Record<string, unknown>>[] = [
     {
@@ -99,9 +131,23 @@ export default function AdminPembayaranPage() {
       sortable: true,
       accessor: (r) => r.payment?.amount || 0,
       cell: (r) => (
-        <span className="font-mono font-bold text-[var(--foreground)] tabular-nums">
-          {formatCurrency(r.payment?.amount || 0)}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono font-bold text-[var(--foreground)] tabular-nums">
+            {formatCurrency(r.payment?.amount || 0)}
+          </span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditAmountReg(r);
+              setNewAmountInput(r.payment?.amount || 0);
+            }}
+            className="p-1 rounded text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-[var(--accent)] transition-colors"
+            title="Edit Nominal Tagihan"
+          >
+            <PencilSimple className="w-3.5 h-3.5" />
+          </button>
+        </div>
       ),
     },
     {
@@ -160,6 +206,16 @@ export default function AdminPembayaranPage() {
                 Setujui
               </Button>
             )}
+
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setDeleteConfirmReg(r)}
+              className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
+              title="Hapus Transaksi"
+            >
+              <Trash className="w-4 h-4" />
+            </Button>
           </div>
         );
       },
@@ -168,35 +224,54 @@ export default function AdminPembayaranPage() {
 
   return (
     <DashboardLayout
-      title="Verifikasi Pembayaran Peserta"
-      subtitle="Periksa keabsahan transfer dana, resi QRIS, dan mutasi biaya pendaftaran kompetisi."
+      title="Verifikasi Pembayaran & Rekapitulasi Kas"
+      subtitle="Periksa keabsahan transfer dana, resi QRIS, sesuaikan nominal, dan kelola mutasi biaya pendaftaran."
     >
       <div className="space-y-6">
         {alertSuccess && (
           <Alert variant="success" onClose={() => setAlertSuccess(null)}>
-            <AlertTitle>Berhasil Diperbarui</AlertTitle>
+            <AlertTitle>Operasi Berhasil</AlertTitle>
             <AlertDescription>{alertSuccess}</AlertDescription>
           </Alert>
         )}
 
-        {pendingReviewCount > 0 && (
-          <Alert variant="warning">
-            <AlertTitle>Perhatian Panitia</AlertTitle>
-            <AlertDescription>
-              Terdapat <strong>{pendingReviewCount}</strong> pembayaran peserta berstatus <strong>Perlu Review</strong> yang menunggu verifikasi bukti transfer.
-            </AlertDescription>
-          </Alert>
-        )}
+        {/* Ringkasan Statistik Finansial */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Transaksi"
+            value={registrationsWithPayment.length}
+            icon={<CreditCard className="w-5 h-5 text-[var(--primary)]" weight="bold" />}
+            description="Semua tagihan terdaftar"
+          />
+          <StatCard
+            title="Perlu Review"
+            value={pendingCount}
+            icon={<Clock className="w-5 h-5 text-[var(--warning-text)]" weight="bold" />}
+            description="Menunggu verifikasi bukti"
+          />
+          <StatCard
+            title="Terverifikasi"
+            value={verifiedCount}
+            icon={<CheckCircle className="w-5 h-5 text-[var(--success-text)]" weight="bold" />}
+            description="Pembayaran sah & lunas"
+          />
+          <StatCard
+            title="Total Dana Masuk"
+            value={formatCurrency(totalVerifiedAmount)}
+            icon={<CurrencyCircleDollar className="w-5 h-5 text-[var(--primary)]" weight="bold" />}
+            description="Kas pembayaran disetujui"
+          />
+        </div>
 
-        {/* Filter status buttons */}
+        {/* Filter status & total counter */}
         <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)]">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-[var(--muted-foreground)] mr-1">Status:</span>
+            <span className="text-xs font-semibold text-[var(--muted-foreground)] mr-1">Filter Status:</span>
             {[
-              { id: 'all', label: 'Semua' },
-              { id: 'uploaded', label: 'Perlu Review' },
-              { id: 'verified', label: 'Terverifikasi' },
-              { id: 'rejected', label: 'Ditolak' },
+              { id: 'all', label: 'Semua Status' },
+              { id: 'uploaded', label: `Perlu Review (${pendingCount})` },
+              { id: 'verified', label: `Terverifikasi (${verifiedCount})` },
+              { id: 'rejected', label: `Ditolak (${rejectedCount})` },
               { id: 'pending', label: 'Belum Unggah' },
             ].map((st) => (
               <button
@@ -215,7 +290,7 @@ export default function AdminPembayaranPage() {
           </div>
 
           <div className="text-xs text-[var(--muted-foreground)] font-mono">
-            Total Transaksi: <strong className="text-[var(--foreground)]">{filtered.length}</strong> entri
+            Tampil: <strong className="text-[var(--foreground)]">{filtered.length}</strong> entri
           </div>
         </div>
 
@@ -232,7 +307,7 @@ export default function AdminPembayaranPage() {
           emptyDescription="Tidak ditemukan pembayaran pendaftaran dengan kriteria filter yang Anda pilih."
         />
 
-        {/* PaymentReviewPanel Drawer (Spesifikasi UI_KIT.md Bagian 3) */}
+        {/* PaymentReviewPanel Drawer */}
         <Drawer
           isOpen={!!reviewDrawerReg}
           onClose={() => setReviewDrawerReg(null)}
@@ -372,6 +447,34 @@ export default function AdminPembayaranPage() {
           )}
         </Drawer>
 
+        {/* Modal Ubah Nominal Pembayaran Manual */}
+        <Modal
+          isOpen={Boolean(editAmountReg)}
+          onClose={() => setEditAmountReg(null)}
+          title="Ubah Nominal Tagihan Pembayaran"
+          description={`Sesuaikan nominal tagihan untuk peserta ${editAmountReg?.user?.full_name}.`}
+        >
+          <form onSubmit={handleSaveAmount} className="space-y-4">
+            <Input
+              label="Nominal Baru (IDR) *"
+              type="number"
+              min="0"
+              step="1000"
+              required
+              value={newAmountInput}
+              onChange={(e) => setNewAmountInput(Number(e.target.value))}
+            />
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border)]">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setEditAmountReg(null)}>
+                Batal
+              </Button>
+              <Button type="submit" variant="primary" size="sm">
+                Simpan Nominal
+              </Button>
+            </div>
+          </form>
+        </Modal>
+
         {/* Dialog Konfirmasi Setujui Pembayaran */}
         <ConfirmDialog
           isOpen={!!approveConfirmReg}
@@ -384,7 +487,18 @@ export default function AdminPembayaranPage() {
           variant="primary"
         />
 
-        {/* Dialog Alasan Penolakan Wajib (ReasonDialog) */}
+        {/* Dialog Konfirmasi Hapus Transaksi */}
+        <ConfirmDialog
+          isOpen={!!deleteConfirmReg}
+          onClose={() => setDeleteConfirmReg(null)}
+          onConfirm={handleDeleteConfirm}
+          title="Hapus Data Transaksi Ini?"
+          description={`Anda akan menghapus catatan pendaftaran dan transaksi ${deleteConfirmReg?.user?.full_name}. Tindakan ini tidak dapat dibatalkan.`}
+          confirmText="Hapus Transaksi"
+          variant="destructive"
+        />
+
+        {/* Dialog Alasan Penolakan Wajib */}
         <ReasonDialog
           isOpen={rejectDialogOpen}
           onClose={() => setRejectDialogOpen(false)}

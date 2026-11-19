@@ -6,41 +6,71 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { ConfirmDialog } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { GameController, Plus } from '@phosphor-icons/react';
+import { MatchResult } from '@/lib/types';
+import { GameController, Plus, PencilSimple, Trash } from '@phosphor-icons/react';
 
 export default function AdminHasilPage() {
-  const { matchResults, competitions, addMatchResult } = useAppStore();
+  const { matchResults, competitions, addMatchResult, updateMatchResult, deleteMatchResult } = useAppStore();
 
   const esportComps = competitions.filter((c) => c.type === 'non_academic');
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
   const [selectedCompId, setSelectedCompId] = useState(esportComps[0]?.id || '');
   const [participantName, setParticipantName] = useState('');
   const [position, setPosition] = useState(1);
   const [notes, setNotes] = useState('');
+  const [deleteConfirmMatch, setDeleteConfirmMatch] = useState<MatchResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+
+  const openCreateModal = () => {
+    setEditingMatchId(null);
+    setSelectedCompId(esportComps[0]?.id || '');
+    setParticipantName('');
+    setPosition(1);
+    setNotes('');
+    setModalOpen(true);
+  };
+
+  const openEditModal = (m: MatchResult) => {
+    setEditingMatchId(m.id);
+    setSelectedCompId(m.competition_id);
+    setParticipantName(m.participant_name);
+    setPosition(m.position);
+    setNotes(m.notes || '');
+    setModalOpen(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await addMatchResult({
-        competition_id: selectedCompId,
-        participant_name: participantName,
-        position: Number(position),
-        notes: notes,
-      });
+      if (editingMatchId) {
+        await updateMatchResult(editingMatchId, {
+          competition_id: selectedCompId,
+          participant_name: participantName,
+          position: Number(position),
+          notes: notes,
+        });
+        setAlertSuccess(`Hasil pertandingan untuk "${participantName}" berhasil diperbarui!`);
+      } else {
+        await addMatchResult({
+          competition_id: selectedCompId,
+          participant_name: participantName,
+          position: Number(position),
+          notes: notes,
+        });
+        setAlertSuccess(`Hasil turnamen "${participantName}" (Juara ${position}) berhasil dirilis!`);
+      }
 
       setModalOpen(false);
-      setParticipantName('');
-      setNotes('');
-      setAlertSuccess('Hasil turnamen e-sport berhasil diinput dan dipublikasikan ke leaderboard!');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan hasil';
       alert(message);
@@ -49,12 +79,19 @@ export default function AdminHasilPage() {
     }
   };
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmMatch) return;
+    await deleteMatchResult(deleteConfirmMatch.id);
+    setAlertSuccess(`Catatan juara untuk "${deleteConfirmMatch.participant_name}" telah dihapus.`);
+    setDeleteConfirmMatch(null);
+  };
+
   return (
     <DashboardLayout
       title="Input Hasil Pertandingan E-Sport (PES & ML)"
-      subtitle="Pencatatan hasil turnamen e-sport non-akademik ke sistem klasemen dan pengumuman juara resmi."
+      subtitle="Pencatatan dan pengelolaan hasil turnamen e-sport non-akademik ke sistem klasemen juara resmi."
       actions={
-        <Button size="sm" variant="primary" leftIcon={<Plus className="w-4 h-4" weight="bold" />} onClick={() => setModalOpen(true)}>
+        <Button size="sm" variant="primary" leftIcon={<Plus className="w-4 h-4" weight="bold" />} onClick={openCreateModal}>
           + Input Juara / Skor Baru
         </Button>
       }
@@ -62,7 +99,7 @@ export default function AdminHasilPage() {
       <div className="space-y-6">
         {alertSuccess && (
           <Alert variant="success" onClose={() => setAlertSuccess(null)}>
-            <AlertTitle>Hasil Berhasil Disimpan</AlertTitle>
+            <AlertTitle>Operasi Berhasil</AlertTitle>
             <AlertDescription>{alertSuccess}</AlertDescription>
           </Alert>
         )}
@@ -78,6 +115,11 @@ export default function AdminHasilPage() {
                 icon={<GameController className="w-7 h-7 text-[var(--primary)]" weight="duotone" />}
                 title="Belum Ada Hasil Pertandingan"
                 description="Turnamen e-sport PES atau Mobile Legends belum memiliki input rekapitulasi juara. Klik tombol di atas untuk menambah entri."
+                action={
+                  <Button size="sm" variant="primary" onClick={openCreateModal}>
+                    Input Juara
+                  </Button>
+                }
               />
             ) : (
               <div className="divide-y divide-[var(--border)]">
@@ -101,8 +143,31 @@ export default function AdminHasilPage() {
                         </div>
                       </div>
 
-                      <div className="text-left sm:text-right text-xs text-[var(--muted-foreground)] font-mono shrink-0">
-                        Dicatat: {formatDateShort(m.created_at)}
+                      <div className="flex items-center gap-3">
+                        <div className="text-left sm:text-right text-xs text-[var(--muted-foreground)] font-mono shrink-0">
+                          {formatDateShort(m.created_at)}
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditModal(m)}
+                            className="p-2 min-h-0 min-w-0"
+                            title="Edit Skor/Juara"
+                          >
+                            <PencilSimple className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setDeleteConfirmMatch(m)}
+                            className="p-2 min-h-0 min-w-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+                            title="Hapus Catatan Juara"
+                          >
+                            <Trash className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -113,11 +178,11 @@ export default function AdminHasilPage() {
         </Card>
       </div>
 
-      {/* Modal Input Hasil Turnamen E-Sport */}
+      {/* Modal Input & Edit Hasil Turnamen E-Sport */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Input Juara / Hasil Turnamen E-Sport"
+        title={editingMatchId ? 'Ubah Hasil / Juara Turnamen' : 'Input Juara / Hasil Turnamen E-Sport'}
         description="Hasil pertandingan yang dimasukkan akan langsung disahkan dan muncul di Leaderboard publik."
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -138,7 +203,7 @@ export default function AdminHasilPage() {
           </div>
 
           <Input
-            label="Nama Pemain / Tim (Squad)"
+            label="Nama Pemain / Tim (Squad) *"
             placeholder="Contoh: Mystic Slayers / Ahmad Fauzi"
             required
             value={participantName}
@@ -179,11 +244,22 @@ export default function AdminHasilPage() {
               Batal
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={submitting}>
-              Simpan &amp; Rilis Hasil
+              {editingMatchId ? 'Simpan Perubahan' : 'Simpan & Rilis Hasil'}
             </Button>
           </div>
         </form>
       </Modal>
+
+      {/* Dialog Konfirmasi Hapus Hasil Turnamen */}
+      <ConfirmDialog
+        isOpen={Boolean(deleteConfirmMatch)}
+        onClose={() => setDeleteConfirmMatch(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Rekapitulasi Juara Ini?"
+        description={`Anda akan menghapus catatan juara untuk "${deleteConfirmMatch?.participant_name}" (Posisi #${deleteConfirmMatch?.position}). Peringkat leaderboard akan disesuaikan.`}
+        confirmText="Hapus Catatan"
+        variant="destructive"
+      />
     </DashboardLayout>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { 
   User, 
   UserRole, 
@@ -39,21 +39,45 @@ interface AppContextType {
   auditLogs: AuditLog[];
   matchResults: MatchResult[];
   
-  // Actions
+  // Actions - Pendaftaran & Pembayaran
   registerCompetition: (competitionId: string, formData: Record<string, unknown>) => Promise<Registration>;
   uploadPaymentProof: (registrationId: string, proofUrl: string, proofName: string) => Promise<void>;
   verifyPayment: (registrationId: string, status: 'verified' | 'rejected', reason?: string) => Promise<void>;
+  updatePaymentAmount: (registrationId: string, amount: number) => Promise<void>;
+  deleteRegistration: (registrationId: string) => Promise<void>;
+
+  // Actions - Karya & Penilaian
   submitWork: (registrationId: string, stageId: string, data: { fileUrl?: string; fileName?: string; linkUrl?: string; notes?: string }) => Promise<void>;
   assignJudge: (submissionId: string, judgeId: string) => Promise<void>;
+  removeJudgeAssignment: (assignmentId: string) => Promise<void>;
   submitJudgeScore: (assignmentId: string, scores: { criteriaId: string; score: number; comment?: string }[]) => Promise<void>;
-  addMatchResult: (result: Omit<MatchResult, 'id' | 'created_at'>) => Promise<void>;
+
+  // Actions - Kompetisi CRUD
+  addCompetition: (comp: Omit<Competition, 'id' | 'registered_count'>) => Promise<Competition>;
+  updateCompetition: (id: string, updates: Partial<Competition>) => Promise<void>;
+  deleteCompetition: (id: string) => Promise<void>;
+
+  // Actions - Pengguna CRUD (Peserta, Juri, Panitia, Admin)
+  addUser: (user: Omit<User, 'id'>) => Promise<User>;
+  updateUser: (id: string, updates: Partial<User>) => Promise<void>;
+  deleteUser: (id: string) => Promise<void>;
+
+  // Actions - Pengumuman CRUD
   createAnnouncement: (announcement: Omit<Announcement, 'id' | 'published_at'>) => Promise<void>;
+  updateAnnouncement: (id: string, updates: Partial<Announcement>) => Promise<void>;
+  deleteAnnouncement: (id: string) => Promise<void>;
+
+  // Actions - Hasil E-Sport CRUD
+  addMatchResult: (result: Omit<MatchResult, 'id' | 'created_at'>) => Promise<void>;
+  updateMatchResult: (id: string, updates: Partial<MatchResult>) => Promise<void>;
+  deleteMatchResult: (id: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User>(MOCK_USERS[0]); // default to peserta
+  const [availableUsers, setAvailableUsers] = useState<User[]>(MOCK_USERS);
   const [competitions, setCompetitions] = useState<Competition[]>(INITIAL_COMPETITIONS);
   const [registrations, setRegistrations] = useState<Registration[]>(MOCK_REGISTRATIONS);
   const [submissions, setSubmissions] = useState<Submission[]>(MOCK_SUBMISSIONS);
@@ -65,7 +89,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
-    const userForRole = MOCK_USERS.find(u => u.role === role) || {
+    const userForRole = availableUsers.find(u => u.role === role) || {
       id: `mock-${role}`,
       email: `${role}@permifest.id`,
       full_name: `Demo ${role.toUpperCase()}`,
@@ -88,6 +112,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
+  // --- CRUD Pendaftaran & Pembayaran ---
   const registerCompetition = async (competitionId: string, formData: Record<string, unknown>): Promise<Registration> => {
     const comp = competitions.find(c => c.id === competitionId);
     if (!comp) throw new Error('Kompetisi tidak ditemukan');
@@ -110,7 +135,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     setRegistrations(prev => [newReg, ...prev]);
-    // increment registered count
     setCompetitions(prev => prev.map(c => c.id === competitionId ? { ...c, registered_count: c.registered_count + 1 } : c));
     logAudit('REGISTER_COMPETITION', 'registration', newReg.id, { competition: comp.name });
     return newReg;
@@ -157,6 +181,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('VERIFY_PAYMENT', 'payment', registrationId, { status, reason });
   };
 
+  const updatePaymentAmount = async (registrationId: string, amount: number) => {
+    setRegistrations(prev => prev.map(reg => {
+      if (reg.id === registrationId && reg.payment) {
+        return {
+          ...reg,
+          payment: {
+            ...reg.payment,
+            amount,
+          }
+        };
+      }
+      return reg;
+    }));
+    logAudit('UPDATE_PAYMENT_AMOUNT', 'payment', registrationId, { amount });
+  };
+
+  const deleteRegistration = async (registrationId: string) => {
+    setRegistrations(prev => prev.filter(r => r.id !== registrationId));
+    logAudit('DELETE_REGISTRATION', 'registration', registrationId, {});
+  };
+
+  // --- Submission & Juri ---
   const submitWork = async (
     registrationId: string, 
     stageId: string, 
@@ -194,7 +240,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const assignJudge = async (submissionId: string, judgeId: string) => {
-    const judge = MOCK_USERS.find(u => u.id === judgeId);
+    const judge = availableUsers.find(u => u.id === judgeId);
     const sub = submissions.find(s => s.id === submissionId);
     const newAssignment: JudgeAssignment = {
       id: `assign-${Date.now()}`,
@@ -209,11 +255,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('ASSIGN_JUDGE', 'judge_assignment', newAssignment.id, { judgeName: judge?.full_name });
   };
 
+  const removeJudgeAssignment = async (assignmentId: string) => {
+    setJudgeAssignments(prev => prev.filter(a => a.id !== assignmentId));
+    logAudit('REMOVE_JUDGE_ASSIGNMENT', 'judge_assignment', assignmentId, {});
+  };
+
   const submitJudgeScore = async (
     assignmentId: string, 
     scoresInput: { criteriaId: string; score: number; comment?: string }[]
   ) => {
-    // calculate weighted score
     let totalWeighted = 0;
     scoresInput.forEach(s => {
       const crit = rubricCriteria.find(c => c.id === s.criteriaId);
@@ -243,7 +293,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return a;
     }));
 
-    // update submission final score
     const targetAssign = judgeAssignments.find(a => a.id === assignmentId);
     if (targetAssign) {
       setSubmissions(prev => prev.map(s => {
@@ -257,6 +306,77 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('SUBMIT_JUDGE_SCORE', 'score', assignmentId, { totalWeighted });
   };
 
+  // --- CRUD Kompetisi ---
+  const addCompetition = async (compData: Omit<Competition, 'id' | 'registered_count'>): Promise<Competition> => {
+    const newComp: Competition = {
+      ...compData,
+      id: `comp-${Date.now()}`,
+      registered_count: 0,
+    };
+    setCompetitions(prev => [...prev, newComp]);
+    logAudit('CREATE_COMPETITION', 'competition', newComp.id, { name: newComp.name });
+    return newComp;
+  };
+
+  const updateCompetition = async (id: string, updates: Partial<Competition>) => {
+    setCompetitions(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+    logAudit('UPDATE_COMPETITION', 'competition', id, updates as Record<string, unknown>);
+  };
+
+  const deleteCompetition = async (id: string) => {
+    const comp = competitions.find(c => c.id === id);
+    setCompetitions(prev => prev.filter(c => c.id !== id));
+    logAudit('DELETE_COMPETITION', 'competition', id, { name: comp?.name });
+  };
+
+  // --- CRUD Pengguna (Peserta, Juri, Panitia, Admin) ---
+  const addUser = async (userData: Omit<User, 'id'>): Promise<User> => {
+    const newUser: User = {
+      ...userData,
+      id: `user-${Date.now()}`,
+    };
+    setAvailableUsers(prev => [newUser, ...prev]);
+    logAudit('CREATE_USER', 'user', newUser.id, { email: newUser.email, role: newUser.role });
+    return newUser;
+  };
+
+  const updateUser = async (id: string, updates: Partial<User>) => {
+    setAvailableUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
+    if (currentUser.id === id) {
+      setCurrentUser(prev => ({ ...prev, ...updates }));
+    }
+    logAudit('UPDATE_USER', 'user', id, updates as Record<string, unknown>);
+  };
+
+  const deleteUser = async (id: string) => {
+    const user = availableUsers.find(u => u.id === id);
+    setAvailableUsers(prev => prev.filter(u => u.id !== id));
+    logAudit('DELETE_USER', 'user', id, { email: user?.email, name: user?.full_name });
+  };
+
+  // --- CRUD Pengumuman ---
+  const createAnnouncement = async (announcement: Omit<Announcement, 'id' | 'published_at'>) => {
+    const newAnn: Announcement = {
+      ...announcement,
+      id: `ann-${Date.now()}`,
+      published_at: new Date().toISOString(),
+    };
+    setAnnouncements(prev => [newAnn, ...prev]);
+    logAudit('CREATE_ANNOUNCEMENT', 'announcement', newAnn.id, { title: announcement.title });
+  };
+
+  const updateAnnouncement = async (id: string, updates: Partial<Announcement>) => {
+    setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
+    logAudit('UPDATE_ANNOUNCEMENT', 'announcement', id, updates as Record<string, unknown>);
+  };
+
+  const deleteAnnouncement = async (id: string) => {
+    const ann = announcements.find(a => a.id === id);
+    setAnnouncements(prev => prev.filter(a => a.id !== id));
+    logAudit('DELETE_ANNOUNCEMENT', 'announcement', id, { title: ann?.title });
+  };
+
+  // --- CRUD Hasil E-Sport ---
   const addMatchResult = async (result: Omit<MatchResult, 'id' | 'created_at'>) => {
     const newResult: MatchResult = {
       ...result,
@@ -268,14 +388,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('INPUT_MATCH_RESULT', 'match_result', newResult.id, { participant: result.participant_name, position: result.position });
   };
 
-  const createAnnouncement = async (announcement: Omit<Announcement, 'id' | 'published_at'>) => {
-    const newAnn: Announcement = {
-      ...announcement,
-      id: `ann-${Date.now()}`,
-      published_at: new Date().toISOString(),
-    };
-    setAnnouncements(prev => [newAnn, ...prev]);
-    logAudit('CREATE_ANNOUNCEMENT', 'announcement', newAnn.id, { title: announcement.title });
+  const updateMatchResult = async (id: string, updates: Partial<MatchResult>) => {
+    setMatchResults(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+    logAudit('UPDATE_MATCH_RESULT', 'match_result', id, updates as Record<string, unknown>);
+  };
+
+  const deleteMatchResult = async (id: string) => {
+    const match = matchResults.find(m => m.id === id);
+    setMatchResults(prev => prev.filter(m => m.id !== id));
+    logAudit('DELETE_MATCH_RESULT', 'match_result', id, { participant: match?.participant_name });
   };
 
   return (
@@ -283,7 +404,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       currentUser,
       setCurrentUser,
       switchRole,
-      availableUsers: MOCK_USERS,
+      availableUsers,
       competitions,
       registrations,
       submissions,
@@ -295,11 +416,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       registerCompetition,
       uploadPaymentProof,
       verifyPayment,
+      updatePaymentAmount,
+      deleteRegistration,
       submitWork,
       assignJudge,
+      removeJudgeAssignment,
       submitJudgeScore,
-      addMatchResult,
+      addCompetition,
+      updateCompetition,
+      deleteCompetition,
+      addUser,
+      updateUser,
+      deleteUser,
       createAnnouncement,
+      updateAnnouncement,
+      deleteAnnouncement,
+      addMatchResult,
+      updateMatchResult,
+      deleteMatchResult,
     }}>
       {children}
     </AppContext.Provider>

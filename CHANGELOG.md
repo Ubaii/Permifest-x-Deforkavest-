@@ -8,7 +8,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 - Paket dokumentasi agentic: `AGENTS.md`, `docs/ARCHITECTURE.md`, `SITEMAP_RBAC.md`, `SCHEMA.md`, `SECURITY.md`, `DESIGN_SYSTEM.md`, `UI_KIT.md`, `TESTING.md`, `TASKS.md`, `DECISIONS.md`.
 - UI Kit visual (publik, peserta, panel admin/juri).
 - Komponen UI atomik baru: `Modal` (compound + `ConfirmDialog`), `Drawer` (slide-over detail), `Alert` (semantic variants), `Pagination`, `Section` (`PageHeader`, `SectionHeader`, `SectionCard`), `Tabs`, dan `DataTable` (generic dengan search, sorting, pagination).
-- Integrasi `DataTable` dan `Drawer` detail pada modul admin peserta dan pembayaran.
+- CRUD penuh di panel admin:
+  - **Manajemen Kompetisi**: Create via Modal, Update parameter, Delete dengan ConfirmDialog, dan toggle publish.
+  - **Manajemen Pengguna (Peserta, Juri, Panitia, Admin)**: Tambah akun baru, Edit peran dan profil, Hapus akun, filter peran tab.
+  - **Verifikasi Pembayaran**: StatCards ringkasan, Review Drawer resi besar, Edit nominal manual, Setujui/Tolak dengan dialog alasan, Hapus transaksi.
+  - **Manajemen Pengumuman**: Create, Edit, dan Delete pengumuman via Modal.
+  - **Hasil E-Sport & Penugasan Juri**: Create, Edit skor/juara, Hapus catatan hasil, dan cabut penugasan juri.
 
 ### Changed
 - Keputusan desain: panel admin dan juri mendukung terang/gelap; publik dan peserta dark only (ADR-009).

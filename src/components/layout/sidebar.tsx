@@ -58,7 +58,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
           { label: 'Admin Overview', href: '/dashboard/admin', icon: House },
           { label: 'Manajemen Kompetisi', href: '/dashboard/admin/kompetisi', icon: SquaresFour },
           { label: 'Verifikasi Pembayaran', href: '/dashboard/admin/pembayaran', icon: CreditCard },
-          { label: 'Data Peserta', href: '/dashboard/admin/peserta', icon: Users },
+          { label: 'Manajemen Pengguna', href: '/dashboard/admin/peserta', icon: Users },
           { label: 'Submission & Juri', href: '/dashboard/admin/submission', icon: FileText },
           { label: 'Input Hasil E-Sport', href: '/dashboard/admin/hasil', icon: GameController },
           { label: 'Pengumuman', href: '/dashboard/admin/pengumuman', icon: Bell },

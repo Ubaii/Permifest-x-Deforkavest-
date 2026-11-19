@@ -12,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
+import { JudgeAssignment } from '@/lib/types';
 import {
   FileText,
   UserPlus,
@@ -19,16 +20,18 @@ import {
   ArrowSquareOut,
   Lock,
   LockOpen,
+  X,
 } from '@phosphor-icons/react';
 
 export default function AdminSubmissionPage() {
-  const { submissions, availableUsers, judgeAssignments, assignJudge } = useAppStore();
+  const { submissions, availableUsers, judgeAssignments, assignJudge, removeJudgeAssignment } = useAppStore();
 
   const [activeSubId, setActiveSubId] = useState<string | null>(null);
   const [selectedJudgeId, setSelectedJudgeId] = useState<string>('');
   const [assigning, setAssigning] = useState(false);
   const [lockedSubmissions, setLockedSubmissions] = useState<Record<string, boolean>>({});
   const [confirmLockTarget, setConfirmLockTarget] = useState<string | null>(null);
+  const [deleteAssignTarget, setDeleteAssignTarget] = useState<JudgeAssignment | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
 
   const judgesList = availableUsers.filter((u) => u.role === 'juri' || u.role === 'panitia' || u.role === 'super_admin');
@@ -60,6 +63,13 @@ export default function AdminSubmissionPage() {
     }));
     setAlertSuccess(`Nilai karya berhasil ${isCurrentlyLocked ? 'dibuka kembali' : 'dikunci dan disahkan'}!`);
     setConfirmLockTarget(null);
+  };
+
+  const handleDeleteAssignConfirm = async () => {
+    if (!deleteAssignTarget) return;
+    await removeJudgeAssignment(deleteAssignTarget.id);
+    setAlertSuccess(`Penugasan juri ${deleteAssignTarget.judge?.full_name} berhasil dicabut.`);
+    setDeleteAssignTarget(null);
   };
 
   return (
@@ -169,10 +179,22 @@ export default function AdminSubmissionPage() {
                                   Status: {assign.status === 'completed' ? 'Selesai Dinilai' : 'Sedang Menilai'}
                                 </span>
                               </div>
-                              <StatusBadge
-                                status={assign.status === 'completed' ? 'completed' : 'assigned'}
-                                customLabel={assign.status === 'completed' ? 'Selesai' : 'Ditugaskan'}
-                              />
+                              <div className="flex items-center gap-1.5">
+                                <StatusBadge
+                                  status={assign.status === 'completed' ? 'completed' : 'assigned'}
+                                  customLabel={assign.status === 'completed' ? 'Selesai' : 'Ditugaskan'}
+                                />
+                                {!isLocked && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setDeleteAssignTarget(assign)}
+                                    className="p-1 rounded text-[var(--muted-foreground)] hover:text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] transition-colors"
+                                    title="Cabut Penugasan Juri"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -237,6 +259,17 @@ export default function AdminSubmissionPage() {
         }
         confirmText={confirmLockTarget && lockedSubmissions[confirmLockTarget] ? 'Ya, Buka Kunci' : 'Ya, Kunci Nilai'}
         variant={confirmLockTarget && lockedSubmissions[confirmLockTarget] ? 'warning' : 'primary'}
+      />
+
+      {/* Dialog Konfirmasi Cabut Penugasan Juri */}
+      <ConfirmDialog
+        isOpen={Boolean(deleteAssignTarget)}
+        onClose={() => setDeleteAssignTarget(null)}
+        onConfirm={handleDeleteAssignConfirm}
+        title="Cabut Penugasan Juri?"
+        description={`Anda akan mencabut tugas penilaian dari juri "${deleteAssignTarget?.judge?.full_name}". Karya ini tidak akan lagi muncul di dashboard juri bersangkutan.`}
+        confirmText="Cabut Penugasan"
+        variant="destructive"
       />
     </DashboardLayout>
   );
