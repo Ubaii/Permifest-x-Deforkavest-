@@ -152,15 +152,16 @@ export function DataTable<T extends Record<string, unknown>>({
       {/* Controls Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
-          <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)]" />
-          <Input
+          <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted-foreground)] pointer-events-none" />
+          <input
+            type="text"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
             placeholder={searchPlaceholder}
-            className="pl-9 h-10 w-full text-xs sm:text-sm bg-[var(--card)]"
+            className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl pl-9 pr-4 h-9 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:border-[var(--primary)] shadow-2xs transition-all"
           />
         </div>
 
@@ -171,7 +172,8 @@ export function DataTable<T extends Record<string, unknown>>({
               variant="outline"
               size="sm"
               onClick={handleExportCSV}
-              className="gap-1.5 h-10 text-xs font-semibold"
+              className="gap-1.5 h-9 px-3 rounded-xl border-[var(--border)] bg-[var(--card)] hover:bg-[var(--accent)] text-xs font-semibold shadow-2xs"
+              title="Unduh seluruh catatan data saat ini dalam format berkas CSV"
             >
               <FileCsv className="w-4 h-4 text-[var(--primary)]" />
               <span>Ekspor CSV</span>
@@ -182,7 +184,7 @@ export function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {/* Table Container */}
-      <div className="bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-xs overflow-hidden transition-colors">
+      <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-xs overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm border-collapse">
             <thead>

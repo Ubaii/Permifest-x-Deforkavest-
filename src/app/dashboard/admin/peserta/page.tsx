@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   Trophy,
   CalendarBlank,
+  Eye,
 } from '@phosphor-icons/react';
 
 export default function AdminPesertaPage() {
@@ -183,19 +184,22 @@ export default function AdminPesertaPage() {
             size="sm"
             variant="ghost"
             onClick={() => setSelectedReg(r)}
-            className="text-xs"
+            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+            title="Lihat Detail Pendaftaran & Tim"
+            aria-label="Detail Pendaftaran"
           >
-            Detail
+            <Eye className="w-4 h-4" />
           </Button>
 
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmReg(r)}
-            className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
-            title="Hapus Pendaftaran"
+            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            title="Hapus Catatan Pendaftaran"
+            aria-label="Hapus Pendaftaran"
           >
-            <Trash className="w-3.5 h-3.5" />
+            <Trash className="w-4 h-4" />
           </Button>
         </div>
       ),
@@ -213,7 +217,7 @@ export default function AdminPesertaPage() {
           leftIcon={<UserPlus className="w-4 h-4" weight="bold" />}
           onClick={() => setModalOpen(true)}
         >
-          + Pendaftaran Manual
+          Pendaftaran Manual
         </Button>
       }
     >

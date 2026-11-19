@@ -105,24 +105,24 @@ export default function AdminSubmissionPage() {
       header: 'Aksi Berkas',
       className: 'text-right',
       cell: (s) => (
-        <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           {s.link_url ? (
-            <a href={s.link_url} target="_blank" rel="noreferrer">
-              <Button size="sm" variant="outline" leftIcon={<ArrowSquareOut className="w-3.5 h-3.5" />}>
-                Buka Figma
+            <a href={s.link_url} target="_blank" rel="noreferrer" title="Buka Tautan Desain Figma">
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]" aria-label="Buka Tautan Figma">
+                <ArrowSquareOut className="w-4 h-4" />
               </Button>
             </a>
           ) : s.file_url ? (
-            <a href={s.file_url} target="_blank" rel="noreferrer">
-              <Button size="sm" variant="outline" leftIcon={<DownloadSimple className="w-3.5 h-3.5" />}>
-                Unduh
+            <a href={s.file_url} target="_blank" rel="noreferrer" title="Unduh Berkas Dokumen">
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]" aria-label="Unduh Berkas">
+                <DownloadSimple className="w-4 h-4" />
               </Button>
             </a>
           ) : null}
 
-          <Link href={`/dashboard/admin/penilaian?sub_id=${s.id}`}>
-            <Button size="sm" variant="secondary" className="text-xs">
-              Penilaian &rarr;
+          <Link href={`/dashboard/admin/penilaian?sub_id=${s.id}`} title="Penugasan & Penilaian Dewan Juri">
+            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-[var(--primary)] hover:bg-[var(--primary)]/10" aria-label="Penilaian Juri">
+              <CheckCircle className="w-4 h-4" weight="bold" />
             </Button>
           </Link>
 
@@ -130,10 +130,11 @@ export default function AdminSubmissionPage() {
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmSub(s)}
-            className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
-            title="Hapus Berkas"
+            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            title="Hapus Berkas Karya"
+            aria-label="Hapus Berkas Karya"
           >
-            <Trash className="w-3.5 h-3.5" />
+            <Trash className="w-4 h-4" />
           </Button>
         </div>
       ),

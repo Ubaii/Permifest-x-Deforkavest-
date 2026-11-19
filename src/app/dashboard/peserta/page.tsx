@@ -207,7 +207,7 @@ export default function PesertaOverviewPage() {
           </div>
           <Link href="/kompetisi">
             <Button size="sm" variant="secondary">
-              + Ikut Lomba Lain
+              Ikut Lomba Lain
             </Button>
           </Link>
         </CardHeader>

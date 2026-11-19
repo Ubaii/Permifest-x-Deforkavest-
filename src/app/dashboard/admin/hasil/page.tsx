@@ -102,7 +102,7 @@ export default function AdminHasilPage() {
       subtitle="Pencatatan dan pengelolaan hasil turnamen e-sport non-akademik ke sistem klasemen juara resmi."
       actions={
         <Button size="sm" variant="primary" leftIcon={<Plus className="w-4 h-4" weight="bold" />} onClick={openCreateModal}>
-          + Input Juara / Skor Baru
+          Input Juara / Skor Baru
         </Button>
       }
     >
@@ -192,19 +192,21 @@ export default function AdminHasilPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => openEditModal(m)}
-                            className="p-2 min-h-0 min-w-0"
-                            title="Edit Skor/Juara"
+                            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+                            title="Edit Hasil Pertandingan"
+                            aria-label="Edit Hasil Pertandingan"
                           >
-                            <PencilSimple className="w-3.5 h-3.5" />
+                            <PencilSimple className="w-4 h-4" />
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => setDeleteConfirmMatch(m)}
-                            className="p-2 min-h-0 min-w-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
-                            title="Hapus Catatan Juara"
+                            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+                            title="Hapus Hasil Pertandingan"
+                            aria-label="Hapus Hasil Pertandingan"
                           >
-                            <Trash className="w-3.5 h-3.5" />
+                            <Trash className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>

@@ -342,39 +342,41 @@ export default function AdminKompetisiPage() {
       header: 'Aksi',
       className: 'text-right',
       cell: (comp) => (
-        <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           {comp.type === 'academic' && (
             <Link href={`/dashboard/admin/rubrik?competition_id=${comp.id}`}>
               <Button
                 size="sm"
-                variant="outline"
-                className="text-xs gap-1 h-8"
-                title="Kelola Rubrik"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-[var(--primary)] hover:bg-[var(--primary)]/10"
+                title="Kelola Rubrik Penilaian"
+                aria-label="Kelola Rubrik Penilaian"
               >
-                <ListNumbers className="w-3.5 h-3.5 text-[var(--primary)]" />
-                {/* <span className="hidden sm:inline">Rubrik</span> */}
+                <ListNumbers className="w-4 h-4" />
               </Button>
             </Link>
           )}
 
           <Button
             size="sm"
-            variant="secondary"
+            variant="ghost"
             onClick={() => openEditModal(comp)}
-            className="text-xs h-8"
+            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+            title="Edit Cabang Lomba"
+            aria-label="Edit Cabang Lomba"
           >
-            <PencilSimple className="w-3.5 h-3.5 sm:mr-1" />
-            {/* <span className="hidden sm:inline">Edit</span> */}
+            <PencilSimple className="w-4 h-4" />
           </Button>
 
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmComp(comp)}
-            className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] h-8 w-8 p-0"
-            title="Hapus Kompetisi"
+            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            title="Hapus Cabang Lomba"
+            aria-label="Hapus Cabang Lomba"
           >
-            <Trash className="w-3.5 h-3.5" />
+            <Trash className="w-4 h-4" />
           </Button>
         </div>
       ),
@@ -392,7 +394,7 @@ export default function AdminKompetisiPage() {
           leftIcon={<Plus className="w-4 h-4" weight="bold" />}
           onClick={openCreateModal}
         >
-          + Tambah Lomba Baru
+          Tambah Lomba Baru
         </Button>
       }
     >
@@ -415,7 +417,7 @@ export default function AdminKompetisiPage() {
               },
               {
                 id: 'non_academic',
-                label: `E-Sport (${competitions.filter((c) => c.type === 'non_academic').length})`,
+                label: `Non-Akademik (${competitions.filter((c) => c.type === 'non_academic').length})`,
               },
             ].map((tab) => (
               <button

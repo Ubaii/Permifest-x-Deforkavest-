@@ -26,6 +26,7 @@ import {
   Trophy,
   ClipboardText,
   CheckCircle,
+  Eye,
 } from '@phosphor-icons/react';
 
 interface UserFormData {
@@ -204,30 +205,34 @@ export default function AdminMasterPenggunaPage() {
             size="sm"
             variant="ghost"
             onClick={() => setSelectedUser(u)}
-            className="text-xs"
+            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+            title="Lihat Detail Profil Pengguna"
+            aria-label="Lihat Detail Pengguna"
           >
-            Detail
+            <Eye className="w-4 h-4" />
           </Button>
 
           <Button
             size="sm"
             variant="ghost"
             onClick={() => openEditModal(u)}
-            className="text-xs p-2 min-h-0 min-w-0"
-            title="Edit Pengguna"
+            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+            title="Edit Akun Pengguna"
+            aria-label="Edit Pengguna"
           >
-            <PencilSimple className="w-3.5 h-3.5" />
+            <PencilSimple className="w-4 h-4" />
           </Button>
 
           <Button
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmUser(u)}
-            className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
-            title="Hapus Akun"
+            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            title="Hapus Akun Pengguna"
+            aria-label="Hapus Akun"
             disabled={u.id === currentUser.id}
           >
-            <Trash className="w-3.5 h-3.5" />
+            <Trash className="w-4 h-4" />
           </Button>
         </div>
       ),
@@ -249,7 +254,7 @@ export default function AdminMasterPenggunaPage() {
           leftIcon={<UserPlus className="w-4 h-4" weight="bold" />}
           onClick={openCreateModal}
         >
-          + Tambah Pengguna Baru
+          Tambah Pengguna Baru
         </Button>
       }
     >

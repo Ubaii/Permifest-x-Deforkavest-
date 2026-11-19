@@ -608,22 +608,26 @@ export default function AdminTimelinePage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2 shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-[var(--border)]">
+                        <div className="flex items-center gap-1 shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-[var(--border)]">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => openEditModal(ev)}
-                            leftIcon={<PencilSimple size={14} />}
+                            className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+                            title="Edit Agenda Timeline"
+                            aria-label="Edit Agenda"
                           >
-                            Edit
+                            <PencilSimple size={16} />
                           </Button>
                           <Button
-                            variant="danger"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setDeleteConfirmId(ev.id)}
-                            leftIcon={<Trash size={14} />}
+                            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+                            title="Hapus Agenda Timeline"
+                            aria-label="Hapus Agenda"
                           >
-                            Hapus
+                            <Trash size={16} />
                           </Button>
                         </div>
                       </div>

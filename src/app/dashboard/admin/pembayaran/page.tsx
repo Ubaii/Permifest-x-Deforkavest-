@@ -185,25 +185,28 @@ export default function AdminPembayaranPage() {
         const payment = r.payment;
         const isVerified = payment?.status === 'verified';
         return (
-          <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={() => setReviewDrawerReg(r)}
-              className="text-xs gap-1"
+              className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+              title="Review Bukti & Detail Pembayaran"
+              aria-label="Review Pembayaran"
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Review</span>
+              <Eye className="w-4 h-4" />
             </Button>
 
             {!isVerified && payment?.proof_url && (
               <Button
                 size="sm"
-                variant="primary"
+                variant="ghost"
                 onClick={() => setApproveConfirmReg(r)}
-                className="text-xs"
+                className="h-8 w-8 p-0 text-[var(--success)] hover:bg-[var(--success)]/10"
+                title="Setujui Pembayaran Langsung"
+                aria-label="Setujui Pembayaran"
               >
-                Setujui
+                <CheckCircle className="w-4 h-4" weight="bold" />
               </Button>
             )}
 
@@ -211,8 +214,9 @@ export default function AdminPembayaranPage() {
               size="sm"
               variant="ghost"
               onClick={() => setDeleteConfirmReg(r)}
-              className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
-              title="Hapus Transaksi"
+              className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+              title="Hapus Data Transaksi"
+              aria-label="Hapus Transaksi"
             >
               <Trash className="w-4 h-4" />
             </Button>

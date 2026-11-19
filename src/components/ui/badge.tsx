@@ -16,16 +16,16 @@ export function Badge({ className, variant = 'neutral', size = 'md', children, .
     neutral: 'bg-[var(--muted)] text-[var(--foreground)]/80 border border-[var(--border)]',
     primary: 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30',
     gold: 'bg-[var(--brand-gold)]/15 text-[var(--brand-gold-soft)] border border-[var(--brand-gold)]/40',
-    cyber: 'bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--primary)]/40 shadow-sm shadow-[var(--primary)]/20',
+    cyber: 'bg-[var(--accent)] text-[var(--accent-foreground)] border border-[var(--primary)]/40 shadow-xs shadow-[var(--primary)]/20',
   };
 
   const sizes = {
-    sm: 'text-[11px] px-2 py-0.5 rounded-full font-medium',
-    md: 'text-xs px-2.5 py-1 rounded-full font-medium',
+    sm: 'text-[11px] px-2 py-0.5 rounded-md font-semibold tracking-wide',
+    md: 'text-xs px-2.5 py-0.5 rounded-lg font-semibold tracking-wide',
   };
 
   return (
-    <span className={cn('inline-flex items-center gap-1.5 transition-colors', variants[variant], sizes[size], className)} {...props}>
+    <span className={cn('inline-flex items-center gap-1.5 transition-colors leading-normal select-none', variants[variant], sizes[size], className)} {...props}>
       {children}
     </span>
   );

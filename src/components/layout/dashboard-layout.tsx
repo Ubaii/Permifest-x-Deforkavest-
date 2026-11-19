@@ -112,7 +112,6 @@ export function DashboardLayout({
     if (!pathname) return [];
 
     const segments = pathname.split('/').filter(Boolean);
-    // segments: ['dashboard', 'admin', 'kompetisi']
     if (segments.length <= 1) return [];
 
     const items: BreadcrumbItem[] = [];
@@ -159,84 +158,67 @@ export function DashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header Bar */}
-        <header className="h-16 border-b border-border bg-card/85 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
+        {/* Header Bar (Ramping & Bersih) */}
+        <header className="h-14 border-b border-border bg-card/85 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors shrink-0"
+              className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted min-h-[40px] min-w-[40px] flex items-center justify-center transition-colors shrink-0"
               aria-label="Buka Menu Samping"
             >
-              <List size={22} weight="bold" />
+              <List size={20} weight="bold" />
             </button>
             
-            <div className="min-w-0">
-              {/* Breadcrumbs Navigation */}
-              {resolvedBreadcrumbs.length > 0 && (
-                <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium mb-0.5 overflow-hidden">
-                  <Link href={baseDashboardHref} className="hover:text-foreground transition-colors flex items-center gap-1 shrink-0" title="Ke Dashboard Utama">
-                    <House size={12} weight="fill" />
-                    <span>Home</span>
-                  </Link>
-                  {resolvedBreadcrumbs.map((crumb, idx) => (
-                    <React.Fragment key={idx}>
-                      <CaretRight size={10} className="text-muted-foreground/60 shrink-0" />
-                      {crumb.href ? (
-                        <Link href={crumb.href} className="hover:text-foreground transition-colors truncate max-w-[120px] sm:max-w-[200px]">
-                          {crumb.label}
-                        </Link>
-                      ) : (
-                        <span className="text-foreground font-semibold truncate max-w-[140px] sm:max-w-[220px]">
-                          {crumb.label}
-                        </span>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </nav>
-              )}
-
-              {title && (
-                <h1 className="text-sm sm:text-base md:text-lg font-bold font-[family-name:var(--font-bricolage)] text-foreground truncate">
-                  {title}
-                </h1>
-              )}
-              {subtitle && (
-                <p className="text-xs text-muted-foreground hidden md:block truncate max-w-xl">
-                  {subtitle}
-                </p>
-              )}
-            </div>
+            {/* Breadcrumbs Navigation di Navbar */}
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium overflow-hidden">
+              <Link href={baseDashboardHref} className="hover:text-foreground transition-colors flex items-center gap-1 shrink-0" title="Ke Dashboard Utama">
+                <House size={13} weight="fill" />
+                <span className="hidden sm:inline">Home</span>
+              </Link>
+              {resolvedBreadcrumbs.map((crumb, idx) => (
+                <React.Fragment key={idx}>
+                  <CaretRight size={11} className="text-muted-foreground/60 shrink-0" />
+                  {crumb.href ? (
+                    <Link href={crumb.href} className="hover:text-foreground transition-colors truncate max-w-[120px] sm:max-w-[200px]">
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span className="text-foreground font-semibold truncate max-w-[150px] sm:max-w-[240px]">
+                      {crumb.label}
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
+            </nav>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {actions}
-
             {/* Tombol Toggle Tema Dark / Light */}
             <button
               type="button"
               onClick={toggleTheme}
-              className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-border bg-muted/60 hover:bg-muted text-foreground transition-all min-h-[38px] sm:min-h-[44px] text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-muted/60 hover:bg-muted text-foreground transition-all text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`}
               title={`Mode saat ini: ${theme === 'dark' ? 'Gelap' : 'Terang'}. Klik untuk ganti.`}
             >
               {theme === 'dark' ? (
-                <Sun size={18} weight="bold" className="text-brand-gold" />
+                <Sun size={17} weight="bold" className="text-brand-gold" />
               ) : (
-                <Moon size={18} weight="bold" className="text-primary" />
+                <Moon size={17} weight="bold" className="text-primary" />
               )}
             </button>
 
             {/* User Profile & Role Indicator */}
             <Link
               href={profileHref}
-              className="hidden sm:flex items-center gap-2 pl-3 border-l border-border hover:opacity-85 transition-opacity"
+              className="flex items-center gap-2 pl-3 border-l border-border hover:opacity-85 transition-opacity"
               title="Buka Pengaturan Profil Saya"
             >
               <div className="w-8 h-8 rounded-full bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-bold text-xs shrink-0">
                 {currentUser.full_name?.charAt(0) || <User size={14} />}
               </div>
-              <div className="text-left hidden lg:block">
+              <div className="text-left hidden md:block">
                 <span className="text-xs font-bold text-foreground block leading-tight truncate max-w-[110px]">
                   {currentUser.full_name}
                 </span>
@@ -248,9 +230,35 @@ export function DashboardLayout({
           </div>
         </header>
 
-        {/* Page Content */}
+        {/* Page Content dengan Slot Page Header yang Lega */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
-          <div className="max-w-7xl mx-auto space-y-6">{children}</div>
+          <div className="max-w-7xl mx-auto space-y-6">
+            
+            {/* Page Header di Dalam Slot Page */}
+            {(title || actions) && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+                <div className="space-y-1">
+                  {title && (
+                    <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight">
+                      {title}
+                    </h1>
+                  )}
+                  {subtitle && (
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-2xl">
+                      {subtitle}
+                    </p>
+                  )}
+                </div>
+                {actions && (
+                  <div className="flex items-center gap-2 flex-wrap shrink-0">
+                    {actions}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {children}
+          </div>
         </main>
       </div>
     </div>

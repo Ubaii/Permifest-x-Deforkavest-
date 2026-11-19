@@ -169,7 +169,7 @@ function RubricManagerContent() {
           leftIcon={<Plus className="w-4 h-4" weight="bold" />}
           onClick={openCreateModal}
         >
-          + Tambah Kriteria
+          Tambah Kriteria
         </Button>
       }
     >
@@ -276,22 +276,24 @@ function RubricManagerContent() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-1 shrink-0">
                     <Button
                       size="sm"
-                      variant="secondary"
-                      leftIcon={<PencilSimple className="w-3.5 h-3.5" />}
+                      variant="ghost"
                       onClick={() => openEditModal(crit)}
-                      className="text-xs"
+                      className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+                      title="Edit Kriteria Rubrik"
+                      aria-label="Edit Kriteria Rubrik"
                     >
-                      Edit
+                      <PencilSimple className="w-4 h-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setDeleteConfirmCrit(crit)}
-                      className="text-xs text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)] p-2 min-h-0 min-w-0"
-                      title="Hapus Kriteria"
+                      className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+                      title="Hapus Kriteria Rubrik"
+                      aria-label="Hapus Kriteria Rubrik"
                     >
                       <Trash className="w-4 h-4" />
                     </Button>
