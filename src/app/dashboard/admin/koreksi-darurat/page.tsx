@@ -26,6 +26,7 @@ export default function AdminKoreksiDaruratPage() {
   const [reason, setReason] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedSub = submissions.find((s) => s.id === selectedSubId);
@@ -33,12 +34,13 @@ export default function AdminKoreksiDaruratPage() {
 
   const handleOpenConfirm = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!selectedSubId) {
-      alert('Pilih karya peserta yang ingin dikoreksi terlebih dahulu.');
+      setFormError('Pilih karya peserta yang ingin dikoreksi terlebih dahulu.');
       return;
     }
     if (reason.trim().length < 20) {
-      alert('Alasan koreksi darurat wajib diisi minimal 20 karakter demi kepatuhan audit forensik.');
+      setFormError('Alasan koreksi darurat wajib diisi minimal 20 karakter demi kepatuhan audit forensik.');
       return;
     }
     setConfirmOpen(true);
@@ -47,6 +49,7 @@ export default function AdminKoreksiDaruratPage() {
   const handleConfirmOverride = async () => {
     if (!selectedSubId) return;
     setIsSubmitting(true);
+    setFormError(null);
     try {
       await overrideScore(selectedSubId, Number(newScoreInput), reason);
       setAlertSuccess(
@@ -58,7 +61,8 @@ export default function AdminKoreksiDaruratPage() {
       setConfirmOpen(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal mengeksekusi koreksi darurat';
-      alert(msg);
+      setFormError(msg);
+      setConfirmOpen(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -74,6 +78,13 @@ export default function AdminKoreksiDaruratPage() {
           <Alert variant="success" onClose={() => setAlertSuccess(null)}>
             <AlertTitle>Override Berhasil Dicatat</AlertTitle>
             <AlertDescription>{alertSuccess}</AlertDescription>
+          </Alert>
+        )}
+
+        {formError && (
+          <Alert variant="destructive" onClose={() => setFormError(null)}>
+            <AlertTitle>Validasi Gagal</AlertTitle>
+            <AlertDescription>{formError}</AlertDescription>
           </Alert>
         )}
 

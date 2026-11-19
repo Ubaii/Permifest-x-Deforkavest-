@@ -42,6 +42,7 @@ export default function AdminPenilaianPage() {
   const [confirmLockSub, setConfirmLockSub] = useState<Submission | null>(null);
   const [deleteAssignTarget, setDeleteAssignTarget] = useState<JudgeAssignment | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const judgesList = availableUsers.filter(
     (u) => u.role === 'juri' || u.role === 'panitia' || u.role === 'super_admin'
@@ -57,6 +58,7 @@ export default function AdminPenilaianPage() {
     if (!activeSubId || !selectedJudgeId) return;
 
     setAssigning(true);
+    setModalError(null);
     try {
       await assignJudge(activeSubId, selectedJudgeId);
       setActiveSubId(null);
@@ -64,7 +66,7 @@ export default function AdminPenilaianPage() {
       setAlertSuccess('Karya peserta berhasil ditugaskan ke dewan juri!');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menugaskan juri';
-      alert(message);
+      setModalError(message);
     } finally {
       setAssigning(false);
     }
@@ -278,6 +280,13 @@ export default function AdminPenilaianPage() {
         description="Pilih akun juri yang akan bertanggung jawab memberikan penilaian berbasis rubrik untuk karya ini."
       >
         <form onSubmit={handleAssignSubmit} className="space-y-4">
+          {modalError && (
+            <Alert variant="destructive" onClose={() => setModalError(null)}>
+              <AlertTitle>Gagal Menugaskan Juri</AlertTitle>
+              <AlertDescription>{modalError}</AlertDescription>
+            </Alert>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
               Pilih Dewan Juri <span className="text-[var(--destructive-text)]">*</span>

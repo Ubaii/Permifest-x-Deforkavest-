@@ -46,6 +46,7 @@ export default function AdminPesertaPage() {
   const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
   const [deleteConfirmReg, setDeleteConfirmReg] = useState<Registration | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form manual pendaftaran baru
@@ -71,6 +72,7 @@ export default function AdminPesertaPage() {
     if (!manualUserId || !manualCompId) return;
 
     setIsSubmitting(true);
+    setModalError(null);
     try {
       await addRegistrationManual({
         userId: manualUserId,
@@ -84,7 +86,7 @@ export default function AdminPesertaPage() {
       setManualTeamName('');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Gagal menambahkan pendaftaran';
-      alert(msg);
+      setModalError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -424,6 +426,13 @@ export default function AdminPesertaPage() {
           description="Daftarkan akun peserta yang ada ke cabang lomba tertentu tanpa melalui alur pembayaran publik."
         >
           <form onSubmit={handleCreateSubmit} className="space-y-4">
+            {modalError && (
+              <Alert variant="destructive" onClose={() => setModalError(null)}>
+                <AlertTitle>Gagal Menyimpan</AlertTitle>
+                <AlertDescription>{modalError}</AlertDescription>
+              </Alert>
+            )}
+
             <div>
               <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
                 Pilih Akun Pengguna / Peserta *

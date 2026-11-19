@@ -249,6 +249,7 @@ export interface SystemSettings {
   bank_account_number: string;
   bank_account_holder: string;
   qris_nmid: string;
+  qris_image_url?: string;
   whatsapp_helpdesk: string;
   email_helpdesk: string;
 }

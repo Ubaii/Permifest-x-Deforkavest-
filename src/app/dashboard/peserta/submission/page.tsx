@@ -38,6 +38,7 @@ export default function PesertaSubmissionPage() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const selectedReg = registrations.find((r) => r.id === activeRegId);
   const isFigmaRequired = selectedReg?.competition?.submission_config.allowedTypes.includes('figma_url');
@@ -49,6 +50,7 @@ export default function PesertaSubmissionPage() {
     setFileUrl('');
     setFigmaLink('');
     setNotes('');
+    setModalError(null);
     setModalOpen(true);
   };
 
@@ -57,6 +59,7 @@ export default function PesertaSubmissionPage() {
     if (!activeRegId || !activeStageId) return;
 
     setSubmitting(true);
+    setModalError(null);
     try {
       await submitWork(activeRegId, activeStageId, {
         fileName: isFigmaRequired ? undefined : (fileName || 'karya_permifest.pdf'),
@@ -69,7 +72,7 @@ export default function PesertaSubmissionPage() {
       setSuccessBanner('Karya Anda berhasil dikumpulkan! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
-      alert(message);
+      setModalError(message);
     } finally {
       setSubmitting(false);
     }
@@ -216,6 +219,12 @@ export default function PesertaSubmissionPage() {
         description="Pastikan karya mematuhi batasan format, ukuran berkas, dan kaidah orisinalitas."
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          {modalError && (
+            <Alert variant="destructive" onClose={() => setModalError(null)}>
+              <AlertTitle>Gagal Menyimpan</AlertTitle>
+              <AlertDescription>{modalError}</AlertDescription>
+            </Alert>
+          )}
           {isFigmaRequired ? (
             <Input
               label="Tautan Berkas Figma (Public Viewable)"

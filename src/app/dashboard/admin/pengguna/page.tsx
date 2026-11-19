@@ -54,6 +54,7 @@ export default function AdminMasterPenggunaPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredUsers = availableUsers.filter((u) => {
@@ -69,6 +70,7 @@ export default function AdminMasterPenggunaPage() {
   const openCreateModal = () => {
     setEditingUserId(null);
     setFormData(defaultUserFormData);
+    setModalError(null);
     setModalOpen(true);
   };
 
@@ -81,12 +83,14 @@ export default function AdminMasterPenggunaPage() {
       institution: user.institution || '',
       phone: user.phone || '',
     });
+    setModalError(null);
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setModalError(null);
 
     try {
       if (editingUserId) {
@@ -112,7 +116,7 @@ export default function AdminMasterPenggunaPage() {
       setModalOpen(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data';
-      alert(message);
+      setModalError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +125,7 @@ export default function AdminMasterPenggunaPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteConfirmUser) return;
     if (deleteConfirmUser.id === currentUser.id) {
-      alert('Anda tidak dapat menghapus akun yang sedang aktif digunakan.');
+      setAlertSuccess('Peringatan: Anda tidak dapat menghapus akun yang sedang aktif digunakan.');
       setDeleteConfirmUser(null);
       return;
     }
@@ -338,6 +342,13 @@ export default function AdminMasterPenggunaPage() {
           maxWidth="md"
         >
           <form onSubmit={handleSubmit} className="space-y-4">
+            {modalError && (
+              <Alert variant="destructive" onClose={() => setModalError(null)}>
+                <AlertTitle>Validasi Gagal</AlertTitle>
+                <AlertDescription>{modalError}</AlertDescription>
+              </Alert>
+            )}
+
             <Input
               label="Nama Lengkap *"
               placeholder="Contoh: Budi Pratama, S.Kom"

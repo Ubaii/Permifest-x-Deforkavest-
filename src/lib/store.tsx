@@ -36,6 +36,7 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   bank_account_number: '8820 1928 37',
   bank_account_holder: 'Panitia Permifest x Deforkafest',
   qris_nmid: 'ID10293847561',
+  qris_image_url: '',
   whatsapp_helpdesk: '0812-3456-7890',
   email_helpdesk: 'helpdesk@permifest.id',
 };

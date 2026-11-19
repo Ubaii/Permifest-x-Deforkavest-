@@ -29,6 +29,7 @@ export default function AdminHasilPage() {
   const [deleteConfirmMatch, setDeleteConfirmMatch] = useState<MatchResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const openCreateModal = () => {
     setEditingMatchId(null);
@@ -36,6 +37,7 @@ export default function AdminHasilPage() {
     setParticipantName('');
     setPosition(1);
     setNotes('');
+    setModalError(null);
     setModalOpen(true);
   };
 
@@ -45,12 +47,14 @@ export default function AdminHasilPage() {
     setParticipantName(m.participant_name);
     setPosition(m.position);
     setNotes(m.notes || '');
+    setModalError(null);
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setModalError(null);
     try {
       if (editingMatchId) {
         await updateMatchResult(editingMatchId, {
@@ -73,7 +77,7 @@ export default function AdminHasilPage() {
       setModalOpen(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan hasil';
-      alert(message);
+      setModalError(message);
     } finally {
       setSubmitting(false);
     }
@@ -186,6 +190,13 @@ export default function AdminHasilPage() {
         description="Hasil pertandingan yang dimasukkan akan langsung disahkan dan muncul di Leaderboard publik."
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          {modalError && (
+            <Alert variant="destructive" onClose={() => setModalError(null)}>
+              <AlertTitle>Gagal Menyimpan</AlertTitle>
+              <AlertDescription>{modalError}</AlertDescription>
+            </Alert>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
               Cabang Turnamen E-Sport <span className="text-[var(--destructive-text)]">*</span>

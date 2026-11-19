@@ -37,11 +37,13 @@ export default function AdminPengumumanPage() {
   const [formData, setFormData] = useState<AnnouncementFormData>(defaultFormData);
   const [deleteConfirmAnn, setDeleteConfirmAnn] = useState<Announcement | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const openCreateModal = () => {
     setEditingAnnId(null);
     setFormData(defaultFormData);
+    setModalError(null);
     setModalOpen(true);
   };
 
@@ -53,12 +55,14 @@ export default function AdminPengumumanPage() {
       content: ann.content,
       competition_id: ann.competition_id || '',
     });
+    setModalError(null);
     setModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setModalError(null);
     try {
       const comp = competitions.find((c) => c.id === formData.competition_id);
 
@@ -87,7 +91,7 @@ export default function AdminPengumumanPage() {
       setModalOpen(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan pengumuman';
-      alert(message);
+      setModalError(message);
     } finally {
       setSubmitting(false);
     }
@@ -191,6 +195,13 @@ export default function AdminPengumumanPage() {
         maxWidth="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          {modalError && (
+            <Alert variant="destructive" onClose={() => setModalError(null)}>
+              <AlertTitle>Validasi Gagal</AlertTitle>
+              <AlertDescription>{modalError}</AlertDescription>
+            </Alert>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
               Target Cabang Lomba

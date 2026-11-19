@@ -75,7 +75,7 @@ export default function InformasiPage() {
                 </p>
               </div>
             </div>
-            <a href="#download" onClick={(e) => { e.preventDefault(); alert('Guidebook template siap diunduh.'); }}>
+            <a href="/docs/guidebook-permifest-2026.pdf" download="Guidebook_Permifest_Deforkafest_2026.pdf">
               <Button variant="primary" leftIcon={<Download className="w-4 h-4" />}>
                 Unduh PDF (v2.1)
               </Button>

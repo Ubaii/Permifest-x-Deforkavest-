@@ -22,7 +22,7 @@ import {
 } from '@phosphor-icons/react';
 
 export default function PesertaPembayaranPage() {
-  const { currentUser, registrations, uploadPaymentProof } = useAppStore();
+  const { currentUser, registrations, uploadPaymentProof, systemSettings } = useAppStore();
   const myRegistrations = registrations.filter((r) => r.user_id === currentUser.id && r.payment);
 
   const [selectedRegId, setSelectedRegId] = useState<string | null>(null);
@@ -31,17 +31,34 @@ export default function PesertaPembayaranPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedBank, setCopiedBank] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
+
+  const selectedReg = registrations.find((r) => r.id === selectedRegId);
+  const activeQrUrl = selectedReg?.competition?.payment_qr_url || systemSettings.qris_image_url;
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('8820192837');
+    navigator.clipboard.writeText(systemSettings.bank_account_number.replace(/\s+/g, ''));
     setCopiedBank(true);
     setTimeout(() => setCopiedBank(false), 2000);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setProofFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setProofUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRegId) return;
     setIsSubmitting(true);
+    setErrorBanner(null);
     try {
       const fileName = proofFileName || `bukti_transfer_${Date.now()}.png`;
       const url = proofUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600';
@@ -49,10 +66,10 @@ export default function PesertaPembayaranPage() {
       setSelectedRegId(null);
       setProofUrl('');
       setProofFileName('');
-      setSuccessBanner('Bukti pembayaran berhasil diunggah! Panitia akan memverifikasi dalam waktu maksimal 24 jam.');
+      setSuccessBanner('Bukti pembayaran berhasil diunggah! Panitia bendahara akan memverifikasi dalam waktu maksimal 24 jam.');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal mengunggah bukti';
-      alert(message);
+      const message = err instanceof Error ? err.message : 'Gagal mengunggah bukti pembayaran';
+      setErrorBanner(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -60,8 +77,8 @@ export default function PesertaPembayaranPage() {
 
   return (
     <DashboardLayout
-      title="Pembayaran & Bukti Transfer"
-      subtitle="Selesaikan pembayaran biaya pendaftaran dengan scan QRIS atau transfer rekening resmi panitia."
+      title="Pembayaran &amp; Bukti Transfer"
+      subtitle="Selesaikan pembayaran biaya pendaftaran dengan scan QRIS atau transfer ke rekening resmi panitia."
     >
       <div className="space-y-6">
         {successBanner && (
@@ -71,8 +88,15 @@ export default function PesertaPembayaranPage() {
           </Alert>
         )}
 
+        {errorBanner && (
+          <Alert variant="destructive" onClose={() => setErrorBanner(null)}>
+            <AlertTitle>Gagal Memproses</AlertTitle>
+            <AlertDescription>{errorBanner}</AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Kolom Kiri: Panduan Pembayaran & QRIS */}
+          {/* Kolom Kiri: Panduan Pembayaran & Barcode QRIS Resmi */}
           <div className="lg:col-span-1 space-y-6">
             <Card className="border-[var(--border)] bg-[var(--card)]">
               <CardHeader className="text-center pb-2">
@@ -80,18 +104,27 @@ export default function PesertaPembayaranPage() {
                   <Sparkle className="w-3.5 h-3.5" weight="fill" />
                   QRIS RESMI EVENT
                 </div>
-                <CardTitle className="justify-center text-base">Scan QRIS Pembayaran</CardTitle>
+                <CardTitle className="justify-center text-base">Scan Barcode QRIS</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-center">
-                {/* QR Box */}
-                <div className="w-52 h-52 mx-auto bg-white p-3 rounded-2xl shadow-sm border border-[var(--border)] flex flex-col items-center justify-center">
-                  <div className="w-full h-full bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                    <QrCode className="w-24 h-24 text-[var(--primary)] mb-2" weight="duotone" />
-                    <span className="text-[10px] font-mono text-[var(--foreground)] font-bold tracking-wider">
-                      PERMIFEST x DEFORKAFEST
-                    </span>
-                    <span className="text-[9px] text-[var(--muted-foreground)]">NMID: ID10293847561</span>
-                  </div>
+                {/* QR Box Container */}
+                <div className="w-56 h-56 mx-auto bg-white p-2.5 rounded-2xl shadow-sm border border-[var(--border)] flex flex-col items-center justify-center">
+                  {activeQrUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={activeQrUrl}
+                      alt="Barcode QRIS Resmi"
+                      className="w-full h-full object-contain rounded-xl"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                      <QrCode className="w-24 h-24 text-[var(--primary)] mb-2" weight="duotone" />
+                      <span className="text-[10px] font-mono text-[var(--foreground)] font-bold tracking-wider">
+                        {systemSettings.event_name.toUpperCase()}
+                      </span>
+                      <span className="text-[9px] text-[var(--muted-foreground)]">NMID: {systemSettings.qris_nmid}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Rekening Transfer Panitia */}
@@ -101,12 +134,12 @@ export default function PesertaPembayaranPage() {
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-[var(--muted-foreground)]">Bank:</span>
-                    <span className="font-semibold text-[var(--foreground)]">BCA (Bank Central Asia)</span>
+                    <span className="font-semibold text-[var(--foreground)]">{systemSettings.bank_name}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-[var(--muted-foreground)]">No. Rekening:</span>
                     <div className="flex items-center gap-1.5 font-mono font-bold text-[var(--foreground)]">
-                      <span className="select-all">8820 1928 37</span>
+                      <span className="select-all">{systemSettings.bank_account_number}</span>
                       <button
                         type="button"
                         onClick={handleCopyAccount}
@@ -122,12 +155,12 @@ export default function PesertaPembayaranPage() {
                   )}
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-[var(--muted-foreground)]">Atas Nama:</span>
-                    <span className="text-[var(--foreground)] font-medium">Panitia Permifest</span>
+                    <span className="text-[var(--foreground)] font-medium">{systemSettings.bank_account_holder}</span>
                   </div>
                 </div>
 
                 <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
-                  Simpan screenshot atau struk bukti pembayaran Anda, lalu unggah pada panel tagihan di sebelah kanan.
+                  Simpan bukti transfer atau struk Anda, lalu unggah pada kartu tagihan di sebelah kanan.
                 </p>
               </CardContent>
             </Card>
@@ -247,20 +280,23 @@ export default function PesertaPembayaranPage() {
           description="Pastikan nominal transfer, nama pengirim, dan tanggal transaksi terlihat jelas."
         >
           <form onSubmit={handleUploadSubmit} className="space-y-4">
-            <Input
-              label="Nama File / Judul Bukti"
-              placeholder="Contoh: bukti_transfer_bca_budi.png"
-              value={proofFileName}
-              onChange={(e) => setProofFileName(e.target.value)}
-              helperText="Format gambar (.png, .jpg, .jpeg) atau scan dokumen"
-            />
+            <div>
+              <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
+                Pilih Berkas Gambar Bukti Transfer (Screenshot/Struk)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="w-full text-xs text-[var(--foreground)] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:opacity-90 cursor-pointer"
+              />
+            </div>
 
             <Input
-              label="Tautan / URL Gambar Bukti (Opsional)"
-              placeholder="https://drive.google.com/... atau URL file"
-              value={proofUrl}
-              onChange={(e) => setProofUrl(e.target.value)}
-              helperText="Kosongkan untuk menggunakan file simulasi default"
+              label="Nama Berkas (Opsional)"
+              placeholder="bukti_transfer_bca.png"
+              value={proofFileName}
+              onChange={(e) => setProofFileName(e.target.value)}
             />
 
             <div className="p-3 rounded-[var(--radius-md)] bg-[var(--accent)]/30 border border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-1">
@@ -268,7 +304,7 @@ export default function PesertaPembayaranPage() {
                 <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
                 <span>SLA Verifikasi Panitia</span>
               </div>
-              <p>Panitia akan memvalidasi bukti Anda dalam waktu 1x24 jam. Status akan otomatis berganti ke Terverifikasi.</p>
+              <p>Panitia akan memvalidasi bukti Anda dalam waktu 1x24 jam. Status pendaftaran akan otomatis menjadi Terverifikasi.</p>
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border)]">

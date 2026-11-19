@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateWIB } from '@/lib/utils';
@@ -29,6 +30,8 @@ export default function JuriPenugasanPage() {
   const [activeAssignmentId, setActiveAssignmentId] = useState<string | null>(null);
   const [scoresInput, setScoresInput] = useState<Record<string, { score: number; comment: string }>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [successBanner, setSuccessBanner] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const activeAssignment = judgeAssignments.find((a) => a.id === activeAssignmentId);
   const activeCompId = activeAssignment?.submission?.registration?.competition_id;
@@ -39,6 +42,7 @@ export default function JuriPenugasanPage() {
 
   const openScoringModal = (assignmentId: string) => {
     setActiveAssignmentId(assignmentId);
+    setModalError(null);
     const assign = judgeAssignments.find((a) => a.id === assignmentId);
     
     // Pre-populate nilai yang tersimpan sebelumnya
@@ -79,6 +83,7 @@ export default function JuriPenugasanPage() {
     if (!activeAssignmentId || isLocked) return;
 
     setSubmitting(true);
+    setModalError(null);
     try {
       const payload = activeRubrics.map((crit) => ({
         criteriaId: crit.id,
@@ -88,10 +93,10 @@ export default function JuriPenugasanPage() {
 
       await submitJudgeScore(activeAssignmentId, payload);
       setActiveAssignmentId(null);
-      alert('Penilaian dewan juri berhasil disimpan dan dihitung otomatis!');
+      setSuccessBanner('Penilaian dewan juri berhasil disimpan dan dihitung otomatis!');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan nilai';
-      alert(message);
+      setModalError(message);
     } finally {
       setSubmitting(false);
     }
@@ -103,6 +108,13 @@ export default function JuriPenugasanPage() {
       subtitle="Evaluasi karya peserta sesuai rubrik kriteria dan persentase bobot yang ditentukan panitia."
     >
       <div className="space-y-6">
+        
+        {successBanner && (
+          <Alert variant="success" onClose={() => setSuccessBanner(null)}>
+            <AlertTitle>Penilaian Tersimpan</AlertTitle>
+            <AlertDescription>{successBanner}</AlertDescription>
+          </Alert>
+        )}
         
         {judgeAssignments.length === 0 ? (
           <EmptyState
@@ -221,6 +233,13 @@ export default function JuriPenugasanPage() {
         maxWidth="xl"
       >
         <form onSubmit={handleSaveScore} className="space-y-4">
+          
+          {modalError && (
+            <Alert variant="destructive" onClose={() => setModalError(null)}>
+              <AlertTitle>Gagal Menyimpan</AlertTitle>
+              <AlertDescription>{modalError}</AlertDescription>
+            </Alert>
+          )}
           
           {/* Header Ringkasan Karya */}
           <div className="p-3.5 rounded-xl bg-muted/50 border border-border text-xs flex flex-col sm:flex-row justify-between sm:items-center gap-2">

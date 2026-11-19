@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateWIB } from '@/lib/utils';
 import { 
@@ -36,6 +37,7 @@ function DetailKompetisiContent() {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!comp) {
     return (
@@ -64,6 +66,7 @@ function DetailKompetisiContent() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setErrorMessage(null);
     try {
       await registerCompetition(comp.id, formData);
       setSuccessMessage(true);
@@ -73,7 +76,7 @@ function DetailKompetisiContent() {
       }, 1500);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mendaftar';
-      alert(message);
+      setErrorMessage(message);
     } finally {
       setSubmitting(false);
     }
@@ -267,6 +270,12 @@ function DetailKompetisiContent() {
           </div>
         ) : (
           <form onSubmit={handleFormSubmit} className="space-y-4">
+            {errorMessage && (
+              <Alert variant="destructive" onClose={() => setErrorMessage(null)}>
+                <AlertTitle>Pendaftaran Gagal</AlertTitle>
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
             
             {/* Auto-filled user info */}
             <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-1">
