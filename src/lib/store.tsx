@@ -47,6 +47,8 @@ interface AppContextType {
   currentUser: User;
   setCurrentUser: (user: User) => void;
   switchRole: (role: UserRole) => void;
+  logout: () => void;
+  isLoggedIn: boolean;
   availableUsers: User[];
   competitions: Competition[];
   registrations: Registration[];
@@ -130,7 +132,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>(() => getTimelineEvents());
 
-  // Switch role easily for demo & testing
+  // Restore user session from localStorage if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('permifest_user');
+      const logged = localStorage.getItem('permifest_logged_in');
+      if (saved) {
+        setCurrentUser(JSON.parse(saved));
+      }
+      if (logged === 'true') {
+        setIsLoggedIn(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleSetCurrentUser = (user: User) => {
+    setCurrentUser(user);
+    setIsLoggedIn(true);
+    try {
+      localStorage.setItem('permifest_user', JSON.stringify(user));
+      localStorage.setItem('permifest_logged_in', 'true');
+    } catch {
+      // ignore
+    }
+  };
+
+  const logout = () => {
+    setIsLoggedIn(false);
+    try {
+      localStorage.removeItem('permifest_logged_in');
+      localStorage.removeItem('permifest_user');
+    } catch {
+      // ignore
+    }
+  };
+
+  // Switch role helper
   const switchRole = (role: UserRole) => {
     const userForRole = availableUsers.find(u => u.role === role) || {
       id: `mock-${role}`,
@@ -139,7 +178,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       role: role,
       email_verified: true,
     };
-    setCurrentUser(userForRole);
+    handleSetCurrentUser(userForRole);
   };
 
   const logAudit = (action: string, entity_type: string, entity_id: string, details: Record<string, unknown>) => {
@@ -703,7 +742,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider value={{
       currentUser,
-      setCurrentUser,
+      setCurrentUser: handleSetCurrentUser,
       switchRole,
       availableUsers,
       competitions,

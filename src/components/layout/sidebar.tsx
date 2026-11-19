@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { ROLE_LABELS } from '@/lib/constants';
 import { UserRole } from '@/lib/types';
@@ -50,7 +50,15 @@ interface MenuGroup {
 
 export function Sidebar({ onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
-  const { currentUser, switchRole } = useAppStore();
+  const router = useRouter();
+  const { currentUser, logout } = useAppStore();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  const role = currentUser?.role || 'peserta';
 
   const getMenuGroups = (): MenuGroup[] => {
     switch (currentUser.role) {
