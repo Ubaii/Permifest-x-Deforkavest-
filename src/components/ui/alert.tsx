@@ -19,19 +19,19 @@ export function Alert({
   ...props
 }: AlertProps) {
   const variantStyles = {
-    default: 'bg-[var(--card)] text-[var(--foreground)] border-[var(--border)]',
-    info: 'bg-[var(--info-bg)] text-[var(--info-text)] border-[var(--info-border)]',
-    success: 'bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success-border)]',
-    warning: 'bg-[var(--warning-bg)] text-[var(--warning-text)] border-[var(--warning-border)]',
-    destructive: 'bg-[var(--destructive-bg)] text-[var(--destructive-text)] border-[var(--destructive-border)]',
+    default: 'bg-[var(--card)] text-[var(--foreground)] border-[var(--border)] shadow-2xs',
+    info: 'bg-[var(--info)]/10 text-[var(--foreground)] border-[var(--info)]/30 shadow-2xs',
+    success: 'bg-[var(--success)]/10 text-[var(--foreground)] border-[var(--success)]/30 shadow-2xs',
+    warning: 'bg-[var(--warning)]/10 text-[var(--foreground)] border-[var(--warning)]/30 shadow-2xs',
+    destructive: 'bg-[var(--destructive)]/10 text-[var(--foreground)] border-[var(--destructive)]/30 shadow-2xs',
   };
 
   const defaultIcons = {
     default: <Info className="w-5 h-5 text-[var(--primary)] shrink-0" weight="bold" />,
-    info: <Info className="w-5 h-5 text-[var(--info-text)] shrink-0" weight="bold" />,
-    success: <CheckCircle className="w-5 h-5 text-[var(--success-text)] shrink-0" weight="bold" />,
-    warning: <Warning className="w-5 h-5 text-[var(--warning-text)] shrink-0" weight="bold" />,
-    destructive: <XCircle className="w-5 h-5 text-[var(--destructive-text)] shrink-0" weight="bold" />,
+    info: <Info className="w-5 h-5 text-[var(--info)] shrink-0" weight="bold" />,
+    success: <CheckCircle className="w-5 h-5 text-[var(--success)] shrink-0" weight="bold" />,
+    warning: <Warning className="w-5 h-5 text-[var(--warning)] shrink-0" weight="bold" />,
+    destructive: <XCircle className="w-5 h-5 text-[var(--destructive)] shrink-0" weight="bold" />,
   };
 
   const renderedIcon = icon !== undefined ? icon : defaultIcons[variant];

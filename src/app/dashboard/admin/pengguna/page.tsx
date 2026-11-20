@@ -49,13 +49,13 @@ export default function AdminMasterPenggunaPage() {
   const { availableUsers, registrations, judgeAssignments, addUser, updateUser, deleteUser, currentUser } = useAppStore();
 
   const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [modalOpen, setModalOpen] = useState(false);
+  const [userDrawerOpen, setUserDrawerOpen] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [formData, setFormData] = useState<UserFormData>(defaultUserFormData);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
-  const [modalError, setModalError] = useState<string | null>(null);
+  const [drawerError, setDrawerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredUsers = availableUsers.filter((u) => {
@@ -68,14 +68,14 @@ export default function AdminMasterPenggunaPage() {
   const panitiaCount = availableUsers.filter((u) => u.role === 'panitia').length;
   const adminCount = availableUsers.filter((u) => u.role === 'super_admin').length;
 
-  const openCreateModal = () => {
+  const openCreateDrawer = () => {
     setEditingUserId(null);
     setFormData(defaultUserFormData);
-    setModalError(null);
-    setModalOpen(true);
+    setDrawerError(null);
+    setUserDrawerOpen(true);
   };
 
-  const openEditModal = (user: User) => {
+  const openEditDrawer = (user: User) => {
     setEditingUserId(user.id);
     setFormData({
       full_name: user.full_name,
@@ -84,14 +84,14 @@ export default function AdminMasterPenggunaPage() {
       institution: user.institution || '',
       phone: user.phone || '',
     });
-    setModalError(null);
-    setModalOpen(true);
+    setDrawerError(null);
+    setUserDrawerOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setModalError(null);
+    setDrawerError(null);
 
     try {
       if (editingUserId) {
@@ -114,10 +114,10 @@ export default function AdminMasterPenggunaPage() {
         });
         setAlertSuccess(`Pengguna baru "${formData.full_name}" dengan peran ${formData.role.toUpperCase()} berhasil dibuat!`);
       }
-      setModalOpen(false);
+      setUserDrawerOpen(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data';
-      setModalError(message);
+      setDrawerError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -215,7 +215,7 @@ export default function AdminMasterPenggunaPage() {
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => openEditModal(u)}
+            onClick={() => openEditDrawer(u)}
             className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
             title="Edit Akun Pengguna"
             aria-label="Edit Pengguna"
@@ -252,7 +252,7 @@ export default function AdminMasterPenggunaPage() {
           size="sm"
           variant="primary"
           leftIcon={<UserPlus className="w-4 h-4" weight="bold" />}
-          onClick={openCreateModal}
+          onClick={openCreateDrawer}
         >
           Tambah Pengguna Baru
         </Button>
@@ -338,79 +338,88 @@ export default function AdminMasterPenggunaPage() {
           emptyDescription="Tidak ditemukan pengguna dengan kriteria pencarian atau filter peran tersebut."
         />
 
-        {/* Modal Tambah & Ubah Pengguna */}
-        <Modal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title={editingUserId ? 'Ubah Profil & Hak Akses Pengguna' : 'Tambah Pengguna Baru'}
-          description="Atur identitas, peran sistem (RBAC), dan informasi kontak."
-          maxWidth="md"
+        {/* Drawer Tambah & Ubah Pengguna */}
+        <Drawer
+          isOpen={userDrawerOpen}
+          onClose={() => setUserDrawerOpen(false)}
+          size="md"
         >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {modalError && (
-              <Alert variant="destructive" onClose={() => setModalError(null)}>
+          <DrawerHeader>
+            <DrawerTitle>
+              {editingUserId ? 'Ubah Profil & Hak Akses Pengguna' : 'Tambah Pengguna Baru'}
+            </DrawerTitle>
+            <DrawerDescription>
+              Atur identitas, peran sistem (RBAC), dan informasi kontak pengguna.
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <DrawerContent className="p-5 sm:p-6 overflow-y-auto space-y-4">
+            {drawerError && (
+              <Alert variant="destructive" onClose={() => setDrawerError(null)}>
                 <AlertTitle>Validasi Gagal</AlertTitle>
-                <AlertDescription>{modalError}</AlertDescription>
+                <AlertDescription>{drawerError}</AlertDescription>
               </Alert>
             )}
 
-            <Input
-              label="Nama Lengkap *"
-              placeholder="Contoh: Budi Pratama, S.Kom"
-              required
-              value={formData.full_name}
-              onChange={(e) => setFormData((prev) => ({ ...prev, full_name: e.target.value }))}
-            />
+            <form onSubmit={handleSubmit} id="user-form" className="space-y-4">
+              <Input
+                label="Nama Lengkap *"
+                placeholder="Contoh: Budi Pratama, S.Kom"
+                required
+                value={formData.full_name}
+                onChange={(e) => setFormData((prev) => ({ ...prev, full_name: e.target.value }))}
+              />
 
-            <Input
-              label="Alamat Email *"
-              type="email"
-              placeholder="user@permifest.id"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-            />
+              <Input
+                label="Alamat Email *"
+                type="email"
+                placeholder="user@permifest.id"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+              />
 
-            <div>
-              <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
-                Peran Pengguna (Role) *
-              </label>
-              <select
-                value={formData.role}
-                onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value as UserRole }))}
-                className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[40px]"
-              >
-                <option value="peserta">Peserta (Daftar &amp; Kumpul Karya)</option>
-                <option value="juri">Juri (Evaluasi Rubrik Penilaian)</option>
-                <option value="panitia">Panitia (Verifikasi Pembayaran &amp; Operasional)</option>
-                <option value="super_admin">Super Admin (Akses Penuh Sistem)</option>
-              </select>
-            </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
+                  Peran Pengguna (Role) *
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, role: e.target.value as UserRole }))}
+                  className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-10 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                >
+                  <option value="peserta">Peserta (Daftar &amp; Kumpul Karya)</option>
+                  <option value="juri">Juri (Evaluasi Rubrik Penilaian)</option>
+                  <option value="panitia">Panitia (Verifikasi Pembayaran &amp; Operasional)</option>
+                  <option value="super_admin">Super Admin (Akses Penuh Sistem)</option>
+                </select>
+              </div>
 
-            <Input
-              label="Instansi / Kampus / Asal Lembaga"
-              placeholder="Contoh: Universitas Indonesia / Komunitas IT"
-              value={formData.institution}
-              onChange={(e) => setFormData((prev) => ({ ...prev, institution: e.target.value }))}
-            />
+              <Input
+                label="Instansi / Kampus / Asal Lembaga"
+                placeholder="Contoh: Universitas Indonesia / Komunitas IT"
+                value={formData.institution}
+                onChange={(e) => setFormData((prev) => ({ ...prev, institution: e.target.value }))}
+              />
 
-            <Input
-              label="Nomor WhatsApp"
-              placeholder="Contoh: 081234567890"
-              value={formData.phone}
-              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
-            />
+              <Input
+                label="Nomor WhatsApp"
+                placeholder="Contoh: 081234567890"
+                value={formData.phone}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+              />
+            </form>
+          </DrawerContent>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--border)]">
-              <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
-                Batal
-              </Button>
-              <Button type="submit" variant="primary" size="sm" isLoading={isSubmitting}>
-                {editingUserId ? 'Simpan Perubahan' : 'Buat Pengguna'}
-              </Button>
-            </div>
-          </form>
-        </Modal>
+          <DrawerFooter className="flex items-center justify-end gap-2 border-t border-[var(--border)] p-4 bg-[var(--card)]">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setUserDrawerOpen(false)}>
+              Batal
+            </Button>
+            <Button type="submit" form="user-form" variant="primary" size="sm" isLoading={isSubmitting}>
+              {editingUserId ? 'Simpan Perubahan' : 'Buat Pengguna'}
+            </Button>
+          </DrawerFooter>
+        </Drawer>
 
         {/* Drawer Detail Pengguna */}
         <Drawer
@@ -540,7 +549,7 @@ export default function AdminMasterPenggunaPage() {
                     onClick={() => {
                       const u = selectedUser;
                       setSelectedUser(null);
-                      openEditModal(u);
+                      openEditDrawer(u);
                     }}
                   >
                     Edit Profil

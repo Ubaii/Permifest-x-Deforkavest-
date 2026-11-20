@@ -33,6 +33,7 @@ export interface DataTableProps<T> {
   actionSlot?: React.ReactNode;
   exportFilename?: string;
   className?: string;
+  compact?: boolean;
 }
 
 export function DataTable<T extends Record<string, unknown>>({
@@ -49,6 +50,7 @@ export function DataTable<T extends Record<string, unknown>>({
   actionSlot,
   exportFilename,
   className,
+  compact = true,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,7 +196,9 @@ export function DataTable<T extends Record<string, unknown>>({
                     key={col.key}
                     scope="col"
                     className={cn(
-                      'py-3.5 px-4 text-xs font-bold uppercase tracking-wider select-none whitespace-nowrap',
+                      compact
+                        ? 'py-2.5 px-3.5 text-[11px] font-bold uppercase tracking-wider select-none whitespace-nowrap'
+                        : 'py-3.5 px-4 text-xs font-bold uppercase tracking-wider select-none whitespace-nowrap',
                       col.headerClassName
                     )}
                   >
@@ -238,7 +242,12 @@ export function DataTable<T extends Record<string, unknown>>({
                     {columns.map((col) => (
                       <td
                         key={`${keyExtractor(item)}-${col.key}`}
-                        className={cn('py-3.5 px-4 text-[var(--foreground)] align-middle', col.className)}
+                        className={cn(
+                          compact
+                            ? 'py-2 px-3.5 text-xs text-[var(--foreground)] align-middle'
+                            : 'py-3.5 px-4 text-xs sm:text-sm text-[var(--foreground)] align-middle',
+                          col.className
+                        )}
                       >
                         {col.cell
                           ? col.cell(item, (validCurrentPage - 1) * pageSize + rowIdx)

@@ -89,7 +89,7 @@ export default function AdminKoreksiDaruratPage() {
         )}
 
         {/* Banner Peringatan Keamanan Kritis */}
-        <Alert variant="destructive" icon={<WarningOctagon className="w-5 h-5 text-[var(--destructive-text)]" weight="fill" />}>
+        <Alert variant="destructive" icon={<WarningOctagon className="w-5 h-5 text-[var(--destructive)]" weight="fill" />}>
           <AlertTitle>PERINGATAN PROTOKOL BREAK-GLASS SUPER ADMIN</AlertTitle>
           <AlertDescription>
             Fitur ini secara sepihak menimpa (*override*) nilai akhir hasil pertimbangan dewan juri. Sesuai kontrak keamanan sistem (SECURITY.md), alasan penulisan wajib minimal 20 karakter dan seluruh detail pergantian nilai akan disimpan ke rekam jejak append-only tanpa dapat dihapus.
@@ -98,9 +98,9 @@ export default function AdminKoreksiDaruratPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Formulir Break Glass */}
-          <Card className="border-[var(--destructive-border)] bg-[var(--card)]">
+          <Card className="border-[var(--destructive)]/40 bg-[var(--card)]">
             <CardHeader className="pb-3 border-b border-[var(--border)]">
-              <div className="flex items-center gap-2 text-[var(--destructive-text)] font-bold text-base">
+              <div className="flex items-center gap-2 text-[var(--destructive)] font-bold text-base">
                 <ShieldWarning className="w-5 h-5" weight="fill" />
                 <CardTitle className="text-base text-inherit">Formulir Koreksi Darurat</CardTitle>
               </div>
@@ -126,7 +126,7 @@ export default function AdminKoreksiDaruratPage() {
                         setNewScoreInput(sub.final_score || 0);
                       }
                     }}
-                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--destructive-text)] min-h-[40px]"
+                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-10 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--destructive)]"
                   >
                     <option value="">Pilih Karya...</option>
                     {submissions.map((s) => (
@@ -178,7 +178,7 @@ export default function AdminKoreksiDaruratPage() {
                     placeholder="Contoh: Berdasarkan klarifikasi banding juri pleno terdapat kesalahan input kriteria penilaian ke-3 yang seharusnya mendapat nilai 85..."
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] p-3 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--destructive-text)] resize-none"
+                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--destructive)] resize-none"
                   />
                 </div>
 
@@ -215,7 +215,7 @@ export default function AdminKoreksiDaruratPage() {
                     {scoreChanges.map((sc) => (
                       <div
                         key={sc.id}
-                        className="p-3.5 rounded-[var(--radius-md)] bg-[var(--accent)]/30 border border-[var(--border)] text-xs space-y-1.5"
+                        className="p-3.5 rounded-xl bg-[var(--accent)]/30 border border-[var(--border)] text-xs space-y-1.5"
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-mono text-[11px] text-[var(--muted-foreground)]">
@@ -223,8 +223,8 @@ export default function AdminKoreksiDaruratPage() {
                           </span>
                           <span className="font-mono text-xs font-bold text-[var(--foreground)] flex items-center gap-1.5">
                             <span className="line-through text-[var(--muted-foreground)]">{sc.old_score}</span>
-                            <ArrowRight className="w-3 h-3 text-[var(--destructive-text)]" />
-                            <span className="text-[var(--success-text)]">{sc.new_score}</span>
+                            <ArrowRight className="w-3 h-3 text-[var(--destructive)]" />
+                            <span className="text-[var(--success)]">{sc.new_score}</span>
                           </span>
                         </div>
                         <p className="text-xs text-[var(--foreground)] italic leading-relaxed">

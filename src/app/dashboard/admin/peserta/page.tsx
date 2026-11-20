@@ -195,7 +195,7 @@ export default function AdminPesertaPage() {
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmReg(r)}
-            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            className="h-8 w-8 p-0 text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
             title="Hapus Catatan Pendaftaran"
             aria-label="Hapus Pendaftaran"
           >
@@ -240,13 +240,13 @@ export default function AdminPesertaPage() {
           <StatCard
             title="Terverifikasi"
             value={verifiedPendaftar}
-            icon={<ShieldCheck className="w-5 h-5 text-[var(--success-text)]" weight="bold" />}
+            icon={<ShieldCheck className="w-5 h-5 text-[var(--success)]" weight="bold" />}
             description="Siap mengikuti lomba"
           />
           <StatCard
             title="Menunggu Bayar"
             value={pendingPayment}
-            icon={<CalendarBlank className="w-5 h-5 text-[var(--warning-text)]" weight="bold" />}
+            icon={<CalendarBlank className="w-5 h-5 text-[var(--warning)]" weight="bold" />}
             description="Belum melunasi biaya"
           />
           <StatCard
@@ -258,7 +258,7 @@ export default function AdminPesertaPage() {
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)]">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs text-[var(--muted-foreground)] font-semibold">Cabang Lomba:</span>
@@ -266,7 +266,7 @@ export default function AdminPesertaPage() {
                 value={compFilter}
                 onChange={(e) => setCompFilter(e.target.value)}
                 aria-label="Filter cabang lomba"
-                className="bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[36px]"
+                className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-9 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
               >
                 <option value="all">Semua Cabang Lomba</option>
                 {competitions.map((c) => (
@@ -283,7 +283,7 @@ export default function AdminPesertaPage() {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 aria-label="Filter status pendaftaran"
-                className="bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[36px]"
+                className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-9 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
               >
                 <option value="all">Semua Status</option>
                 <option value="verified">Terverifikasi</option>

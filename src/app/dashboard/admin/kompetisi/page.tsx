@@ -5,16 +5,15 @@ import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/ui/modal';
 import { ConfirmDialog } from '@/components/ui/modal';
+import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { DataTable, Column } from '@/components/dashboard/DataTable';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency } from '@/lib/utils';
-import { Competition, CompetitionCategory, CompetitionType, ParticipationType } from '@/lib/types';
+import { Competition, CompetitionCategory, CompetitionType, ParticipationType, RubricCriteria } from '@/lib/types';
 import {
-  Stack,
   Plus,
   PencilSimple,
   Trash,
@@ -23,6 +22,12 @@ import {
   ListNumbers,
   QrCode,
   Users,
+  CaretLeft,
+  CaretRight,
+  CheckCircle,
+  WarningCircle,
+  FileText,
+  Sliders,
 } from '@phosphor-icons/react';
 
 interface CompetitionFormData {
@@ -64,32 +69,52 @@ const defaultFormData: CompetitionFormData = {
 };
 
 export default function AdminKompetisiPage() {
-  const { competitions, addCompetition, updateCompetition, deleteCompetition } = useAppStore();
+  const {
+    competitions,
+    addCompetition,
+    updateCompetition,
+    deleteCompetition,
+    rubricCriteria,
+    addRubricCriteria,
+    updateRubricCriteria,
+    deleteRubricCriteria,
+  } = useAppStore();
 
   const [activeTab, setActiveTab] = useState<'all' | 'academic' | 'non_academic'>('all');
-  const [modalOpen, setModalOpen] = useState(false);
+  
+  // Competition Drawer CRUD state
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingCompId, setEditingCompId] = useState<string | null>(null);
   const [formData, setFormData] = useState<CompetitionFormData>(defaultFormData);
-  const [modalTab, setModalTab] = useState<'info' | 'biaya' | 'berkas'>('info');
+  const [drawerTab, setDrawerTab] = useState<'info' | 'biaya' | 'berkas'>('info');
   const [deleteConfirmComp, setDeleteConfirmComp] = useState<Competition | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Rubrik Drawer state
+  const [rubricDrawerComp, setRubricDrawerComp] = useState<Competition | null>(null);
+  const [newCritName, setNewCritName] = useState('');
+  const [newCritDesc, setNewCritDesc] = useState('');
+  const [newCritMaxScore, setNewCritMaxScore] = useState(100);
+  const [newCritWeight, setNewCritWeight] = useState(25);
+  const [editingCritId, setEditingCritId] = useState<string | null>(null);
+  const [rubricError, setRubricError] = useState<string | null>(null);
 
   const filteredCompetitions = competitions.filter((c) => {
     if (activeTab === 'all') return true;
     return c.type === activeTab;
   });
 
-  const openCreateModal = () => {
+  const openCreateDrawer = () => {
     setEditingCompId(null);
     setFormData(defaultFormData);
-    setModalTab('info');
+    setDrawerTab('info');
     setFormError(null);
-    setModalOpen(true);
+    setDrawerOpen(true);
   };
 
-  const openEditModal = (comp: Competition) => {
+  const openEditDrawer = (comp: Competition) => {
     setEditingCompId(comp.id);
     setFormData({
       name: comp.name,
@@ -109,9 +134,9 @@ export default function AdminKompetisiPage() {
       registration_close_at: comp.registration_close_at,
       is_published: comp.is_published,
     });
-    setModalTab('info');
+    setDrawerTab('info');
     setFormError(null);
-    setModalOpen(true);
+    setDrawerOpen(true);
   };
 
   const handleNameChange = (name: string) => {
@@ -131,7 +156,7 @@ export default function AdminKompetisiPage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setFormError('File QRIS harus berupa gambar (.png, .jpg, .jpeg, .webp)');
+      setFormError('File QRIS harus berformat gambar (.png, .jpg, .jpeg, .webp)');
       return;
     }
 
@@ -141,23 +166,22 @@ export default function AdminKompetisiPage() {
         ...prev,
         payment_qr_url: reader.result as string,
       }));
-      setFormError(null);
     };
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setFormError(null);
 
-    if (!formData.name.trim()) {
-      setFormError('Nama cabang lomba wajib diisi.');
-      setModalTab('info');
-      return;
-    }
-
-    setIsSubmitting(true);
     try {
+      if (!formData.name.trim()) throw new Error('Nama lomba wajib diisi');
+      if (!formData.slug.trim()) throw new Error('Slug URL wajib diisi');
+      if (formData.min_team_size > formData.max_team_size) {
+        throw new Error('Jumlah minimal anggota tidak boleh melebihi maksimal');
+      }
+
       const allowedTypesArray = formData.allowed_types
         .split(',')
         .map((t) => t.trim())
@@ -184,11 +208,11 @@ export default function AdminKompetisiPage() {
             allowedTypes: allowedTypesArray,
           },
         });
-        setAlertSuccess(`Kompetisi "${formData.name}" berhasil diperbarui!`);
+        setAlertSuccess(`Cabang lomba "${formData.name}" berhasil diperbarui!`);
       } else {
         await addCompetition({
           name: formData.name,
-          slug: formData.slug || `comp-${Date.now()}`,
+          slug: formData.slug,
           type: formData.type,
           category: formData.category,
           participation_type: formData.participation_type,
@@ -226,7 +250,7 @@ export default function AdminKompetisiPage() {
         setAlertSuccess(`Kompetisi baru "${formData.name}" berhasil ditambahkan!`);
       }
 
-      setModalOpen(false);
+      setDrawerOpen(false);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data';
       setFormError(message);
@@ -245,9 +269,79 @@ export default function AdminKompetisiPage() {
   const handleTogglePublish = async (comp: Competition) => {
     await updateCompetition(comp.id, { is_published: !comp.is_published });
     setAlertSuccess(
-      `Status publikasi "${comp.name}" diubah menjadi ${!comp.is_published ? 'Aktif (Published)' : 'Draft (Unpublished)'
+      `Status publikasi "${comp.name}" diubah menjadi ${
+        !comp.is_published ? 'Aktif (Published)' : 'Draft (Unpublished)'
       }.`
     );
+  };
+
+  // Rubrik Drawer Helpers
+  const activeRubricCriteria = rubricDrawerComp
+    ? rubricCriteria.filter((c) => c.competition_id === rubricDrawerComp.id)
+    : [];
+  
+  const totalWeightPercent = Math.round(
+    activeRubricCriteria.reduce((sum, c) => sum + (c.weight || 0) * 100, 0)
+  );
+
+  const handleSaveRubricCriterion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rubricDrawerComp) return;
+    setRubricError(null);
+
+    if (!newCritName.trim()) {
+      setRubricError('Nama kriteria wajib diisi');
+      return;
+    }
+
+    try {
+      if (editingCritId) {
+        await updateRubricCriteria(editingCritId, {
+          name: newCritName,
+          description: newCritDesc,
+          max_score: Number(newCritMaxScore),
+          weight: Number(newCritWeight) / 100,
+        });
+        setAlertSuccess(`Kriteria "${newCritName}" berhasil diperbarui.`);
+        setEditingCritId(null);
+      } else {
+        await addRubricCriteria({
+          competition_id: rubricDrawerComp.id,
+          name: newCritName,
+          description: newCritDesc,
+          max_score: Number(newCritMaxScore),
+          weight: Number(newCritWeight) / 100,
+          sort_order: activeRubricCriteria.length + 1,
+        });
+        setAlertSuccess(`Kriteria baru "${newCritName}" berhasil ditambahkan ke rubrik.`);
+      }
+
+      setNewCritName('');
+      setNewCritDesc('');
+      setNewCritMaxScore(100);
+      setNewCritWeight(25);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal menyimpan rubrik kriteria';
+      setRubricError(msg);
+    }
+  };
+
+  const handleEditCriterionClick = (crit: RubricCriteria) => {
+    setEditingCritId(crit.id);
+    setNewCritName(crit.name);
+    setNewCritDesc(crit.description || '');
+    setNewCritMaxScore(crit.max_score);
+    setNewCritWeight(Math.round((crit.weight || 0) * 100));
+  };
+
+  const handleDeleteCriterionClick = async (id: string, name: string) => {
+    await deleteRubricCriteria(id);
+    setAlertSuccess(`Kriteria "${name}" telah dihapus.`);
+    if (editingCritId === id) {
+      setEditingCritId(null);
+      setNewCritName('');
+      setNewCritDesc('');
+    }
   };
 
   const columns: Column<Competition & Record<string, unknown>>[] = [
@@ -257,57 +351,53 @@ export default function AdminKompetisiPage() {
       sortable: true,
       cell: (comp) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-[var(--radius-md)] bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 flex items-center justify-center shrink-0">
-            <Stack className="w-5 h-5" weight="bold" />
+          <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 flex items-center justify-center shrink-0">
+            <Sliders className="w-4 h-4" />
           </div>
           <div>
-            <div className="font-bold text-[var(--foreground)] text-sm">{comp.name}</div>
-            <div className="text-[11px] text-[var(--muted-foreground)] truncate max-w-xs" title={comp.theme}>
-              Tema: <strong className="text-[var(--foreground)]">{comp.theme || '-'}</strong>
+            <div className="font-bold text-[var(--foreground)] flex items-center gap-2">
+              <span>{comp.name}</span>
+              <Badge variant={comp.type === 'academic' ? 'primary' : 'neutral'} size="sm">
+                {comp.type === 'academic' ? 'Akademik' : 'Non-Akademik'}
+              </Badge>
             </div>
-            <span className="font-mono text-[10px] text-[var(--muted-foreground)]">/{comp.slug}</span>
+            <div className="text-[11px] text-[var(--muted-foreground)] line-clamp-1">
+              Tema: <span className="italic">{comp.theme || 'Belum ditentukan'}</span>
+            </div>
           </div>
         </div>
       ),
     },
     {
-      key: 'type',
-      header: 'Kategori & Bentuk',
+      key: 'participation',
+      header: 'Partisipasi & Kuota',
       sortable: true,
-      accessor: (comp) => comp.category,
+      accessor: (comp) => comp.participation_type,
       cell: (comp) => (
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Badge variant={comp.type === 'academic' ? 'primary' : 'neutral'} size="sm">
-              {comp.type === 'academic' ? 'Akademik' : 'E-Sport'}
-            </Badge>
-            <Badge variant="info" size="sm">
-              {comp.category.toUpperCase()}
-            </Badge>
-          </div>
-          <div className="text-[11px] text-[var(--muted-foreground)] flex items-center gap-1">
-            <Users className="w-3.5 h-3.5" />
-            <span className="capitalize">
-              {comp.participation_type} ({comp.min_team_size}-{comp.max_team_size} org)
+        <div className="text-xs">
+          <div className="flex items-center gap-1 font-semibold text-[var(--foreground)]">
+            <Users className="w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+            <span>
+              {comp.participation_type === 'team'
+                ? `Tim (${comp.min_team_size}-${comp.max_team_size} org)`
+                : 'Individu (Solo)'}
             </span>
+          </div>
+          <div className="text-[11px] text-[var(--muted-foreground)]">
+            Kuota: {comp.quota ? `${comp.quota} slot` : 'Tanpa batas'}
           </div>
         </div>
       ),
     },
     {
       key: 'fee',
-      header: 'Biaya & Kuota',
+      header: 'Biaya Tiket',
       sortable: true,
       accessor: (comp) => comp.registration_fee,
       cell: (comp) => (
-        <div className="space-y-0.5">
-          <div className="font-mono font-bold text-sm text-[var(--primary)] tabular-nums">
-            {formatCurrency(comp.registration_fee)}
-          </div>
-          <div className="text-[11px] text-[var(--muted-foreground)] font-mono">
-            {comp.registered_count} / {comp.quota ? `${comp.quota} slot` : '∞'}
-          </div>
-        </div>
+        <span className="font-mono text-xs font-bold text-[var(--foreground)]">
+          {comp.registration_fee === 0 ? 'Gratis' : formatCurrency(comp.registration_fee)}
+        </span>
       ),
     },
     {
@@ -344,25 +434,24 @@ export default function AdminKompetisiPage() {
       cell: (comp) => (
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           {comp.type === 'academic' && (
-            <Link href={`/dashboard/admin/rubrik?competition_id=${comp.id}`}>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 text-[var(--primary)] hover:bg-[var(--primary)]/10"
-                title="Kelola Rubrik Penilaian"
-                aria-label="Kelola Rubrik Penilaian"
-              >
-                <ListNumbers className="w-4 h-4" />
-              </Button>
-            </Link>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setRubricDrawerComp(comp)}
+              className="h-8 w-8 p-0 text-[var(--primary)] hover:bg-[var(--primary)]/10"
+              title="Kelola Rubrik Penilaian (Buka Drawer)"
+              aria-label="Kelola Rubrik Penilaian"
+            >
+              <ListNumbers className="w-4 h-4" />
+            </Button>
           )}
 
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => openEditModal(comp)}
+            onClick={() => openEditDrawer(comp)}
             className="h-8 w-8 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
-            title="Edit Cabang Lomba"
+            title="Edit Cabang Lomba (Buka Drawer)"
             aria-label="Edit Cabang Lomba"
           >
             <PencilSimple className="w-4 h-4" />
@@ -372,7 +461,7 @@ export default function AdminKompetisiPage() {
             size="sm"
             variant="ghost"
             onClick={() => setDeleteConfirmComp(comp)}
-            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+            className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive)]/10"
             title="Hapus Cabang Lomba"
             aria-label="Hapus Cabang Lomba"
           >
@@ -386,13 +475,13 @@ export default function AdminKompetisiPage() {
   return (
     <DashboardLayout
       title="Manajemen Cabang Kompetisi"
-      subtitle="Kelola parameter lomba, biaya registrasi, pembagian kuota, ketentuan berkas, dan rubrik penilaian."
+      subtitle="Kelola parameter lomba, biaya registrasi, pembagian kuota, ketentuan berkas, dan rubrik penilaian melalui panel drawer."
       actions={
         <Button
           size="sm"
           variant="primary"
           leftIcon={<Plus className="w-4 h-4" weight="bold" />}
-          onClick={openCreateModal}
+          onClick={openCreateDrawer}
         >
           Tambah Lomba Baru
         </Button>
@@ -407,8 +496,8 @@ export default function AdminKompetisiPage() {
         )}
 
         {/* Tab Filter Kategori Bersih */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-[var(--radius-lg)] bg-[var(--card)] border border-[var(--border)]">
-          <div className="flex items-center gap-1 bg-[var(--accent)]/50 p-1 rounded-[var(--radius-md)] border border-[var(--border)]">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div className="flex items-center gap-1 bg-[var(--accent)]/50 p-1 rounded-lg border border-[var(--border)]">
             {[
               { id: 'all', label: `Semua Cabang (${competitions.length})` },
               {
@@ -424,10 +513,11 @@ export default function AdminKompetisiPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-[var(--radius-sm)] transition-colors min-h-[32px] ${activeTab === tab.id
-                  ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
-                  }`}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors min-h-[32px] ${
+                  activeTab === tab.id
+                    ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs border border-[var(--border)]'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+                }`}
               >
                 {tab.label}
               </button>
@@ -447,20 +537,27 @@ export default function AdminKompetisiPage() {
           searchPlaceholder="Cari nama lomba, tema, slug..."
           searchableKeys={['name', 'slug', 'theme', 'category']}
           exportFilename="cabang_kompetisi_permifest"
-          onRowClick={(item) => openEditModal(item as Competition)}
+          onRowClick={(item) => openEditDrawer(item as Competition)}
           emptyTitle="Belum Ada Cabang Lomba"
           emptyDescription="Belum ada kompetisi pada kategori ini. Silakan buat kompetisi baru dengan tombol di atas."
         />
 
-        {/* Modal CRUD Terstruktur Rapi */}
-        <Modal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title={editingCompId ? `Edit Lomba: ${formData.name || 'Kompetisi'}` : 'Tambah Cabang Kompetisi Baru'}
-          description="Atur informasi parameter, biaya pendaftaran, kuota peserta, dan ketentuan berkas pengumpulan."
-          maxWidth="2xl"
+        {/* DRAWER CRUD KOMPETISI */}
+        <Drawer
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          size="lg"
         >
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <DrawerHeader>
+            <DrawerTitle>
+              {editingCompId ? `Edit Lomba: ${formData.name || 'Kompetisi'}` : 'Tambah Cabang Kompetisi Baru'}
+            </DrawerTitle>
+            <DrawerDescription>
+              Atur parameter lomba, biaya tiket, kuota slot peserta, dan format berkas yang diterima.
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <DrawerContent className="p-5 sm:p-6 overflow-y-auto space-y-4">
             {formError && (
               <Alert variant="destructive" onClose={() => setFormError(null)}>
                 <AlertTitle>Validasi Gagal</AlertTitle>
@@ -468,42 +565,45 @@ export default function AdminKompetisiPage() {
               </Alert>
             )}
 
-            {/* Sub-navigasi Tab Modal */}
+            {/* Sub-navigasi Tab Drawer */}
             <div className="flex items-center gap-1 border-b border-[var(--border)] pb-2">
               <button
                 type="button"
-                onClick={() => setModalTab('info')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'info'
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                  }`}
+                onClick={() => setDrawerTab('info')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+                  drawerTab === 'info'
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                }`}
               >
                 1. Informasi Dasar
               </button>
               <button
                 type="button"
-                onClick={() => setModalTab('biaya')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'biaya'
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                  }`}
+                onClick={() => setDrawerTab('biaya')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+                  drawerTab === 'biaya'
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                }`}
               >
                 2. Biaya &amp; Kuota
               </button>
               <button
                 type="button"
-                onClick={() => setModalTab('berkas')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-[var(--radius-sm)] transition-colors ${modalTab === 'berkas'
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
-                  }`}
+                onClick={() => setDrawerTab('berkas')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+                  drawerTab === 'berkas'
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--muted-foreground)] hover:bg-[var(--accent)]'
+                }`}
               >
                 3. Berkas &amp; QRIS
               </button>
             </div>
 
             {/* Tab 1: Informasi Dasar */}
-            {modalTab === 'info' && (
+            {drawerTab === 'info' && (
               <div className="space-y-3.5 pt-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
@@ -534,7 +634,7 @@ export default function AdminKompetisiPage() {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, type: e.target.value as CompetitionType }))
                       }
-                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[40px]"
+                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-9 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                     >
                       <option value="academic">Akademik (Karya &amp; Dinilai Juri)</option>
                       <option value="non_academic">Non-Akademik (E-Sport / Pertandingan)</option>
@@ -550,7 +650,7 @@ export default function AdminKompetisiPage() {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, category: e.target.value as CompetitionCategory }))
                       }
-                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[40px]"
+                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-9 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                     >
                       <option value="esai">Esai Ilmiah</option>
                       <option value="uiux">UI/UX Design</option>
@@ -575,7 +675,7 @@ export default function AdminKompetisiPage() {
                   </label>
                   <textarea
                     rows={3}
-                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] p-3 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] resize-none"
+                    className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] resize-none"
                     placeholder="Tuliskan latar belakang singkat dan sasaran kompetisi..."
                     value={formData.description}
                     onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -584,8 +684,8 @@ export default function AdminKompetisiPage() {
               </div>
             )}
 
-            {/* Tab 2: Partisipasi, Biaya & Kuota */}
-            {modalTab === 'biaya' && (
+            {/* Tab 2: Biaya & Kuota */}
+            {drawerTab === 'biaya' && (
               <div className="space-y-3.5 pt-1">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
@@ -600,7 +700,7 @@ export default function AdminKompetisiPage() {
                           participation_type: e.target.value as ParticipationType,
                         }))
                       }
-                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-md)] px-3 py-2 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] min-h-[40px]"
+                      className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 h-9 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                     >
                       <option value="individual">Individu (Solo)</option>
                       <option value="team">Kelompok (Tim)</option>
@@ -608,7 +708,7 @@ export default function AdminKompetisiPage() {
                   </div>
 
                   <Input
-                    label="Min Anggota Tim *"
+                    label="Min Anggota *"
                     type="number"
                     min="1"
                     max="10"
@@ -618,7 +718,7 @@ export default function AdminKompetisiPage() {
                   />
 
                   <Input
-                    label="Maks Anggota Tim *"
+                    label="Maks Anggota *"
                     type="number"
                     min="1"
                     max="10"
@@ -644,7 +744,7 @@ export default function AdminKompetisiPage() {
                     label="Kuota Slot Peserta"
                     type="number"
                     min="1"
-                    placeholder="Kosongkan jika tidak terbatas"
+                    placeholder="Kosongkan jika tak terbatas"
                     value={formData.quota || ''}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -657,7 +757,7 @@ export default function AdminKompetisiPage() {
                 </div>
 
                 <div className="pt-2">
-                  <label className="flex items-center gap-2.5 cursor-pointer p-3 rounded-[var(--radius-md)] bg-[var(--accent)]/30 border border-[var(--border)]">
+                  <label className="flex items-center gap-2.5 cursor-pointer p-3 rounded-xl bg-[var(--accent)]/30 border border-[var(--border)]">
                     <input
                       type="checkbox"
                       checked={formData.is_published}
@@ -677,8 +777,8 @@ export default function AdminKompetisiPage() {
               </div>
             )}
 
-            {/* Tab 3: Berkas & QRIS Khusus */}
-            {modalTab === 'berkas' && (
+            {/* Tab 3: Berkas & QRIS */}
+            {drawerTab === 'berkas' && (
               <div className="space-y-3.5 pt-1">
                 <Input
                   label="Format Berkas yang Diizinkan"
@@ -688,7 +788,6 @@ export default function AdminKompetisiPage() {
                   helperText="Pisahkan dengan koma. Contoh: .pdf, figma_url"
                 />
 
-                {/* Zona QRIS Khusus Cabang Lomba */}
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-[var(--foreground)]">
                     Unggah QRIS Khusus Cabang Ini (Opsional)
@@ -697,7 +796,7 @@ export default function AdminKompetisiPage() {
                     Kosongkan jika ingin menggunakan barcode QRIS default event dari Pengaturan Sistem.
                   </p>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-4 p-3.5 rounded-[var(--radius-md)] border border-dashed border-[var(--border)] bg-[var(--accent)]/20">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 p-3.5 rounded-xl border border-dashed border-[var(--border)] bg-[var(--accent)]/20">
                     {formData.payment_qr_url ? (
                       <div className="w-24 h-24 rounded-lg overflow-hidden border border-[var(--border)] bg-white p-1 shrink-0 flex items-center justify-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -725,7 +824,7 @@ export default function AdminKompetisiPage() {
                         <button
                           type="button"
                           onClick={() => setFormData((prev) => ({ ...prev, payment_qr_url: '' }))}
-                          className="text-[11px] text-[var(--destructive-text)] hover:underline block"
+                          className="text-[11px] text-[var(--destructive)] hover:underline block"
                         >
                           Hapus QRIS khusus (gunakan global)
                         </button>
@@ -735,49 +834,253 @@ export default function AdminKompetisiPage() {
                 </div>
               </div>
             )}
+          </DrawerContent>
 
-            {/* Footer Modal */}
-            <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]">
-              <div className="flex items-center gap-1.5">
-                {modalTab !== 'info' && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (modalTab === 'berkas') setModalTab('biaya');
-                      else if (modalTab === 'biaya') setModalTab('info');
-                    }}
-                  >
-                    &larr; Kembali
-                  </Button>
-                )}
-                {modalTab !== 'berkas' && (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      if (modalTab === 'info') setModalTab('biaya');
-                      else if (modalTab === 'biaya') setModalTab('berkas');
-                    }}
-                  >
-                    Selanjutnya &rarr;
-                  </Button>
-                )}
+          <DrawerFooter className="flex items-center justify-between border-t border-[var(--border)] p-4 bg-[var(--card)]">
+            <div className="flex items-center gap-1.5">
+              {drawerTab !== 'info' && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<CaretLeft className="w-3.5 h-3.5" />}
+                  onClick={() => {
+                    if (drawerTab === 'berkas') setDrawerTab('biaya');
+                    else if (drawerTab === 'biaya') setDrawerTab('info');
+                  }}
+                >
+                  Kembali
+                </Button>
+              )}
+              {drawerTab !== 'berkas' && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  rightIcon={<CaretRight className="w-3.5 h-3.5" />}
+                  onClick={() => {
+                    if (drawerTab === 'info') setDrawerTab('biaya');
+                    else if (drawerTab === 'biaya') setDrawerTab('berkas');
+                  }}
+                >
+                  Selanjutnya
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setDrawerOpen(false)}>
+                Batal
+              </Button>
+              <Button type="button" variant="primary" size="sm" isLoading={isSubmitting} onClick={handleSubmit}>
+                {editingCompId ? 'Simpan Perubahan' : 'Buat Kompetisi'}
+              </Button>
+            </div>
+          </DrawerFooter>
+        </Drawer>
+
+        {/* DRAWER MANAJEMEN RUBRIK PENILAIAN */}
+        <Drawer
+          isOpen={Boolean(rubricDrawerComp)}
+          onClose={() => setRubricDrawerComp(null)}
+          size="xl"
+        >
+          <DrawerHeader>
+            <div className="flex items-center gap-2">
+              <ListNumbers className="w-5 h-5 text-[var(--primary)]" />
+              <DrawerTitle>
+                Rubrik Penilaian: {rubricDrawerComp?.name}
+              </DrawerTitle>
+            </div>
+            <DrawerDescription>
+              Kelola indikator, skala skor, dan persentase bobot penilaian dewan juri untuk cabang akademik ini.
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <DrawerContent className="p-5 sm:p-6 overflow-y-auto space-y-5">
+            {/* Bobot Meter Status */}
+            <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--accent)]/30 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[var(--foreground)]">Total Bobot Kriteria</span>
+                <span className="font-mono text-sm font-bold text-[var(--primary)]">{totalWeightPercent}% / 100%</span>
               </div>
-
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
-                  Batal
-                </Button>
-                <Button type="submit" variant="primary" size="sm" isLoading={isSubmitting}>
-                  {editingCompId ? 'Simpan Perubahan' : 'Buat Kompetisi'}
-                </Button>
+              <div className="w-full h-2 rounded-full bg-[var(--accent)] overflow-hidden">
+                <div
+                  style={{ width: `${Math.min(totalWeightPercent, 100)}%` }}
+                  className={`h-full rounded-full transition-all duration-300 ${
+                    totalWeightPercent === 100
+                      ? 'bg-[var(--success)]'
+                      : totalWeightPercent > 100
+                      ? 'bg-[var(--destructive)]'
+                      : 'bg-[var(--warning)]'
+                  }`}
+                />
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px]">
+                {totalWeightPercent === 100 ? (
+                  <span className="text-[var(--success)] flex items-center gap-1 font-semibold">
+                    <CheckCircle className="w-3.5 h-3.5" weight="bold" />
+                    Bobot valid dan seimbang (Pas 100%)
+                  </span>
+                ) : (
+                  <span className="text-[var(--warning)] flex items-center gap-1 font-semibold">
+                    <WarningCircle className="w-3.5 h-3.5" weight="bold" />
+                    Total bobot belum 100% (Selisih {100 - totalWeightPercent}%)
+                  </span>
+                )}
               </div>
             </div>
-          </form>
-        </Modal>
+
+            {/* List Kriteria yang Sudah Ada */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+                Daftar Kriteria Penilaian ({activeRubricCriteria.length})
+              </h4>
+
+              {activeRubricCriteria.length === 0 ? (
+                <div className="p-8 text-center border border-dashed border-[var(--border)] rounded-xl text-xs text-[var(--muted-foreground)]">
+                  Belum ada kriteria penilaian untuk lomba ini. Silakan tambahkan kriteria melalui formulir di bawah.
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {activeRubricCriteria.map((crit) => (
+                    <div
+                      key={crit.id}
+                      className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]/50 transition-colors flex items-start justify-between gap-3 shadow-2xs"
+                    >
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <strong className="text-xs text-[var(--foreground)]">{crit.name}</strong>
+                          <Badge variant="primary" size="sm" className="font-mono">
+                            Bobot: {Math.round((crit.weight || 0) * 100)}%
+                          </Badge>
+                          <Badge variant="neutral" size="sm" className="font-mono">
+                            Maks: {crit.max_score} poin
+                          </Badge>
+                        </div>
+                        {crit.description && (
+                          <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
+                            {crit.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditCriterionClick(crit)}
+                          className="h-7 w-7 p-0 text-[var(--foreground)] hover:bg-[var(--accent)]"
+                          title="Edit Kriteria"
+                        >
+                          <PencilSimple className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteCriterionClick(crit.id, crit.name)}
+                          className="h-7 w-7 p-0 text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+                          title="Hapus Kriteria"
+                        >
+                          <Trash className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Form Tambah/Edit Kriteria */}
+            <form onSubmit={handleSaveRubricCriterion} className="p-4 rounded-xl border border-[var(--border)] bg-[var(--accent)]/10 space-y-3.5">
+              <h4 className="text-xs font-bold text-[var(--foreground)] flex items-center justify-between">
+                <span>{editingCritId ? 'Edit Kriteria Terpilih' : 'Tambah Kriteria Baru'}</span>
+                {editingCritId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCritId(null);
+                      setNewCritName('');
+                      setNewCritDesc('');
+                    }}
+                    className="text-[10px] text-[var(--muted-foreground)] hover:underline"
+                  >
+                    Batal Edit
+                  </button>
+                )}
+              </h4>
+
+              {rubricError && (
+                <Alert variant="destructive" onClose={() => setRubricError(null)}>
+                  <AlertTitle>Gagal Menyimpan</AlertTitle>
+                  <AlertDescription>{rubricError}</AlertDescription>
+                </Alert>
+              )}
+
+              <Input
+                label="Nama Kriteria *"
+                placeholder="Contoh: Orisinalitas & Inovasi Ide"
+                required
+                value={newCritName}
+                onChange={(e) => setNewCritName(e.target.value)}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
+                  label="Persentase Bobot (%) *"
+                  type="number"
+                  min="1"
+                  max="100"
+                  required
+                  value={newCritWeight}
+                  onChange={(e) => setNewCritWeight(Number(e.target.value))}
+                  helperText="Contoh: 25 untuk bobot 25%"
+                />
+
+                <Input
+                  label="Skor Maksimal *"
+                  type="number"
+                  min="10"
+                  max="100"
+                  required
+                  value={newCritMaxScore}
+                  onChange={(e) => setNewCritMaxScore(Number(e.target.value))}
+                  helperText="Skala penilaian juri (default 100)"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+                  Deskripsi &amp; Panduan Juri
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Panduan bagi dewan juri dalam memberikan rentang nilai..."
+                  value={newCritDesc}
+                  onChange={(e) => setNewCritDesc(e.target.value)}
+                  className="w-full bg-[var(--card)] border border-[var(--border)] rounded-xl p-2.5 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end pt-1">
+                <Button type="submit" variant="primary" size="sm">
+                  {editingCritId ? 'Simpan Perubahan Kriteria' : 'Tambah Kriteria ke Rubrik'}
+                </Button>
+              </div>
+            </form>
+          </DrawerContent>
+
+          <DrawerFooter className="flex items-center justify-end border-t border-[var(--border)] p-4 bg-[var(--card)]">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setRubricDrawerComp(null)}
+            >
+              Tutup Rubrik
+            </Button>
+          </DrawerFooter>
+        </Drawer>
 
         {/* Dialog Konfirmasi Hapus Kompetisi */}
         <ConfirmDialog

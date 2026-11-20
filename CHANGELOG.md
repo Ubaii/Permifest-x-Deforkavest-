@@ -5,19 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
-- Paket dokumentasi agentic: `AGENTS.md`, `docs/ARCHITECTURE.md`, `SITEMAP_RBAC.md`, `SCHEMA.md`, `SECURITY.md`, `DESIGN_SYSTEM.md`, `UI_KIT.md`, `TESTING.md`, `TASKS.md`, `DECISIONS.md`.
-- UI Kit visual (publik, peserta, panel admin/juri).
-- Penataan ulang sitemap dan struktur navigasi panel admin (4 Grup Navigasi: Operasional, Penilaian, Konten, Sistem & Tata Kelola).
-- Modul baru panel admin dengan CRUD penuh:
-  - `/dashboard/admin/pengguna`: Master seluruh pengguna (peserta, juri, panitia, super admin) & kontrol RBAC.
-  - `/dashboard/admin/penilaian`: Matriks karya x juri, monitoring progres evaluasi juri, dan penguncian skor akhir (*Lock Scores*).
-  - `/dashboard/admin/rubrik`: Konfigurasi bobot kriteria penilaian rubrik akademik (total bobot 100%).
-  - `/dashboard/admin/koreksi-darurat`: Protokol *Break-Glass* override nilai dengan justifikasi wajib minimal 20 karakter & audit log permanen.
-  - `/dashboard/admin/pengaturan`: Pengaturan rekening bank, QRIS, status portal registrasi, dan WhatsApp helpdesk.
-- Komponen UI atomik baru: `Modal` (compound + `ConfirmDialog`), `Drawer` (slide-over detail), `Alert` (semantic variants), `Pagination`, `Section` (`PageHeader`, `SectionHeader`, `SectionCard`), `Tabs`, dan `DataTable` (generic dengan search, sorting, pagination).
+- Standardisasi CRUD lewat `Drawer` di seluruh panel admin (Cabang Lomba, Rubrik, Pengguna, Hasil E-Sport, Pengumuman).
+- Drawer khusus manajemen Rubrik Penilaian per-lomba dengan validasi total bobot 100% langsung di daftar kompetisi.
+- Drawer pratinjau submission karya (`SubmissionPreviewDrawer`) dengan dukungan viewer dokumen PDF dan kartu launcher Figma.
+- Analitik dan grafik visual di Admin Overview (tren registrasi 7 hari, komposisi akademik vs non-akademik, dan status pembayaran).
+- Format turnamen dan podium visual untuk hasil cabang E-Sport (PES & Mobile Legends).
+- Matriks evaluasi rubrik interaktif pada penilaian karya dengan kalkulasi skor terbobot otomatis.
+- Kartu ATM rekening bank dan barcode QRIS live preview di halaman Pengaturan Sistem.
 
 ### Changed
-- Keputusan desain: panel admin dan juri mendukung terang/gelap; publik dan peserta dark only (ADR-009).
+- Perbaikan token semantic pada komponen `Alert` dan callout status agar kompatibel penuh dengan Light dan Dark mode.
+- Tabel `DataTable` diperbarui menjadi mode compact dengan padding sel yang rapat (`compact: true`) dan ekspor CSV yang selaras.
+- Eliminasi karakter ASCII mentah (`&rarr;`, `&larr;`) dan redundansi tombol di seluruh halaman dashboard.
+- Standardisasi dropdown filter select pada seluruh tabel di dashboard.
 
 ### Security
 - Daftar temuan audit awal dicatat di `DECISIONS.md` B.2 (RBAC server/RLS, role-switcher, upload, 2FA).

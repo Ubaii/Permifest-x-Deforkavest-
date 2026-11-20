@@ -159,7 +159,7 @@ export default function AdminPembayaranPage() {
         <div className="space-y-1">
           <StatusBadge status={r.payment?.status || 'pending'} domain="payment" />
           {r.payment?.status === 'rejected' && r.payment?.rejection_reason && (
-            <p className="text-[10px] text-[var(--destructive-text)] truncate max-w-[160px]" title={r.payment.rejection_reason}>
+            <p className="text-[10px] text-[var(--destructive)] truncate max-w-[160px]" title={r.payment.rejection_reason}>
               {r.payment.rejection_reason}
             </p>
           )}
@@ -214,7 +214,7 @@ export default function AdminPembayaranPage() {
               size="sm"
               variant="ghost"
               onClick={() => setDeleteConfirmReg(r)}
-              className="h-8 w-8 p-0 text-[var(--destructive-text)] hover:bg-[var(--destructive-bg)]"
+              className="h-8 w-8 p-0 text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
               title="Hapus Data Transaksi"
               aria-label="Hapus Transaksi"
             >
