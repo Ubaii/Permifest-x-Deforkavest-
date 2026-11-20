@@ -336,3 +336,114 @@ INSERT INTO roles (name, description) VALUES
   ('panitia', 'Panitia pengelola lomba'),
   ('super_admin', 'Administrator platform dengan akses penuh')
 ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
+-- STORAGE: Buckets & Row Level Security Policies
+-- ============================================================================
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES 
+  ('payment-proofs', 'payment-proofs', false, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'application/pdf']),
+  ('submissions', 'submissions', false, 26214400, ARRAY['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/x-zip-compressed']),
+  ('identity-docs', 'identity-docs', false, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'application/pdf']),
+  ('public-assets', 'public-assets', true, 10485760, ARRAY['application/pdf', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'])
+ON CONFLICT (id) DO UPDATE SET
+  public = EXCLUDED.public,
+  file_size_limit = EXCLUDED.file_size_limit,
+  allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+CREATE OR REPLACE FUNCTION public.is_staff()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_roles ur
+    JOIN public.roles r ON ur.role_id = r.id
+    WHERE ur.user_id = auth.uid()
+      AND r.name IN ('panitia', 'super_admin')
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_assigned_judge_for_submission(p_submission_path TEXT)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.submissions s
+    JOIN public.judge_assignments ja ON ja.submission_id = s.id
+    WHERE s.storage_path = p_submission_path
+      AND ja.judge_id = auth.uid()
+  );
+$$;
+
+-- Policies for payment-proofs
+DROP POLICY IF EXISTS "payment_proofs_insert_owner" ON storage.objects;
+DROP POLICY IF EXISTS "payment_proofs_select_owner_or_staff" ON storage.objects;
+
+CREATE POLICY "payment_proofs_insert_owner" ON storage.objects
+FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'payment-proofs' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "payment_proofs_select_owner_or_staff" ON storage.objects
+FOR SELECT TO authenticated
+USING (bucket_id = 'payment-proofs' AND ((storage.foldername(name))[1] = auth.uid()::text OR public.is_staff()));
+
+-- Policies for submissions
+DROP POLICY IF EXISTS "submissions_insert_registered" ON storage.objects;
+DROP POLICY IF EXISTS "submissions_select_owner_judge_staff" ON storage.objects;
+
+CREATE POLICY "submissions_insert_registered" ON storage.objects
+FOR INSERT TO authenticated
+WITH CHECK (
+  bucket_id = 'submissions'
+  AND (EXISTS (SELECT 1 FROM public.registrations r WHERE r.id::text = (storage.foldername(name))[2] AND (r.user_id = auth.uid() OR public.is_staff())))
+);
+
+CREATE POLICY "submissions_select_owner_judge_staff" ON storage.objects
+FOR SELECT TO authenticated
+USING (
+  bucket_id = 'submissions'
+  AND (
+    EXISTS (SELECT 1 FROM public.registrations r WHERE r.id::text = (storage.foldername(name))[2] AND r.user_id = auth.uid())
+    OR public.is_assigned_judge_for_submission(name)
+    OR public.is_staff()
+  )
+);
+
+-- Policies for identity-docs
+DROP POLICY IF EXISTS "identity_docs_insert_owner" ON storage.objects;
+DROP POLICY IF EXISTS "identity_docs_select_owner_or_staff" ON storage.objects;
+
+CREATE POLICY "identity_docs_insert_owner" ON storage.objects
+FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'identity-docs' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+CREATE POLICY "identity_docs_select_owner_or_staff" ON storage.objects
+FOR SELECT TO authenticated
+USING (bucket_id = 'identity-docs' AND ((storage.foldername(name))[1] = auth.uid()::text OR public.is_staff()));
+
+-- Policies for public-assets
+DROP POLICY IF EXISTS "public_assets_select_all" ON storage.objects;
+DROP POLICY IF EXISTS "public_assets_insert_staff" ON storage.objects;
+DROP POLICY IF EXISTS "public_assets_update_staff" ON storage.objects;
+DROP POLICY IF EXISTS "public_assets_delete_staff" ON storage.objects;
+
+CREATE POLICY "public_assets_select_all" ON storage.objects
+FOR SELECT TO public USING (bucket_id = 'public-assets');
+
+CREATE POLICY "public_assets_insert_staff" ON storage.objects
+FOR INSERT TO authenticated WITH CHECK (bucket_id = 'public-assets' AND public.is_staff());
+
+CREATE POLICY "public_assets_update_staff" ON storage.objects
+FOR UPDATE TO authenticated USING (bucket_id = 'public-assets' AND public.is_staff());
+
+CREATE POLICY "public_assets_delete_staff" ON storage.objects
+FOR DELETE TO authenticated USING (bucket_id = 'public-assets' AND public.is_staff());

@@ -14,6 +14,7 @@ import { DataTable, Column } from '@/components/dashboard/DataTable';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
 import { Submission } from '@/lib/types';
+import { getFileDownloadUrl } from '@/lib/supabase/storage-client';
 import {
   FileText,
   DownloadSimple,
@@ -37,6 +38,7 @@ export default function AdminSubmissionPage() {
   const [previewSub, setPreviewSub] = useState<Submission | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [openingFile, setOpeningFile] = useState(false);
 
   const filteredSubmissions = submissions.filter((s) => {
     if (compFilter === 'all') return true;
@@ -57,6 +59,25 @@ export default function AdminSubmissionPage() {
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleOpenSubmissionFile = async (rawPathOrUrl: string) => {
+    if (!rawPathOrUrl) return;
+    setOpeningFile(true);
+    try {
+      if (rawPathOrUrl.startsWith('http://') || rawPathOrUrl.startsWith('https://')) {
+        window.open(rawPathOrUrl, '_blank', 'noopener,noreferrer');
+        return;
+      }
+      const res = await getFileDownloadUrl('submissions', rawPathOrUrl, { expiresInSeconds: 1800 });
+      if (res.success && res.url) {
+        window.open(res.url, '_blank', 'noopener,noreferrer');
+      } else {
+        alert(res.error || 'Gagal mendapatkan akses unduh dokumen aman.');
+      }
+    } finally {
+      setOpeningFile(false);
+    }
   };
 
   const columns: Column<Submission & Record<string, unknown>>[] = [
@@ -351,12 +372,16 @@ export default function AdminSubmissionPage() {
                           </div>
                         </div>
 
-                        <a href={previewSub.file_url} target="_blank" rel="noreferrer">
-                          <Button size="sm" variant="outline" className="gap-1.5 h-8 text-xs">
-                            <DownloadSimple className="w-3.5 h-3.5" />
-                            <span>Unduh Berkas</span>
-                          </Button>
-                        </a>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 h-8 text-xs"
+                          isLoading={openingFile}
+                          onClick={() => handleOpenSubmissionFile(previewSub.file_url || '')}
+                        >
+                          <DownloadSimple className="w-3.5 h-3.5" />
+                          <span>Unduh Berkas</span>
+                        </Button>
                       </div>
 
                       {/* Embedded Frame Mockup jika file PDF */}
@@ -373,12 +398,16 @@ export default function AdminSubmissionPage() {
                           <p className="text-[11px] max-w-sm mb-4">
                             Untuk melihat dokumen lengkap dengan format resolusi tinggi, buka berkas langsung melalui tab pembaca.
                           </p>
-                          <a href={previewSub.file_url} target="_blank" rel="noreferrer">
-                            <Button size="sm" variant="primary" className="gap-1.5">
-                              <ArrowSquareOut className="w-4 h-4" />
-                              <span>Buka Dokumen di Tab Penuh</span>
-                            </Button>
-                          </a>
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            className="gap-1.5"
+                            isLoading={openingFile}
+                            onClick={() => handleOpenSubmissionFile(previewSub.file_url || '')}
+                          >
+                            <ArrowSquareOut className="w-4 h-4" />
+                            <span>Buka Dokumen di Tab Penuh</span>
+                          </Button>
                         </div>
                       </div>
                     </div>

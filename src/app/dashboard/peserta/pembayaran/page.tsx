@@ -11,6 +11,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency } from '@/lib/utils';
+import { uploadFileDirectly } from '@/lib/supabase/storage-client';
 import {
   CreditCard,
   QrCode,
@@ -26,8 +27,9 @@ export default function PesertaPembayaranPage() {
   const myRegistrations = registrations.filter((r) => r.user_id === currentUser.id && r.payment);
 
   const [selectedRegId, setSelectedRegId] = useState<string | null>(null);
-  const [proofUrl, setProofUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [proofFileName, setProofFileName] = useState('');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copiedBank, setCopiedBank] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
@@ -46,32 +48,51 @@ export default function PesertaPembayaranPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setProofFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setProofUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    setSelectedFile(file);
+    if (!proofFileName) {
+      setProofFileName(file.name);
+    }
   };
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRegId) return;
+
+    if (!selectedFile) {
+      setErrorBanner('Silakan pilih berkas bukti transfer (format JPG, PNG, WEBP, atau PDF) terlebih dahulu.');
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorBanner(null);
+    setUploadProgress(10);
+
     try {
-      const fileName = proofFileName || `bukti_transfer_${Date.now()}.png`;
-      const url = proofUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600';
-      await uploadPaymentProof(selectedRegId, url, fileName);
+      // Unggah langsung berkas ke Supabase Storage via signed URL
+      const uploadRes = await uploadFileDirectly(selectedFile, {
+        bucket: 'payment-proofs',
+        registrationId: selectedRegId,
+        onProgress: (pct) => setUploadProgress(pct),
+      });
+
+      if (!uploadRes.success || !uploadRes.storagePath) {
+        throw new Error(uploadRes.error || 'Gagal mengunggah berkas bukti transfer ke penyimpanan aman.');
+      }
+
+      const fileName = proofFileName || selectedFile.name;
+      await uploadPaymentProof(selectedRegId, uploadRes.storagePath, fileName);
+
       setSelectedRegId(null);
-      setProofUrl('');
+      setSelectedFile(null);
       setProofFileName('');
-      setSuccessBanner('Bukti pembayaran berhasil diunggah! Panitia bendahara akan memverifikasi dalam waktu maksimal 24 jam.');
+      setUploadProgress(null);
+      setSuccessBanner('Bukti pembayaran berhasil diunggah dan disimpan dengan aman! Panitia bendahara akan memverifikasi dalam waktu maksimal 24 jam.');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengunggah bukti pembayaran';
       setErrorBanner(message);
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -282,22 +303,44 @@ export default function PesertaPembayaranPage() {
           <form onSubmit={handleUploadSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
-                Pilih Berkas Gambar Bukti Transfer (Screenshot/Struk)
+                Pilih Berkas Bukti Transfer (JPG, PNG, WEBP, atau PDF, maks. 5 MB)
               </label>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,application/pdf"
                 onChange={handleFileUpload}
-                className="w-full text-xs text-[var(--foreground)] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:opacity-90 cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full text-xs text-[var(--foreground)] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:opacity-90 cursor-pointer disabled:opacity-50"
               />
+              {selectedFile && (
+                <p className="text-[11px] text-[var(--muted-foreground)] mt-1">
+                  Ukuran berkas: {(selectedFile.size / 1024).toFixed(1)} KB
+                </p>
+              )}
             </div>
 
             <Input
-              label="Nama Berkas (Opsional)"
+              label="Keterangan Nama Berkas (Opsional)"
               placeholder="bukti_transfer_bca.png"
               value={proofFileName}
               onChange={(e) => setProofFileName(e.target.value)}
+              disabled={isSubmitting}
             />
+
+            {uploadProgress !== null && (
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] font-mono">
+                  <span>Mengunggah ke penyimpanan aman...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-[var(--border)] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[var(--primary)] transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="p-3 rounded-[var(--radius-md)] bg-[var(--accent)]/30 border border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-1">
               <div className="flex items-center gap-1.5 font-semibold text-[var(--foreground)]">

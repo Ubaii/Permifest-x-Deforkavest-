@@ -12,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateWIB } from '@/lib/utils';
+import { uploadFileDirectly } from '@/lib/supabase/storage-client';
 import {
   UploadSimple,
   FileText,
@@ -32,10 +33,11 @@ export default function PesertaSubmissionPage() {
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
   const [activeStageId, setActiveStageId] = useState<string | null>(null);
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
   const [figmaLink, setFigmaLink] = useState('');
   const [notes, setNotes] = useState('');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
@@ -46,12 +48,23 @@ export default function PesertaSubmissionPage() {
   const openSubmitModal = (regId: string, stageId: string) => {
     setActiveRegId(regId);
     setActiveStageId(stageId);
+    setSelectedFile(null);
     setFileName('');
-    setFileUrl('');
     setFigmaLink('');
     setNotes('');
+    setUploadProgress(null);
     setModalError(null);
     setModalOpen(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedFile(file);
+    if (!fileName) {
+      setFileName(file.name);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,21 +73,49 @@ export default function PesertaSubmissionPage() {
 
     setSubmitting(true);
     setModalError(null);
+    setUploadProgress(null);
+
     try {
+      let finalStoragePath: string | undefined = undefined;
+
+      // Jika bukan lomba desain Figma, lakukan direct upload berkas ke bucket submissions
+      if (!isFigmaRequired) {
+        if (!selectedFile) {
+          throw new Error('Silakan pilih berkas dokumen karya (PDF, DOCX, atau ZIP) terlebih dahulu.');
+        }
+
+        setUploadProgress(15);
+        const uploadRes = await uploadFileDirectly(selectedFile, {
+          bucket: 'submissions',
+          registrationId: activeRegId,
+          stageId: activeStageId,
+          competitionId: selectedReg?.competition?.id,
+          onProgress: (pct) => setUploadProgress(pct),
+        });
+
+        if (!uploadRes.success || !uploadRes.storagePath) {
+          throw new Error(uploadRes.error || 'Gagal mengunggah berkas karya ke penyimpanan Supabase.');
+        }
+
+        finalStoragePath = uploadRes.storagePath;
+      }
+
       await submitWork(activeRegId, activeStageId, {
-        fileName: isFigmaRequired ? undefined : (fileName || 'karya_permifest.pdf'),
-        fileUrl: isFigmaRequired ? undefined : (fileUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
+        fileName: isFigmaRequired ? undefined : (fileName || selectedFile?.name || 'karya_permifest.pdf'),
+        fileUrl: isFigmaRequired ? undefined : finalStoragePath,
         linkUrl: isFigmaRequired ? figmaLink : undefined,
         notes: notes,
       });
 
       setModalOpen(false);
-      setSuccessBanner('Karya Anda berhasil dikumpulkan! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
+      setSelectedFile(null);
+      setSuccessBanner('Karya Anda berhasil dikumpulkan dan tersimpan aman! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
       setModalError(message);
     } finally {
       setSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -237,21 +278,47 @@ export default function PesertaSubmissionPage() {
             />
           ) : (
             <>
+              <div>
+                <label className="block text-xs font-medium text-[var(--foreground)] mb-1.5">
+                  Pilih Berkas Dokumen Karya (PDF, DOCX, ZIP, maks. 25 MB)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/x-zip-compressed"
+                  onChange={handleFileChange}
+                  disabled={submitting}
+                  className="w-full text-xs text-[var(--foreground)] file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:opacity-90 cursor-pointer disabled:opacity-50"
+                />
+                {selectedFile && (
+                  <p className="text-[11px] text-[var(--muted-foreground)] mt-1">
+                    Ukuran: {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Tipe: {selectedFile.type || 'file'}
+                  </p>
+                )}
+              </div>
+
               <Input
-                label="Nama Berkas Dokumen (DOCX / PDF)"
+                label="Nama Judul Dokumen (Opsional)"
                 placeholder="Contoh: Esai_CyberSecurity_NamaPeserta.pdf"
-                required
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
-              />
-              <Input
-                label="URL Penyimpanan Berkas (Cloud Storage / Drive)"
-                placeholder="https://... (atau biarkan default untuk demo)"
-                value={fileUrl}
-                onChange={(e) => setFileUrl(e.target.value)}
-                helperText="Ukuran maksimal 15-25 MB. Berkas diunggah lewat secure signed URL."
+                disabled={submitting}
               />
             </>
+          )}
+
+          {uploadProgress !== null && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] font-mono">
+                <span>Mengunggah dokumen ke Supabase Storage...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-[var(--border)] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[var(--primary)] transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
           )}
 
           <div>
