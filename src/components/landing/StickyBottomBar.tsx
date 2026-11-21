@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { ArrowRight, Trophy } from '@phosphor-icons/react';
 
 export function StickyBottomBar() {
@@ -49,14 +49,16 @@ export function StickyBottomBar() {
           </div>
         </div>
 
-        <Link
+        <SakugaButton
           href="/register"
-          className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg text-xs font-bold text-white shadow min-h-[44px]"
-          style={{ background: 'var(--gradient-brand)' }}
+          variant="brand"
+          size="sm"
+          sfxText="GASSS!!"
+          className="px-4 py-2 text-xs"
+          rightIcon={<ArrowRight size={15} weight="bold" />}
         >
-          <span>Daftar Sekarang</span>
-          <ArrowRight size={15} weight="bold" />
-        </Link>
+          Daftar Sekarang
+        </SakugaButton>
       </div>
     </aside>
   );

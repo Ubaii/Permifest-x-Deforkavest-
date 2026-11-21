@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { SakugaButton } from '@/components/ui/sakuga-button';
+import { SakugaHeroBackground } from './SakugaHeroBackground';
 import {
   getNearestRegistrationClose,
   getNextDeadline,
 } from '@/lib/landing-data';
 import { MascotIllustration } from './MascotIllustration';
+import { Sparkle, Trophy, GameController, MapPin } from '@phosphor-icons/react';
 
 // ─── Countdown helpers ─────────────────────────────────────────────────────
 
@@ -39,77 +41,110 @@ export function HeroSection() {
   const nextDeadline = getNextDeadline();
   const nearestClose = getNearestRegistrationClose();
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [scrollY, setScrollY] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!nextDeadline) return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mediaQuery.matches);
 
-    const timer = setTimeout(() => {
-      setTimeLeft(computeTimeLeft(nextDeadline.date));
-    }, 0);
+    const handleMotion = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handleMotion);
 
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-    if (prefersReducedMotion) {
-      return () => clearTimeout(timer);
+    if (nextDeadline) {
+      const timer = setTimeout(() => {
+        setTimeLeft(computeTimeLeft(nextDeadline.date));
+      }, 0);
+
+      const interval = setInterval(() => {
+        setTimeLeft(computeTimeLeft(nextDeadline.date));
+      }, 1000);
+
+      return () => {
+        mediaQuery.removeEventListener('change', handleMotion);
+        clearTimeout(timer);
+        clearInterval(interval);
+      };
     }
 
-    const interval = setInterval(() => {
-      setTimeLeft(computeTimeLeft(nextDeadline.date));
-    }, 1000);
-
     return () => {
-      clearTimeout(timer);
-      clearInterval(interval);
+      mediaQuery.removeEventListener('change', handleMotion);
     };
   }, [nextDeadline]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 900) {
+        setScrollY(window.scrollY);
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (reducedMotion) return;
+      const { innerWidth, innerHeight } = window;
+      // Normalisasi -1 sampai 1
+      const nx = (e.clientX / innerWidth - 0.5) * 2;
+      const ny = (e.clientY / innerHeight - 0.5) * 2;
+      setMousePos({ x: nx, y: ny });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [reducedMotion]);
+
   const registrationDateLabel = nearestClose?.dateFormatted ?? '10 Desember 2026';
+
+  // Parallax transform calculations
+  const mascotParallaxY = reducedMotion ? 0 : scrollY * -0.15;
+  const mascotTiltX = reducedMotion ? 0 : mousePos.y * -6;
+  const mascotTiltY = reducedMotion ? 0 : mousePos.x * 8;
+
+  const badge1Parallax = reducedMotion ? 0 : scrollY * -0.28 + mousePos.y * -8;
+  const badge2Parallax = reducedMotion ? 0 : scrollY * -0.22 + mousePos.y * 10;
+  const badge3Parallax = reducedMotion ? 0 : scrollY * -0.35 + mousePos.x * 8;
 
   return (
     <section
+      ref={heroRef}
       id="beranda"
-      className="relative overflow-clip pt-12 pb-16 lg:pt-16 lg:pb-24"
+      className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-28"
       aria-labelledby="hero-heading"
     >
-      {/* ── Blob latar poster ── */}
-      <div className="blob-bg" aria-hidden="true">
-        <div
-          className="absolute -top-36 -left-44 w-[560px] h-[560px] rounded-full"
-          style={{
-            background: 'var(--brand-violet-500)',
-            opacity: 0.35,
-            filter: 'blur(120px)',
-          }}
-        />
-        <div
-          className="absolute top-96 -right-48 w-[520px] h-[520px] rounded-full"
-          style={{
-            background: 'var(--brand-pink)',
-            opacity: 0.2,
-            filter: 'blur(120px)',
-          }}
-        />
-      </div>
+      {/* ── Sakuga & Parallax Ambient Canvas Background ── */}
+      <SakugaHeroBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
           {/* ── Kolom Kiri: Teks & Aksi ── */}
           <div className="flex-1 max-w-2xl text-left">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[#33113a] text-[#F0A6F2] border border-[#5c2466]/40 mb-4">
-              Lomba teknologi mahasiswa
-            </span>
+            {/* Live Indicator Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#140D33]/90 text-[#F5F2FF] border border-[#2E2266] shadow-sm mb-5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4F15A] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C4F15A]" />
+              </span>
+              <span className="tracking-wide">Pendaftaran Gelombang 1 Dibuka</span>
+              <span className="text-[#A99FD1]/50">|</span>
+              <span className="text-[#C4F15A]">Yogyakarta</span>
+            </div>
 
             <h1
               id="hero-heading"
-              className="font-[family-name:var(--font-bricolage)] font-extrabold text-foreground tracking-tight leading-[1.05]"
-              style={{ fontSize: 'clamp(40px, 7vw, 76px)' }}
+              className="font-[family-name:var(--font-bricolage)] font-extrabold text-foreground tracking-tight leading-[1.04]"
+              style={{ fontSize: 'clamp(42px, 7.5vw, 80px)' }}
             >
               Permifest{' '}
               <span
-                className="inline-block"
+                className="inline-block relative"
                 style={{
-                  background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
+                  background: 'linear-gradient(135deg, #9B6BF2 0%, #D56BD9 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -121,17 +156,18 @@ export function HeroSection() {
             </h1>
 
             <p className="mt-5 text-base sm:text-lg text-[#A99FD1] leading-relaxed max-w-xl">
-              Dua komunitas, satu arena. Pilih cabangmu, ajak timmu, lalu panjat papan
-              peringkat. Santai aja, kami yang urus jadwalnya.
+              Dua komunitas, satu arena pertarungan teknologi & e-sport. Pilih cabangmu,
+              ajak tim andalanmu, lalu kibarkan karyamu di panggung tertinggi.
             </p>
 
             {/* CTA Buttons dengan Sakuga Impact VFX */}
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <SakugaButton
                 href="/register"
                 variant="brand"
                 size="lg"
                 sfxText="GASSS!!"
+                className="px-7 py-3.5 text-base shadow-[0_6px_28px_rgba(155,107,242,0.45)]"
               >
                 Daftar sekarang
               </SakugaButton>
@@ -141,27 +177,33 @@ export function HeroSection() {
                 variant="secondary"
                 size="lg"
                 sfxText="IKUZO!!"
+                className="px-6 py-3.5 text-base"
               >
                 Lihat cabang lomba
               </SakugaButton>
             </div>
 
-            {/* Badges Info */}
+            {/* Badges Info Ringkas */}
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/40">
-                Daftar: {registrationDateLabel}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E6C978]" />
+                Batas Daftar: {registrationDateLabel}
               </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/40">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/50">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6CC4FF]" />
                 Biaya: Mulai Rp 35.000
               </span>
             </div>
 
-            {/* Countdown Box */}
+            {/* Countdown Box Bergaya Cyber Manga HUD */}
             {nextDeadline && timeLeft && (
-              <div className="mt-6 p-3.5 rounded-xl bg-[#140D33]/90 border border-[#2E2266] inline-block">
-                <span className="text-[11px] font-semibold text-[#A99FD1] block mb-1.5 uppercase tracking-wider">
-                  Hitung Mundur Deadline Pendaftaran
-                </span>
+              <div className="mt-7 p-4 rounded-2xl bg-[#140D33]/90 border border-[#2E2266] shadow-[0_8px_30px_rgba(11,7,32,0.6)] backdrop-blur-sm inline-block">
+                <div className="flex items-center justify-between gap-4 mb-2">
+                  <span className="text-[11px] font-bold text-[#A99FD1] uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkle size={13} weight="fill" className="text-[#FFE359]" />
+                    Hitung Mundur Penutupan Pendaftaran
+                  </span>
+                </div>
                 <div className="flex items-center gap-2">
                   {[
                     { label: 'Hari', val: timeLeft.hari },
@@ -171,12 +213,12 @@ export function HeroSection() {
                   ].map(({ label, val }) => (
                     <div
                       key={label}
-                      className="px-2.5 py-1 rounded-lg bg-[#0B0720] border border-[#2E2266] text-center min-w-[50px]"
+                      className="px-3 py-1.5 rounded-xl bg-[#0B0720] border border-[#2E2266]/80 text-center min-w-[54px] shadow-inner"
                     >
-                      <span className="tabular-nums text-lg font-bold font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] leading-none block">
+                      <span className="tabular-nums text-xl font-extrabold font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] leading-none block">
                         {pad(val)}
                       </span>
-                      <span className="text-[9px] text-[#A99FD1] uppercase">
+                      <span className="text-[9px] text-[#A99FD1] font-semibold uppercase tracking-wider mt-1 block">
                         {label}
                       </span>
                     </div>
@@ -186,10 +228,81 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu (docs HTML) ── */}
-          <div className="flex-1 w-full max-w-[500px] flex justify-center items-center">
-            <div className="w-full max-w-[460px] aspect-[520/480]">
-              <MascotIllustration className="w-full h-full fl" variant="hero" />
+          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu dengan Parallax 3D Depth ── */}
+          <div className="flex-1 w-full max-w-[540px] flex justify-center items-center relative">
+            {/* Anime Aura Glow di belakang maskot */}
+            <div
+              className="absolute w-[380px] h-[380px] rounded-full pointer-events-none transition-transform duration-300"
+              style={{
+                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.45) 0%, rgba(213, 107, 217, 0.25) 45%, transparent 70%)',
+                filter: 'blur(60px)',
+                transform: `translateY(${mascotParallaxY * 0.5}px)`,
+              }}
+            />
+
+            {/* Parallax Floating Manga Action Badges */}
+            {/* Floating Badge 1: 5 Cabang Lomba */}
+            <div
+              className="absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none"
+              style={{
+                transform: `translateY(${badge1Parallax}px)`,
+              }}
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#9B6BF2]/20 flex items-center justify-center text-[#9B6BF2]">
+                <GameController size={18} weight="duotone" />
+              </div>
+              <div className="text-left">
+                <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
+                  5 Cabang Lomba
+                </span>
+                <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-0.5">
+                  Akademik & E-Sport
+                </span>
+              </div>
+            </div>
+
+            {/* Floating Badge 2: Total Hadiah */}
+            <div
+              className="absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none"
+              style={{
+                transform: `translateY(${badge2Parallax}px)`,
+              }}
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#FFE359]/20 flex items-center justify-center text-[#FFE359]">
+                <Trophy size={18} weight="duotone" />
+              </div>
+              <div className="text-left">
+                <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
+                  Hadiah Puluhan Juta
+                </span>
+                <span className="block text-[10px] text-[#E6C978] font-semibold mt-0.5">
+                  + Sertifikat Nasional
+                </span>
+              </div>
+            </div>
+
+            {/* Floating Badge 3: Yogyakarta Arena */}
+            <div
+              className="hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md items-center gap-2 transition-transform duration-150 ease-out select-none"
+              style={{
+                transform: `translateY(${badge3Parallax}px)`,
+              }}
+            >
+              <MapPin size={16} weight="fill" className="text-[#EF4444]" />
+              <span className="text-[11px] font-bold text-[#F5F2FF]">
+                UST Yogyakarta
+              </span>
+            </div>
+
+            {/* Container Maskot dengan tilt 3D interaktif */}
+            <div
+              className="w-full max-w-[460px] aspect-[520/480] relative z-10 transition-transform duration-200 ease-out"
+              style={{
+                transform: `translateY(${mascotParallaxY}px) rotateX(${mascotTiltX}deg) rotateY(${mascotTiltY}deg)`,
+                perspective: '1000px',
+              }}
+            >
+              <MascotIllustration className="w-full h-full drop-shadow-[0_12px_32px_rgba(155,107,242,0.35)]" variant="hero" />
             </div>
           </div>
         </div>

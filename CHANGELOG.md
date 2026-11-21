@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Komponen latar belakang kinetik anime & parallax (`src/components/landing/SakugaHeroBackground.tsx`) dengan multi-layer depth (manga cyber grid, ambient energy atmosphere orbs, diagonal speed slash bars, dan partikel canvas anime motes halus) yang bereaksi terhadap scroll window.
+- Efek parallax interaktif pada Maskot Kupu-kupu Deforkafest di Hero Section dengan respons gerakan mouse 3D tilt, pulse neon aura glow, dan floating anime badges ("5 Cabang Lomba", "Hadiah Puluhan Juta", "UST Yogyakarta").
+- Peningkatan visual kartu kompetisi (`CompetitionsSection.tsx`) dengan efek manga corner slash flare, border glow hover, transisi scale, dan integrasi tombol aksi `<SakugaButton>` pada modal panduan.
+- Peningkatan UI pada alur pendaftaran 4 langkah (`HowToRegisterSection.tsx`), teaser leaderboard podium (`LeaderboardTeaser.tsx`), dan mobile quick-action bar (`StickyBottomBar.tsx`) dengan animasi kinetik bounce dan feedback partikel Sakuga.
 - Modul visual kinetik Sakuga VFX (`src/lib/sakuga/sakuga-engine.ts`) berbasis Canvas 2D overlay dengan fisika partikel anime (diamond shards, speed slash lines, shockwave donut, anime kira stars, serta teks onomatopoeia manga dengan outline pekat).
 - Komponen interaktif `<SakugaButton>` (`src/components/ui/sakuga-button.tsx`) dengan animasi spring squash & stretch, transisi overshoot, integrasi palet warna Permifest, serta kompatibilitas penuh dengan `prefers-reduced-motion`.
 - Integrasi tombol aksi berenergi kinetik Sakuga pada Hero Section CTA Landing Page ("Daftar Sekarang", "Lihat cabang lomba"), Closing CTA Section, dan tombol Kirim Karya Final pada Lembar Pengumpulan Peserta (`/dashboard/peserta/submission`).

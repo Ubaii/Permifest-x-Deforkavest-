@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { ArrowRight } from '@phosphor-icons/react';
+import { SakugaButton } from '@/components/ui/sakuga-button';
+import { ArrowRight, Trophy } from '@phosphor-icons/react';
 
 export function LeaderboardTeaser() {
   return (
@@ -58,10 +58,11 @@ export function LeaderboardTeaser() {
 
         {/* Juara 1 (Tengah - Elevated) */}
         <div
-          className="rounded-2xl border bg-[#140D33] p-8 sm:py-12 text-center order-1 md:order-2 shadow-xl transition-all"
+          className="rounded-2xl border bg-[#140D33] p-8 sm:py-12 text-center order-1 md:order-2 shadow-[0_8px_32px_rgba(201,160,74,0.18)] transition-all hover:border-[#E6C978]"
           style={{ borderColor: '#C9A04A' }}
         >
-          <span className="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold bg-[#2a2108] text-[#E6C978] mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-3">
+            <Trophy size={14} weight="fill" />
             Peringkat Pertama
           </span>
           <p
@@ -96,13 +97,16 @@ export function LeaderboardTeaser() {
       </div>
 
       <div className="mt-10 text-center">
-        <Link
+        <SakugaButton
           href="/leaderboard"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#7c4ddb] transition-all min-h-[44px]"
+          variant="secondary"
+          size="md"
+          sfxText="LEADERBOARD!!"
+          className="border-[#2E2266] px-6 py-3"
+          rightIcon={<ArrowRight size={16} weight="bold" />}
         >
-          <span>Buka Halaman Papan Peringkat Lengkap</span>
-          <ArrowRight size={16} weight="bold" />
-        </Link>
+          Buka Halaman Papan Peringkat Lengkap
+        </SakugaButton>
       </div>
     </section>
   );

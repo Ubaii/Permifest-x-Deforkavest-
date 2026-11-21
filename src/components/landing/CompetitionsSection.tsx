@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { formatCurrency } from '@/lib/utils';
 import {
   X,
@@ -173,18 +174,23 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
         {COMPETITIONS_DATA.map((comp) => (
           <article
             key={comp.id}
-            className="flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33] p-5 sm:p-6 transition-all hover:border-[#7c4ddb]"
+            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/90 p-5 sm:p-6 transition-all duration-200 hover:border-[#9B6BF2] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(155,107,242,0.18)] backdrop-blur-sm overflow-hidden"
           >
+            {/* Manga Corner Slash Flare Accent */}
+            <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-[-10px] right-[-10px] w-8 h-8 bg-[#9B6BF2]/30 rotate-45 transform" />
+            </div>
+
             <div>
               {/* Icon Box */}
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center border-2 border-[#F5F2FF] shadow-sm mb-4"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center border-2 border-[#F5F2FF] shadow-sm mb-4 transition-transform duration-200 group-hover:scale-105"
                 style={{ backgroundColor: comp.iconBg }}
               >
                 {comp.iconPath}
               </div>
 
-              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2">
+              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2 group-hover:text-[#F0A6F2] transition-colors">
                 {comp.name}
               </h3>
 
@@ -214,9 +220,9 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
               <button
                 type="button"
                 onClick={() => setSelectedComp(comp)}
-                className="w-full inline-flex items-center justify-center rounded-xl px-4 py-2.5 font-bold text-xs sm:text-sm text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#7c4ddb] transition-all min-h-[44px]"
+                className="w-full inline-flex items-center justify-center rounded-xl px-4 py-2.5 font-bold text-xs sm:text-sm text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#9B6BF2] transition-all min-h-[44px] cursor-pointer"
               >
-                Lihat detail
+                Lihat detail & panduan
               </button>
             </div>
           </article>
@@ -294,20 +300,18 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
               <button
                 type="button"
                 onClick={() => setSelectedComp(null)}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px]"
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px] cursor-pointer"
               >
                 Tutup
               </button>
-              <Link
+              <SakugaButton
                 href="/register"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-[#0B0720] hover:opacity-90 min-h-[44px]"
-                style={{
-                  background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
-                }}
+                variant="brand"
+                size="md"
+                sfxText="DAFTAR!!"
               >
                 Daftar Sekarang
-                <ArrowRight size={16} weight="bold" />
-              </Link>
+              </SakugaButton>
             </div>
           </div>
         </div>

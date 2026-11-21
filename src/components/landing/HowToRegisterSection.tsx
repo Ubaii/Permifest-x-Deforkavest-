@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { ArrowRight } from '@phosphor-icons/react';
 
 interface StepItem {
@@ -67,11 +67,11 @@ export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProp
         {STEPS.map((st) => (
           <div
             key={st.num}
-            className="flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33] p-6 transition-all hover:border-[#7c4ddb]"
+            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/90 p-6 transition-all duration-200 hover:border-[#9B6BF2] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(155,107,242,0.15)] backdrop-blur-sm"
           >
             <div>
               <p
-                className="font-[family-name:var(--font-jetbrains)] font-bold text-4xl leading-none mb-4"
+                className="font-[family-name:var(--font-jetbrains)] font-extrabold text-4xl leading-none mb-4 group-hover:scale-105 transition-transform"
                 style={{
                   background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
                   WebkitBackgroundClip: 'text',
@@ -79,10 +79,10 @@ export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProp
                   backgroundClip: 'text',
                 }}
               >
-                {st.num}
+                0{st.num}
               </p>
 
-              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2">
+              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2 group-hover:text-[#F0A6F2] transition-colors">
                 {st.title}
               </h3>
 
@@ -95,16 +95,16 @@ export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProp
       </div>
 
       <div className="mt-10 text-center">
-        <Link
+        <SakugaButton
           href="/register"
-          className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl font-bold text-sm text-[#0B0720] transition-opacity hover:opacity-90 min-h-[48px]"
-          style={{
-            background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
-          }}
+          variant="brand"
+          size="lg"
+          sfxText="GASSS!!"
+          className="px-8 py-3.5"
+          rightIcon={<ArrowRight size={18} weight="bold" />}
         >
-          <span>Daftar Sekarang</span>
-          <ArrowRight size={18} weight="bold" />
-        </Link>
+          Mulai Pendaftaran Sekarang
+        </SakugaButton>
       </div>
     </section>
   );
