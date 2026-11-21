@@ -1,6 +1,11 @@
 import 'server-only';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+// Pastikan admin client tidak pernah berjalan di sisi klien (browser)
+if (typeof window !== 'undefined') {
+  throw new Error('Supabase admin client can only be used on the server.');
+}
+
 let adminClientInstance: SupabaseClient | null = null;
 
 /**
@@ -13,14 +18,8 @@ export function createAdminClient(): SupabaseClient {
     return adminClientInstance;
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl) {
-    throw new Error(
-      'Konfigurasi NEXT_PUBLIC_SUPABASE_URL belum terpasang di file environment (.env.local).'
-    );
-  }
 
   if (!serviceRoleKey) {
     // Mode demo / fallback jika service role belum diisi di .env.local

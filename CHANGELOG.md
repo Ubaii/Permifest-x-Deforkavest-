@@ -5,6 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+<<<<<<< HEAD
 - Mesin validasi form dinamis Zod (`src/lib/config/dynamic-form.ts`) yang membangun validator dari JSONB `form_fields` untuk klien dan server.
 - Modul konfigurasi kebijakan event (`src/lib/config/settings.ts`) mematuhi Golden Rule #2 dan DECISIONS.md C-01 s/d C-17 (kebijakan partisipasi ganda, filter benturan instansi juri, mode leaderboard).
 - Halaman Detail Pendaftaran Lomba Peserta (`/dashboard/peserta/kompetisi/[id]`) untuk melihat berkas pendaftaran, kode undangan tim, dan anggota tim.
@@ -29,6 +30,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 - Integrasi signed download URL & dukungan dokumen PDF pada panel review bukti transfer admin (`/dashboard/admin/pembayaran`).
 - Integrasi signed download URL pada lembar penugasan juri (`/dashboard/juri/penugasan`) untuk unduh proposal/karya terproteksi.
 - Script `"typecheck": "tsc --noEmit"` pada `package.json`.
+=======
+- Standardisasi migrasi database Supabase di `supabase/migrations/` (Schema, Functions & Triggers, RLS, Storage).
+- Skema 20 tabel PostgreSQL, custom enum, constraints, dan index performa sesuai `docs/SCHEMA.md`.
+- Fungsi keamanan dan trigger: `has_role` berlingkup lomba, `handle_new_user` (default registrasi selalu peserta), `guard_locked_scores` (kunci nilai), `admin_override_score` (audit darurat), serta view `v_final_scores`.
+- Row Level Security (RLS) aktif pada seluruh tabel dengan kebijakan bertingkat (Peserta, Juri, Panitia, Super Admin).
+- Konfigurasi bucket Supabase Storage (`payment-proofs`, `submissions`, `identity-docs`, `public-assets`) dengan storage policies.
+- Data awal `supabase/seed.sql` berisi peran, event Permifest x Deforkafest, tema, 5 cabang lomba, tahapan, dan contoh rubrik penilaian berbobot 100%.
+- Server-side admin client `src/lib/supabase/admin.ts` berpelindung isolasi server.
+>>>>>>> 91c0ada (feat(database): implement target supabase migrations, rls policies, and seed data)
 - Standardisasi CRUD lewat `Drawer` di seluruh panel admin (Cabang Lomba, Rubrik, Pengguna, Hasil E-Sport, Pengumuman).
 - Drawer khusus manajemen Rubrik Penilaian per-lomba dengan validasi total bobot 100% langsung di daftar kompetisi.
 - Drawer pratinjau submission karya (`SubmissionPreviewDrawer`) dengan dukungan viewer dokumen PDF dan kartu launcher Figma.

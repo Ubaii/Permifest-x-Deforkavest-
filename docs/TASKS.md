@@ -9,7 +9,7 @@ Status: `[ ]` belum, `[~]` dikerjakan, `[x]` selesai. Satu tugas = satu branch =
 | T0.1 | Rapikan branch `yuum`: pecah perubahan uncommitted jadi commit logis, rebase ke branch utama | Working tree bersih, riwayat bermakna | - | [ ] |
 | T0.2 | Tempatkan dokumen ini di repo (`AGENTS.md`, `docs/*`), salin PRD ke `docs/PRD.md` | Semua tautan di AGENTS.md valid | - | [ ] |
 | T0.3 | Inventaris rute kode vs `SITEMAP_RBAC.md`; buat stub rute berstatus `baru` | Tabel selisih di PR; stub dengan guard dan EmptyState | T0.2 | [ ] |
-| T0.4 | Audit `supabase/schema.sql` vs `SCHEMA.md`; satu sumber di `supabase/migrations/` | Selisih tercatat; satu lokasi skema; `db reset` lolos | T0.2 | [ ] |
+| T0.4 | Audit `supabase/schema.sql` vs `SCHEMA.md`; satu sumber di `supabase/migrations/` | Selisih tercatat; satu lokasi skema; migrasi terpisah | T0.2 | [x] |
 | T0.5 | Pindahkan nilai keputusan terbuka (biaya, anggota tim, partisipasi ganda, tanggal) dari `constants.ts` ke seed + konfigurasi | Tidak ada angka bisnis di kode; seed bertanda placeholder | T0.4 | [ ] |
 | T0.6 | Role-switcher: hanya non-production, tidak memengaruhi otorisasi | Build production tidak memuatnya (diverifikasi) | - | [x] |
 | T0.7 | Konsolidasi UI: token tunggal di `globals.css`, shell per permukaan (publik, peserta, admin/juri), hapus komponen duplikat | Tanpa hex tertanam; 3 layout shell | T0.2 | [ ] |
@@ -25,9 +25,9 @@ Status: `[ ]` belum, `[~]` dikerjakan, `[x]` selesai. Satu tugas = satu branch =
 |---|---|---|---|---|
 | T1.1 | Proyek Supabase dev/staging/prod + env Vercel | Tiga lingkungan terpisah, tanpa secret di repo | T0.10 | [ ] |
 | T1.2 | Migrasi 22 tabel, enum, RLS, fungsi, trigger, bucket, seed | Semua tabel RLS aktif; seed jalan | T0.4 | [ ] |
-| T1.3 | Antarmuka repository + implementasi Supabase untuk `users`, `competitions` | Mock dan Supabase lewat satu antarmuka | T1.2 | [x] |
-| T1.4 | Auth: register, login, verifikasi email, lupa/reset password | Registrasi selalu `peserta`; pesan tidak membocorkan akun | T1.2 | [x] |
-| T1.5 | `requireRole`, `requirePermission`, guard layout per area | Peserta ke URL admin ditolak | T1.4 | [x] |
+| T1.3 | Antarmuka repository + implementasi Supabase untuk `users`, `competitions` | Mock dan Supabase lewat satu antarmuka | T1.2 | [ ] |
+| T1.4 | Auth: register, login, verifikasi email, lupa/reset password | Registrasi selalu `peserta`; pesan tidak membocorkan akun | T1.2 | [ ] |
+| T1.5 | `requireRole`, `requirePermission`, guard layout per area | Peserta ke URL admin ditolak | T1.4 | [ ] |
 | T1.6 | Akun super admin pertama lewat skrip; 2FA wajib | `aal2` dicek di server | T1.5 | [ ] |
 | T1.7 | Uji RLS matriks `TESTING.md` bagian 2 | Semua lulus di CI | T1.2 | [ ] |
 
