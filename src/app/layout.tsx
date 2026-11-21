@@ -43,6 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProvider>
           {children}
         </AppProvider>
+        {/* Sakuga VFX Official Button Component */}
+        <script src="/button.js"></script>
       </body>
     </html>
   );

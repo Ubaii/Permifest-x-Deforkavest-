@@ -222,18 +222,15 @@ export function CompetitionsSection({
               </div>
             </div>
 
-            {/* CTA Button bergaya Sakuga */}
+            {/* CTA Button */}
             <div className="mt-6 pt-4 border-t border-[#2E2266]/70">
-              <SakugaButton
+              <button
                 type="button"
-                variant="secondary"
-                size="md"
-                sfxText="EXPLORE!!"
                 onClick={() => setSelectedComp(comp)}
-                className="w-full justify-center text-xs sm:text-sm"
+                className="w-full inline-flex items-center justify-center rounded-xl px-4 py-2.5 font-bold text-xs sm:text-sm text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#9B6BF2] transition-colors min-h-[44px] cursor-pointer"
               >
                 Lihat Panduan & Syarat
-              </SakugaButton>
+              </button>
             </div>
           </article>
         ))}

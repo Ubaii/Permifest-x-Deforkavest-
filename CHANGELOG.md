@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi resmi Web Component Sakuga Button (`<sakuga-button>`) tanpa dependensi eksternal dari `https://sakuga-vfx.vercel.app/button/button.js` tersimpan di `public/button.js`, dimuat melalui plain `<script src="/button.js"></script>` di `src/app/layout.tsx`.
+- Deklarasi TypeScript `src/types/sakuga.d.ts` untuk `JSX.IntrinsicElements['sakuga-button']` dan method `el.done(hold)` pada elemen HTML.
+- Pengkabelan (wiring) tombol submit form dengan Sakuga Web Component dan pemanggilan method `el.done()` saat aksi berhasil (misal: submit berkas karya di `/dashboard/peserta/submission`, login akun di `/login`, dan registrasi di `/register`).
+- Animasi expand/collapse akordion interaktif pada FAQ (`FaqSection.tsx`) dengan transisi grid rows, nomor urut bertema manga kartun, dan rotasi icon panah halus.
+- Redesain Footer lebih kaya (*rich style*) di `src/components/layout/footer.tsx`: 5 kolom terstruktur, profil penyelenggara (Permikomnas DIY & IMPSI UST), tautan cabang kompetisi, tautan cepat panduan & bantuan, narahubung WhatsApp resmi & venue offline Kampus UST Yogyakarta, serta status operasional sistem.
+- Penghapusan efek letupan onomatopoeia pop text ("EXPLORE!!", "OK!!") pada tombol kartu kompetisi dan tombol modal kalender agar tampilan lebih bersih dan profesional.
 - Integrasi penuh data cabang kompetisi Landing Page (`CompetitionsSection.tsx`) langsung dari database Supabase / Backend via `competitionRepository.getAll()`.
 - Implementasi penuh Sakuga VFX Button Action Style (`src/components/ui/sakuga-button.tsx`) dengan hard anime border, solid block pop shadow (`shadow-[4px_4px_0px_#0B0720]` membal menjadi `hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]`), miring dinamis `rotate(-1.5deg) skewX(-2deg)`, dan sensasi tactile press saat ditekan.
 - Pembersihan layout kanan Hero Section (`HeroSection.tsx`) dengan menghapus floating badges yang menumpuk di samping maskot, sehingga maskot Kupu-kupu Deforkafest tampil megah, proporsional, dan seimbang di sebelah kanan.

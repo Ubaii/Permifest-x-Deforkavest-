@@ -389,15 +389,13 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
                   Simpan di Google Calendar
                 </a>
 
-                <SakugaButton
+                <button
                   type="button"
-                  variant="brand"
-                  size="sm"
-                  sfxText="OK!!"
                   onClick={() => setSelectedAgenda(null)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#2E2266] border border-[#6CC4FF]/40 hover:bg-[#3D2D85] hover:border-[#6CC4FF] transition-all min-h-[44px]"
                 >
                   Tutup Rincian
-                </SakugaButton>
+                </button>
               </div>
             </div>
           </div>

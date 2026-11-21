@@ -89,6 +89,19 @@
   --support-lime: #c4f15a;
   --support-sky: #6cc4ff;
   --gradient-brand: linear-gradient(135deg, #7c4ddb 0%, #d56bd9 100%);
+
+  /* ── Sakuga VFX Component Variables ── */
+  --sk-card: #140D33;
+  --sk-ink: #F5F2FF;
+  --sk-pri: #9B6BF2;
+  --sk-acc: #D56BD9;
+  --sk-btn-line: #9B6BF2;
+  --sk-btn-sh: 4px 4px 0px #0B0720, 7px 7px 0px #9B6BF2;
+  --sk-alt-line: #2E2266;
+  --sk-alt-sh: 4px 4px 0px #0B0720;
+  --sk-soft: #9B6BF2;
+  --sk-r: 12px;
+  --sk-bw: 2.5px;
 }
 
 * {

@@ -24,6 +24,7 @@ import {
 
 export default function PesertaSubmissionPage() {
   const { currentUser, registrations, submissions, submitWork } = useAppStore();
+  const submitBtnRef = React.useRef<HTMLElement | null>(null);
 
   // Hanya kompetisi akademik yang memerlukan pengumpulan berkas/karya
   const myAcademicRegistrations = registrations.filter(
@@ -108,9 +109,14 @@ export default function PesertaSubmissionPage() {
         notes: notes,
       });
 
-      setModalOpen(false);
-      setSelectedFile(null);
-      setSuccessBanner('Karya Anda berhasil dikumpulkan dan tersimpan aman! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
+      // Panggil el.done() pada Sakuga Button untuk mendaratkan checkmark & kilau anime saat aksi sukses
+      submitBtnRef.current?.done?.();
+
+      setTimeout(() => {
+        setModalOpen(false);
+        setSelectedFile(null);
+        setSuccessBanner('Karya Anda berhasil dikumpulkan dan tersimpan aman! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
+      }, 1000);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
       setModalError(message);
@@ -342,19 +348,21 @@ export default function PesertaSubmissionPage() {
             </AlertDescription>
           </Alert>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border)]">
-            <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
-              Batal
-            </Button>
-            <SakugaButton
-              type="submit"
-              variant="brand"
-              size="sm"
-              isLoading={submitting}
-              sfxText="KIRIM!!"
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border)]">
+            <sakuga-button
+              type="button"
+              variant="secondary"
+              onClick={() => setModalOpen(false)}
             >
-              Kirim Karya
-            </SakugaButton>
+              Batal
+            </sakuga-button>
+            <sakuga-button
+              ref={submitBtnRef}
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? 'Mengunggah...' : 'Kirim Karya'}
+            </sakuga-button>
           </div>
         </form>
       </Modal>

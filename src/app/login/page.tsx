@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('peserta@permifest.id');
   const [password, setPassword] = useState('password123');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const loginBtnRef = useRef<HTMLElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fillQuickAccount = (demoEmail: string, role: 'peserta' | 'juri' | 'panitia' | 'super_admin') => {
@@ -51,7 +52,13 @@ export default function LoginPage() {
         switchRole('peserta');
       }
 
-      router.push(result.data.redirectUrl);
+      const redirectUrl = result.data.redirectUrl;
+      // Panggil el.done() pada tombol Sakuga untuk menampilkan animasi centang anime saat login sukses
+      loginBtnRef.current?.done?.();
+
+      setTimeout(() => {
+        router.push(redirectUrl);
+      }, 700);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
       setErrorMessage(msg);
@@ -124,18 +131,15 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="pt-2">
-                <SakugaButton
+              <div className="pt-2 flex justify-center">
+                <sakuga-button
+                  ref={loginBtnRef}
                   type="submit"
-                  variant="brand"
-                  size="lg"
-                  isLoading={isLoading}
-                  sfxText="MASUK!!"
-                  className="w-full justify-center shadow-[0_4px_20px_rgba(155,107,242,0.4)]"
-                  rightIcon={<ArrowRight size={16} weight="bold" />}
+                  disabled={isLoading}
+                  style={{ width: '100%', textAlign: 'center' }}
                 >
-                  Masuk Sekarang
-                </SakugaButton>
+                  {isLoading ? 'Memeriksa Kredensial...' : 'Masuk Sekarang'}
+                </sakuga-button>
               </div>
 
               {/* Quick One-Click Demo Accounts Selector */}

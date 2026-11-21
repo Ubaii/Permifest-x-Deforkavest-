@@ -155,27 +155,25 @@ export function HeroSection() {
               ajak tim andalanmu, lalu kibarkan karyamu di panggung tertinggi.
             </p>
 
-            {/* CTA Buttons dengan Sakuga Impact VFX */}
+            {/* CTA Buttons dengan Sakuga VFX Web Component Resmi */}
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <SakugaButton
-                href="/register"
-                variant="brand"
-                size="lg"
-                sfxText="GASSS!!"
-                className="px-7 py-3.5 text-base"
+              <sakuga-button
+                onClick={() => {
+                  window.location.href = '/register';
+                }}
               >
                 Daftar sekarang
-              </SakugaButton>
+              </sakuga-button>
 
-              <SakugaButton
-                href="#lomba"
+              <sakuga-button
                 variant="secondary"
-                size="lg"
-                sfxText="IKUZO!!"
-                className="px-6 py-3.5 text-base"
+                onClick={() => {
+                  const el = document.getElementById('lomba');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
                 Lihat cabang lomba
-              </SakugaButton>
+              </sakuga-button>
             </div>
 
             {/* Badges Info Ringkas */}
