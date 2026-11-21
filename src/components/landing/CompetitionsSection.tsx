@@ -1,23 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { formatCurrency } from '@/lib/utils';
-import {
-  X,
-  ArrowRight,
-  CheckCircle,
-} from '@phosphor-icons/react';
+import { Competition } from '@/lib/types';
+import { X, CheckCircle } from '@phosphor-icons/react';
 
-interface CompetitionItem {
+interface CompetitionDisplayItem {
   id: string;
+  slug: string;
   name: string;
   type: 'academic' | 'non_academic';
   categoryType: 'gold' | 'sky';
   categoryLabel: 'Akademik' | 'Non-akademik';
   iconBg: string;
-  iconPath: React.ReactNode;
   desc: string;
   formatText: string;
   feeText: string;
@@ -26,20 +22,16 @@ interface CompetitionItem {
   allowedFormat: string;
 }
 
-const COMPETITIONS_DATA: CompetitionItem[] = [
+const DEFAULT_COMPETITIONS: CompetitionDisplayItem[] = [
   {
-    id: 'comp-uiux',
-    name: 'UI/UX',
+    id: 'c2222222-2222-2222-2222-222222222222',
+    slug: 'uiux',
+    name: 'UI/UX Design',
     type: 'academic',
     categoryType: 'gold',
     categoryLabel: 'Akademik',
     iconBg: '#6CC4FF',
-    iconPath: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#0B0720" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8 5v19l5-5 4 8 3-1.5-4-8h7z" />
-      </svg>
-    ),
-    desc: 'Rancang pengalaman yang enak dipakai, dari riset sampai prototipe.',
+    desc: 'Rancang pengalaman yang enak dipakai, dari riset sampai prototipe interaktif.',
     formatText: 'Individu · Desain Figma',
     feeText: 'Rp 75.000',
     registrationFee: 75000,
@@ -47,21 +39,14 @@ const COMPETITIONS_DATA: CompetitionItem[] = [
     allowedFormat: 'Figma Prototype URL & Case Study PDF',
   },
   {
-    id: 'comp-arch',
+    id: 'c3333333-3333-3333-3333-333333333333',
+    slug: 'it_system_arch',
     name: 'IT System Architecture',
     type: 'academic',
     categoryType: 'gold',
     categoryLabel: 'Akademik',
     iconBg: '#E6C978',
-    iconPath: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#0B0720" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="5" y="5" width="22" height="7" rx="2" />
-        <rect x="5" y="20" width="10" height="7" rx="2" />
-        <rect x="17" y="20" width="10" height="7" rx="2" />
-        <path d="M16 12v4M10 20v-4h12v4" />
-      </svg>
-    ),
-    desc: 'Susun arsitektur sistem yang kuat, rapi, dan siap tumbuh.',
+    desc: 'Susun arsitektur sistem yang kuat, rapi, terukur, dan siap tumbuh.',
     formatText: 'Tim (1–3 orang) · Proposal PDF',
     feeText: 'Rp 100.000',
     registrationFee: 100000,
@@ -69,19 +54,14 @@ const COMPETITIONS_DATA: CompetitionItem[] = [
     allowedFormat: 'Blueprint Dokumen & Diagram Arsitektur (.pdf)',
   },
   {
-    id: 'comp-esai',
+    id: 'c1111111-1111-1111-1111-111111111111',
+    slug: 'esai',
     name: 'Esai Cyber Security',
     type: 'academic',
     categoryType: 'gold',
     categoryLabel: 'Akademik',
     iconBg: '#C4F15A',
-    iconPath: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#0B0720" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 4l10 4v8c0 6-4 10-10 12C10 26 6 22 6 16V8z" />
-        <path d="M11 16l4 4 6-8" />
-      </svg>
-    ),
-    desc: 'Tulis gagasanmu soal keamanan siber, tajam dan enak dibaca.',
+    desc: 'Tulis gagasanmu soal keamanan siber dan ketahanan digital secara tajam dan solutif.',
     formatText: 'Individu · Naskah PDF',
     feeText: 'Rp 50.000',
     registrationFee: 50000,
@@ -89,58 +69,89 @@ const COMPETITIONS_DATA: CompetitionItem[] = [
     allowedFormat: 'Naskah Esai Ilmiah (.pdf, maks 15MB)',
   },
   {
-    id: 'comp-ml',
-    name: 'Machine Learning',
+    id: 'c4444444-4444-4444-4444-444444444444',
+    slug: 'pes',
+    name: 'eFootball PES 2026',
+    type: 'non_academic',
+    categoryType: 'sky',
+    categoryLabel: 'Non-akademik',
+    iconBg: '#6CC4FF',
+    desc: 'Turnamen sepak bola virtual konsol PlayStation kompetitif satu lawan satu.',
+    formatText: 'Individu · Offline PS Arena',
+    feeText: 'Rp 35.000',
+    registrationFee: 35000,
+    participationType: 'Individu (1 orang)',
+    allowedFormat: 'Penyisihan Grup & Bracket Knockout Offline',
+  },
+  {
+    id: 'c5555555-5555-5555-5555-555555555555',
+    slug: 'ml',
+    name: 'Mobile Legends: Bang Bang',
     type: 'non_academic',
     categoryType: 'sky',
     categoryLabel: 'Non-akademik',
     iconBg: '#F0A6F2',
-    iconPath: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#0B0720" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="7" cy="9" r="3" />
-        <circle cx="7" cy="23" r="3" />
-        <circle cx="16" cy="16" r="3" />
-        <circle cx="25" cy="16" r="3" />
-        <path d="M10 9l3.5 5M10 23l3.5-5M19 16h3" />
-      </svg>
-    ),
-    desc: 'Latih modelmu, kejar akurasi, dan buktikan di papan skor.',
-    formatText: 'Tim / Individu · Notebook / Code',
-    feeText: 'Rp 75.000',
-    registrationFee: 75000,
-    participationType: 'Individu atau Tim (1–2 orang)',
-    allowedFormat: 'Model Weights & Notebook (.ipynb / GitHub repo)',
-  },
-  {
-    id: 'comp-pes',
-    name: 'PES',
-    type: 'non_academic',
-    categoryType: 'sky',
-    categoryLabel: 'Non-akademik',
-    iconBg: '#9B6BF2',
-    iconPath: (
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="#0B0720" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="9" width="26" height="15" rx="7" />
-        <path d="M10 13v7M6.5 16.5h7" />
-        <circle cx="21" cy="14.5" r="1" />
-        <circle cx="24" cy="18.5" r="1" />
-      </svg>
-    ),
-    desc: 'Adu strategi di lapangan hijau. Jempol boleh pegal, hati jangan.',
-    formatText: 'Individu · Bracket Tanding',
-    feeText: 'Rp 35.000',
-    registrationFee: 35000,
-    participationType: 'Individu (1v1)',
-    allowedFormat: 'Turnamen e-sport offline/online bracket',
+    desc: 'Turnamen 5v5 MLBB memperebutkan gelar penguasa Land of Dawn di arena Yogyakarta.',
+    formatText: 'Tim (5–6 orang) · Custom Draft',
+    feeText: 'Rp 100.000',
+    registrationFee: 100000,
+    participationType: 'Tim (5 pemain + 1 cadangan)',
+    allowedFormat: 'Turnamen Online & Main Event Offline UST',
   },
 ];
 
 interface CompetitionsSectionProps {
   id?: string;
+  initialCompetitions?: Competition[];
 }
 
-export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) {
-  const [selectedComp, setSelectedComp] = useState<CompetitionItem | null>(null);
+export function CompetitionsSection({
+  id = 'lomba',
+  initialCompetitions,
+}: CompetitionsSectionProps) {
+  const [selectedComp, setSelectedComp] = useState<CompetitionDisplayItem | null>(null);
+
+  // Petakan data dari Backend/Database Supabase bila tersedia
+  const displayItems: CompetitionDisplayItem[] = React.useMemo(() => {
+    if (!initialCompetitions || initialCompetitions.length === 0) {
+      return DEFAULT_COMPETITIONS;
+    }
+
+    const bgPalettes = ['#6CC4FF', '#E6C978', '#C4F15A', '#F0A6F2', '#9B6BF2'];
+
+    return initialCompetitions.map((comp, idx) => {
+      const isAcademic = comp.type === 'academic';
+      const partTypeLabel =
+        comp.participation_type === 'individual'
+          ? 'Individu (1 orang)'
+          : `Tim (${comp.min_team_size || 1}–${comp.max_team_size || 3} orang)`;
+
+      const allowedFormatStr =
+        comp.submission_config?.allowedTypes?.length
+          ? comp.submission_config.allowedTypes.join(', ')
+          : isAcademic
+          ? 'Dokumen Proposal / Naskah PDF'
+          : 'Turnamen Bracket Match';
+
+      return {
+        id: comp.id,
+        slug: comp.slug,
+        name: comp.name,
+        type: comp.type,
+        categoryType: isAcademic ? 'gold' : 'sky',
+        categoryLabel: isAcademic ? 'Akademik' : 'Non-akademik',
+        iconBg: bgPalettes[idx % bgPalettes.length],
+        desc: comp.description || 'Kompetisi resmi mahasiswa Permifest x Deforkafest 2026.',
+        formatText: `${comp.participation_type === 'individual' ? 'Individu' : 'Tim'} · ${
+          isAcademic ? 'Karya Ilmiah/Desain' : 'E-Sport Arena'
+        }`,
+        feeText: formatCurrency(comp.registration_fee),
+        registrationFee: comp.registration_fee,
+        participationType: partTypeLabel,
+        allowedFormat: allowedFormatStr,
+      };
+    });
+  }, [initialCompetitions]);
 
   return (
     <section
@@ -149,6 +160,9 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
       className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-2xl mb-10 text-left">
+        <span className="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-[#140D33] text-[#6CC4FF] border border-[#2E2266] mb-3 select-none">
+          Cabang Perlombaan Resmi
+        </span>
         <h2
           id="competitions-heading"
           className="text-3xl sm:text-4xl font-extrabold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight"
@@ -166,64 +180,60 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
           </span>
         </h2>
         <p className="mt-3 text-[#A99FD1] text-base leading-relaxed">
-          Lima cabang contoh. Daftar aslinya diatur panitia dan bisa bertambah kapan saja.
+          Seluruh cabang resmi terintegrasi dengan database backend. Pilih cabang yang sesuai minatmu untuk melihat ketentuan dan mendaftar.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {COMPETITIONS_DATA.map((comp) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {displayItems.map((comp) => (
           <article
             key={comp.id}
-            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/95 p-5 sm:p-6 comic-card-hover backdrop-blur-sm overflow-hidden"
+            className="group relative flex flex-col justify-between rounded-3xl border-2 border-[#2E2266] bg-[#140D33]/95 p-6 comic-card-hover backdrop-blur-sm overflow-hidden"
           >
-            {/* Manga Corner Slash Flare Accent */}
-            <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <div className="absolute top-[-10px] right-[-10px] w-8 h-8 bg-[#9B6BF2]/30 rotate-45 transform" />
-            </div>
-
             <div>
-              {/* Icon Box */}
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center border-2 border-[#F5F2FF] shadow-sm mb-4 transition-transform duration-200 group-hover:scale-105"
-                style={{ backgroundColor: comp.iconBg }}
-              >
-                {comp.iconPath}
+              {/* Category Pill Tag */}
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className={`inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+                    comp.categoryType === 'gold'
+                      ? 'bg-[#2a2108] text-[#E6C978] border border-[#524112]/50'
+                      : 'bg-[#082436] text-[#6CC4FF] border border-[#144766]/50'
+                  }`}
+                >
+                  {comp.categoryLabel}
+                </span>
+
+                <span className="text-xs font-bold font-mono text-[#A99FD1]">
+                  {comp.feeText}
+                </span>
               </div>
 
-              <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2 group-hover:text-[#F0A6F2] transition-colors">
+              <h3 className="text-xl sm:text-2xl font-black font-[family-name:var(--font-bricolage)] text-[#F5F2FF] mb-2 group-hover:text-[#F0A6F2] transition-colors leading-snug">
                 {comp.name}
               </h3>
 
-              {/* Badge */}
-              <span
-                className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-3 ${
-                  comp.categoryType === 'gold'
-                    ? 'bg-[#2a2108] text-[#E6C978] border border-[#524112]/40'
-                    : 'bg-[#082436] text-[#6CC4FF] border border-[#144766]/40'
-                }`}
-              >
-                {comp.categoryLabel}
-              </span>
-
               {/* Description */}
-              <p className="text-sm text-[#A99FD1] leading-relaxed mb-4">
+              <p className="text-sm text-[#A99FD1] leading-relaxed mb-5">
                 {comp.desc}
               </p>
 
-              <p className="text-xs text-[#A99FD1]/90 font-medium">
-                Format: {comp.formatText} · Biaya: {comp.feeText}
-              </p>
+              <div className="pt-3 border-t border-[#2E2266]/70 text-xs text-[#A99FD1]/90 font-medium">
+                Format: <strong className="text-[#F5F2FF]">{comp.formatText}</strong>
+              </div>
             </div>
 
-            {/* CTA Button */}
-            <div className="mt-6 pt-4 border-t border-[#2E2266]/60">
-              <button
+            {/* CTA Button bergaya Sakuga */}
+            <div className="mt-6 pt-4 border-t border-[#2E2266]/70">
+              <SakugaButton
                 type="button"
+                variant="secondary"
+                size="md"
+                sfxText="EXPLORE!!"
                 onClick={() => setSelectedComp(comp)}
-                className="w-full inline-flex items-center justify-center rounded-xl px-4 py-2.5 font-bold text-xs sm:text-sm text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#9B6BF2] transition-all min-h-[44px] cursor-pointer"
+                className="w-full justify-center text-xs sm:text-sm"
               >
-                Lihat detail & panduan
-              </button>
+                Lihat Panduan & Syarat
+              </SakugaButton>
             </div>
           </article>
         ))}
@@ -232,38 +242,41 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
       {/* ── Dialog Detail Lomba Modal ── */}
       {selectedComp && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
           onClick={() => setSelectedComp(null)}
         >
           <div
-            className="relative w-full max-w-lg rounded-2xl bg-[#140D33] border border-[#2E2266] p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-lg rounded-3xl bg-[#140D33] border-2 border-[#9B6BF2] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
-              onClick={() => setSelectedComp(null)}
-              className="absolute top-4 right-4 p-2 rounded-lg text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Tutup"
-            >
-              <X size={20} weight="bold" />
-            </button>
+            {/* Header Modal */}
+            <div className="flex items-center justify-between mb-3">
+              <span
+                className={`inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+                  selectedComp.categoryType === 'gold'
+                    ? 'bg-[#2a2108] text-[#E6C978]'
+                    : 'bg-[#082436] text-[#6CC4FF]'
+                }`}
+              >
+                {selectedComp.categoryLabel}
+              </span>
 
-            <span
-              className={`inline-block px-3 py-0.5 rounded-full text-xs font-bold mb-2 ${
-                selectedComp.categoryType === 'gold'
-                  ? 'bg-[#2a2108] text-[#E6C978]'
-                  : 'bg-[#082436] text-[#6CC4FF]'
-              }`}
-            >
-              {selectedComp.categoryLabel}
-            </span>
+              <button
+                type="button"
+                onClick={() => setSelectedComp(null)}
+                className="p-2 rounded-xl text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+                aria-label="Tutup"
+              >
+                <X size={20} weight="bold" />
+              </button>
+            </div>
 
             <h3
               id="modal-title"
-              className="text-2xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] pr-8"
+              className="text-2xl font-black font-[family-name:var(--font-bricolage)] text-[#F5F2FF] pr-6"
             >
               {selectedComp.name}
             </h3>
@@ -291,7 +304,7 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
               <div className="flex items-center gap-2">
                 <CheckCircle size={18} className="text-[#C4F15A] shrink-0" weight="fill" />
                 <span>
-                  Pengumpulan Karya: <strong className="text-[#F5F2FF]">{selectedComp.allowedFormat}</strong>
+                  Ketentuan Berkas: <strong className="text-[#F5F2FF]">{selectedComp.allowedFormat}</strong>
                 </span>
               </div>
             </div>
@@ -300,7 +313,7 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
               <button
                 type="button"
                 onClick={() => setSelectedComp(null)}
-                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px] cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px] cursor-pointer"
               >
                 Tutup
               </button>
@@ -310,7 +323,7 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
                 size="md"
                 sfxText="DAFTAR!!"
               >
-                Daftar Sekarang
+                Daftar Cabang Ini
               </SakugaButton>
             </div>
           </div>

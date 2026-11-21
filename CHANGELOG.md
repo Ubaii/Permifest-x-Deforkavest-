@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi penuh data cabang kompetisi Landing Page (`CompetitionsSection.tsx`) langsung dari database Supabase / Backend via `competitionRepository.getAll()`.
+- Implementasi penuh Sakuga VFX Button Action Style (`src/components/ui/sakuga-button.tsx`) dengan hard anime border, solid block pop shadow (`shadow-[4px_4px_0px_#0B0720]` membal menjadi `hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]`), miring dinamis `rotate(-1.5deg) skewX(-2deg)`, dan sensasi tactile press saat ditekan.
+- Pembersihan layout kanan Hero Section (`HeroSection.tsx`) dengan menghapus floating badges yang menumpuk di samping maskot, sehingga maskot Kupu-kupu Deforkafest tampil megah, proporsional, dan seimbang di sebelah kanan.
+- Penyesuaian Navbar (`src/components/layout/navbar.tsx`) bergaya anime pop Permifest x Deforkafest dengan tombol Masuk dan Daftar berbasis Sakuga Button.
 - Dukungan akun demo seeder dan auto-auth fallback pada `loginAction` (`src/features/auth/actions.ts`), `session.ts`, dan `proxy.ts` yang memungkinkan login instan untuk 4 role (`peserta@permifest.id`, `juri@permifest.id`, `panitia@permifest.id`, `admin@permifest.id`) dengan password `password123`.
 - Redesain halaman otentikasi publik (`/login` dan `/register`) bergaya Manga Pop Art Permifest x Deforkafest dengan kotak dialog komik, ambient atmosphere glow, tombol aksi Sakuga, dan tombol cepat One-Click Role Selector untuk pengujian.
 - Transformasi section peringkat beranda (`LeaderboardTeaser.tsx`) mengadopsi standar event nasional (referensi Arkavidia) menjadi "Apresiasi & Hadiah Kompetisi (Prize Pool & Benefit Showcase)" dengan 3 kartu benefit (Total Hadiah Puluhan Juta, Rekam Jejak Sertifikat Resmi, Panggung Final & Networking) serta callout transparan jadwal live leaderboard.

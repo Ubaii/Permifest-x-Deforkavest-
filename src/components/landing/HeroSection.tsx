@@ -9,7 +9,7 @@ import {
   getNextDeadline,
 } from '@/lib/landing-data';
 import { MascotIllustration } from './MascotIllustration';
-import { Sparkle, Trophy, GameController, MapPin, Clock } from '@phosphor-icons/react';
+import { Clock } from '@phosphor-icons/react';
 
 // ─── Countdown helpers ─────────────────────────────────────────────────────
 
@@ -84,7 +84,6 @@ export function HeroSection() {
     const handleMouseMove = (e: MouseEvent) => {
       if (reducedMotion) return;
       const { innerWidth, innerHeight } = window;
-      // Normalisasi -1 sampai 1
       const nx = (e.clientX / innerWidth - 0.5) * 2;
       const ny = (e.clientY / innerHeight - 0.5) * 2;
       setMousePos({ x: nx, y: ny });
@@ -99,16 +98,12 @@ export function HeroSection() {
     };
   }, [reducedMotion]);
 
-  const registrationDateLabel = nearestClose?.dateFormatted ?? '10 Desember 2026';
+  const registrationDateLabel = nearestClose?.dateFormatted ?? '11 Desember 2026';
 
-  // Parallax transform calculations
-  const mascotParallaxY = reducedMotion ? 0 : scrollY * -0.15;
-  const mascotTiltX = reducedMotion ? 0 : mousePos.y * -6;
-  const mascotTiltY = reducedMotion ? 0 : mousePos.x * 8;
-
-  const badge1Parallax = reducedMotion ? 0 : scrollY * -0.28 + mousePos.y * -8;
-  const badge2Parallax = reducedMotion ? 0 : scrollY * -0.22 + mousePos.y * 10;
-  const badge3Parallax = reducedMotion ? 0 : scrollY * -0.35 + mousePos.x * 8;
+  // Parallax transform calculations untuk maskot
+  const mascotParallaxY = reducedMotion ? 0 : scrollY * -0.12;
+  const mascotTiltX = reducedMotion ? 0 : mousePos.y * -5;
+  const mascotTiltY = reducedMotion ? 0 : mousePos.x * 6;
 
   return (
     <section
@@ -126,6 +121,10 @@ export function HeroSection() {
           <div className="flex-1 max-w-2xl text-left">
             {/* Live Indicator Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#140D33]/90 text-[#F5F2FF] border border-[#2E2266] shadow-sm mb-5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4F15A] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C4F15A]" />
+              </span>
               <span className="tracking-wide">Pendaftaran Gelombang 1 Dibuka</span>
               <span className="text-[#A99FD1]/50">|</span>
               <span className="text-[#C4F15A]">Yogyakarta</span>
@@ -157,13 +156,13 @@ export function HeroSection() {
             </p>
 
             {/* CTA Buttons dengan Sakuga Impact VFX */}
-            <div className="mt-8 flex flex-wrap items-center gap-3.5">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <SakugaButton
                 href="/register"
                 variant="brand"
                 size="lg"
                 sfxText="GASSS!!"
-                className="px-7 py-3.5 text-base shadow-[0_6px_28px_rgba(155,107,242,0.45)]"
+                className="px-7 py-3.5 text-base"
               >
                 Daftar sekarang
               </SakugaButton>
@@ -220,7 +219,7 @@ export function HeroSection() {
                         </span>
                       </div>
 
-                      {/* Pemisah titik dua digital (kecuali di akhir) */}
+                      {/* Pemisah titik dua digital */}
                       {i < 3 && (
                         <div className="flex flex-col justify-center items-center pb-5 select-none" aria-hidden="true">
                           <span className="text-sm sm:text-base font-bold text-[#9B6BF2] animate-pulse">
@@ -242,70 +241,27 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu dengan Parallax 3D Depth ── */}
-          <div className="flex-1 w-full max-w-[540px] flex justify-center items-center relative">
+          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu (Bersih, Proporsional & Elegan) ── */}
+          <div className="flex-1 w-full max-w-[480px] flex justify-center items-center relative">
             {/* Anime Aura Glow di belakang maskot */}
             <div
-              className="absolute w-[380px] h-[380px] rounded-full pointer-events-none transition-transform duration-300"
+              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none transition-transform duration-300"
               style={{
-                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.45) 0%, rgba(213, 107, 217, 0.25) 45%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.4) 0%, rgba(213, 107, 217, 0.2) 45%, transparent 70%)',
                 filter: 'blur(60px)',
                 transform: `translateY(${mascotParallaxY * 0.5}px)`,
               }}
             />
 
-            {/* Parallax Floating Manga Action Badges */}
-            {/* Floating Badge 1: 5 Cabang Lomba */}
+            {/* Container Maskot dengan tilt 3D interaktif yang menyatu */}
             <div
-              className="comic-card-hover absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
-              style={{
-                transform: `translateY(${badge1Parallax}px)`,
-              }}
-            >
-              <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
-                5 Cabang Lomba
-              </span>
-              <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-1">
-                Akademik & E-Sport
-              </span>
-            </div>
-
-            {/* Floating Badge 2: Total Hadiah */}
-            <div
-              className="comic-card-hover-alt absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
-              style={{
-                transform: `translateY(${badge2Parallax}px)`,
-              }}
-            >
-              <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
-                Hadiah Puluhan Juta
-              </span>
-              <span className="block text-[10px] text-[#E6C978] font-semibold mt-1">
-                + Sertifikat Resmi
-              </span>
-            </div>
-
-            {/* Floating Badge 3: Yogyakarta Arena */}
-            <div
-              className="comic-card-hover hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
-              style={{
-                transform: `translateY(${badge3Parallax}px)`,
-              }}
-            >
-              <span className="text-[11px] font-bold text-[#F5F2FF]">
-                UST Yogyakarta Arena
-              </span>
-            </div>
-
-            {/* Container Maskot dengan tilt 3D interaktif */}
-            <div
-              className="w-full max-w-[460px] aspect-[520/480] relative z-10 transition-transform duration-200 ease-out"
+              className="w-full aspect-[520/480] relative z-10 transition-transform duration-200 ease-out"
               style={{
                 transform: `translateY(${mascotParallaxY}px) rotateX(${mascotTiltX}deg) rotateY(${mascotTiltY}deg)`,
                 perspective: '1000px',
               }}
             >
-              <MascotIllustration className="w-full h-full drop-shadow-[0_12px_32px_rgba(155,107,242,0.35)]" variant="hero" />
+              <MascotIllustration className="w-full h-full drop-shadow-[0_16px_40px_rgba(155,107,242,0.4)]" variant="hero" />
             </div>
           </div>
         </div>

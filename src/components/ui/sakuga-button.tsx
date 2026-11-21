@@ -8,7 +8,7 @@ import { getSakugaVfx, SakugaConfig } from '@/lib/sakuga/sakuga-engine';
 export interface SakugaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Rute URL Next.js jika tombol bertindak sebagai link navigasi */
   href?: string;
-  /** Varian visual tombol */
+  /** Varian visual tombol bergaya Sakuga Anime */
   variant?: 'brand' | 'primary' | 'secondary' | 'gold' | 'outline';
   /** Ukuran tombol */
   size?: 'sm' | 'md' | 'lg';
@@ -73,12 +73,15 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
       onClick?.(e);
     };
 
-    // Styling dengan anime squash & stretch pop physics
+    // Styling Sakuga VFX sejati: Hard Anime Border, Manga Solid Pop Shadow, Tilt & Skew Hover
     const baseStyles = cn(
-      'relative inline-flex items-center justify-center font-bold select-none cursor-pointer',
-      'rounded-xl transition-all duration-200',
-      'ease-[cubic-bezier(0.34,1.56,0.64,1)]', // Spring overshoot curve
-      'active:scale-[0.92] hover:scale-[1.03] hover:-translate-y-0.5',
+      'relative inline-flex items-center justify-center font-black select-none cursor-pointer',
+      'rounded-xl transition-all duration-150',
+      'ease-[cubic-bezier(0.34,1.56,0.64,1)]', // Spring snappy curve
+      // Efek Anime Hover: miring, skew, terangkat ke kiri atas
+      'hover:-translate-y-1 hover:-translate-x-0.5 hover:-rotate-1.5 hover:skew-x-[-2deg]',
+      // Efek Anime Active (Press): menekan ke kanan bawah, kembali tegak, shadow mengecil
+      'active:translate-y-0.5 active:translate-x-0.5 active:rotate-0 active:skew-x-0 active:scale-95',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9B6BF2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0720]',
       'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none',
       'motion-reduce:transform-none motion-reduce:transition-none'
@@ -86,25 +89,34 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
 
     const variants = {
       brand: cn(
-        'text-[#0B0720] shadow-[0_4px_16px_rgba(213,107,217,0.35)]',
-        'hover:shadow-[0_6px_24px_rgba(155,107,242,0.5)]',
-        'border border-[#E0A7F5]/30'
+        'text-[#0B0720] border-2 border-[#0B0720]',
+        'shadow-[4px_4px_0px_#0B0720]',
+        'hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]',
+        'active:shadow-[1px_1px_0px_#0B0720]'
       ),
       primary: cn(
-        'bg-[#6CC4FF] text-[#082436] shadow-[0_4px_16px_rgba(108,196,255,0.35)]',
-        'hover:bg-[#85cfff] hover:shadow-[0_6px_24px_rgba(108,196,255,0.5)]'
+        'bg-[#6CC4FF] text-[#082436] border-2 border-[#082436]',
+        'shadow-[4px_4px_0px_#082436]',
+        'hover:bg-[#85cfff] hover:shadow-[7px_7px_0px_#082436,10px_10px_0px_#9B6BF2]',
+        'active:shadow-[1px_1px_0px_#082436]'
       ),
       gold: cn(
-        'bg-[#FFE359] text-[#2A2108] shadow-[0_4px_16px_rgba(255,227,89,0.35)]',
-        'hover:bg-[#ffea75] hover:shadow-[0_6px_24px_rgba(255,227,89,0.5)]'
+        'bg-[#FFE359] text-[#2A2108] border-2 border-[#2A2108]',
+        'shadow-[4px_4px_0px_#2A2108]',
+        'hover:bg-[#ffea75] hover:shadow-[7px_7px_0px_#2A2108,10px_10px_0px_#D56BD9]',
+        'active:shadow-[1px_1px_0px_#2A2108]'
       ),
       secondary: cn(
-        'bg-[#140D33]/90 text-[#F5F2FF] border border-[#2E2266]',
-        'hover:bg-[#1D1347] hover:border-[#4B37A6] shadow-sm'
+        'bg-[#140D33] text-[#F5F2FF] border-2 border-[#2E2266]',
+        'shadow-[4px_4px_0px_#0B0720]',
+        'hover:bg-[#1D1347] hover:border-[#9B6BF2] hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#9B6BF2]',
+        'active:shadow-[1px_1px_0px_#0B0720]'
       ),
       outline: cn(
-        'bg-transparent text-[#F5F2FF] border-2 border-[#9B6BF2]/60',
-        'hover:bg-[#9B6BF2]/15 hover:border-[#9B6BF2]'
+        'bg-transparent text-[#F5F2FF] border-2 border-[#9B6BF2]',
+        'shadow-[3px_3px_0px_#9B6BF2]',
+        'hover:bg-[#9B6BF2]/20 hover:shadow-[6px_6px_0px_#9B6BF2,9px_9px_0px_#D56BD9]',
+        'active:shadow-[1px_1px_0px_#9B6BF2]'
       ),
     };
 
@@ -116,7 +128,7 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
         : undefined;
 
     const sizes = {
-      sm: 'text-xs px-3.5 py-1.5 gap-1.5 min-h-[36px]',
+      sm: 'text-xs px-3.5 py-1.5 gap-1.5 min-h-[38px]',
       md: 'text-sm px-5 py-2.5 gap-2 min-h-[44px]',
       lg: 'text-base px-6 py-3 gap-2.5 min-h-[48px]',
     };

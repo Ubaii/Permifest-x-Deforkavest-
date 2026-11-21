@@ -10,18 +10,31 @@ import { HowToRegisterSection } from '@/components/landing/HowToRegisterSection'
 import { FaqSection } from '@/components/landing/FaqSection';
 import { CtaClosingSection } from '@/components/landing/CtaClosingSection';
 import { StickyBottomBar } from '@/components/landing/StickyBottomBar';
+import { competitionRepository } from '@/lib/repositories';
+import { Competition } from '@/lib/types';
 
-export default function HomePage() {
+export const instant = false;
+
+export default async function HomePage() {
+  // Ambil data kompetisi langsung dari database backend / Supabase
+  let competitions: Competition[] = [];
+  try {
+    competitions = await competitionRepository.getAll();
+  } catch {
+    // Graceful fallback ke mock data bila Supabase koneksi offline
+    competitions = [];
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0B0720] text-[#F5F2FF]">
       {/* ── Header / Navbar ── */}
       <Navbar />
 
-      {/* ── Main Landing Content (Sesuai docs/Permifest x Deforkafest - Landing Page.html) ── */}
+      {/* ── Main Landing Content ── */}
       <main id="main-content" className="flex-1">
         <HeroSection />
         <OrganizerStrip />
-        <CompetitionsSection id="lomba" />
+        <CompetitionsSection id="lomba" initialCompetitions={competitions} />
         <TimelineSection id="jadwal" />
         <LeaderboardTeaser />
         <HowToRegisterSection id="daftar" />
