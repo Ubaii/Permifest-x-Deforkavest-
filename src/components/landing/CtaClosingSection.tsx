@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { MascotIllustration } from './MascotIllustration';
 
 export function CtaClosingSection() {
@@ -44,15 +44,14 @@ export function CtaClosingSection() {
           </p>
 
           <div className="mt-6">
-            <Link
+            <SakugaButton
               href="/register"
-              className="inline-flex items-center justify-center rounded-xl px-7 py-3.5 font-bold text-sm text-[#0B0720] transition-opacity hover:opacity-90 min-h-[48px]"
-              style={{
-                background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
-              }}
+              variant="brand"
+              size="lg"
+              sfxText="GASSS!!"
             >
               Daftar sekarang
-            </Link>
+            </SakugaButton>
           </div>
         </div>
       </div>

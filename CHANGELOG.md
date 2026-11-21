@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Modul visual kinetik Sakuga VFX (`src/lib/sakuga/sakuga-engine.ts`) berbasis Canvas 2D overlay dengan fisika partikel anime (diamond shards, speed slash lines, shockwave donut, anime kira stars, serta teks onomatopoeia manga dengan outline pekat).
+- Komponen interaktif `<SakugaButton>` (`src/components/ui/sakuga-button.tsx`) dengan animasi spring squash & stretch, transisi overshoot, integrasi palet warna Permifest, serta kompatibilitas penuh dengan `prefers-reduced-motion`.
+- Integrasi tombol aksi berenergi kinetik Sakuga pada Hero Section CTA Landing Page ("Daftar Sekarang", "Lihat cabang lomba"), Closing CTA Section, dan tombol Kirim Karya Final pada Lembar Pengumpulan Peserta (`/dashboard/peserta/submission`).
 - Standardisasi migrasi database Supabase di `supabase/migrations/` (Schema, Functions & Triggers, RLS, Storage).
 - Skema 20 tabel PostgreSQL, custom enum, constraints, dan index performa sesuai `docs/SCHEMA.md`.
 - Fungsi keamanan dan trigger: `has_role` berlingkup lomba, `handle_new_user` (default registrasi selalu peserta), `guard_locked_scores` (kunci nilai), `admin_override_score` (audit darurat), serta view `v_final_scores`.

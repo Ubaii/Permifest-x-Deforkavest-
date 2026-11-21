@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import {
   getNearestRegistrationClose,
   getNextDeadline,
@@ -124,24 +125,25 @@ export function HeroSection() {
               peringkat. Santai aja, kami yang urus jadwalnya.
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons dengan Sakuga Impact VFX */}
             <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link
+              <SakugaButton
                 href="/register"
-                className="inline-flex items-center justify-center rounded-xl px-6 py-3 font-bold text-sm text-[#0B0720] transition-opacity hover:opacity-90 min-h-[48px]"
-                style={{
-                  background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
-                }}
+                variant="brand"
+                size="lg"
+                sfxText="GASSS!!"
               >
                 Daftar sekarang
-              </Link>
+              </SakugaButton>
 
-              <a
+              <SakugaButton
                 href="#lomba"
-                className="inline-flex items-center justify-center rounded-xl px-6 py-3 font-bold text-sm text-[#F5F2FF] bg-[#140D33]/80 border border-[#2E2266] hover:bg-[#1d1347] transition-colors min-h-[48px]"
+                variant="secondary"
+                size="lg"
+                sfxText="IKUZO!!"
               >
                 Lihat cabang lomba
-              </a>
+              </SakugaButton>
             </div>
 
             {/* Badges Info */}

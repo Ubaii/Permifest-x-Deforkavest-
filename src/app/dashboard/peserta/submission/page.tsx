@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -345,9 +346,15 @@ export default function PesertaSubmissionPage() {
             <Button type="button" variant="ghost" size="sm" onClick={() => setModalOpen(false)}>
               Batal
             </Button>
-            <Button type="submit" variant="primary" size="sm" isLoading={submitting}>
+            <SakugaButton
+              type="submit"
+              variant="brand"
+              size="sm"
+              isLoading={submitting}
+              sfxText="KIRIM!!"
+            >
               Kirim Karya
-            </Button>
+            </SakugaButton>
           </div>
         </form>
       </Modal>
