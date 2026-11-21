@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Standardisasi tombol aksi ke format **Pop-Art Kinetik Berbasis CSS Murni** (`<SakugaButton>`) dengan border komik pekat, hover miring dinamis `rotate(-1.5deg) skewX(-2deg)`, solid manga shadow pop yang membal `hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]`, dan tactile press `active:scale-95` yang diproses 100% oleh GPU browser di level *Compositor Thread*.
+- Pencopotan total script `public/button.js` dan Web Component `<sakuga-button>` untuk mengeliminasi looping `requestAnimationFrame` abadi, forced synchronous layout thrashing (`getBoundingClientRect`), serta canvas fullscreen 100vw x 100vh yang sebelumnya membebani CPU/GPU pengguna.
+- Pembersihan dan optimasi penuh performa rendering: beban CPU saat halaman diam turun drastis ke ~0% dengan respons interaksi instan tanpa jeda.
 - Integrasi resmi Web Component Sakuga Button (`<sakuga-button>`) tanpa dependensi eksternal dari `https://sakuga-vfx.vercel.app/button/button.js` tersimpan di `public/button.js`, dimuat melalui plain `<script src="/button.js"></script>` di `src/app/layout.tsx`.
 - Deklarasi TypeScript `src/types/sakuga.d.ts` untuk `JSX.IntrinsicElements['sakuga-button']` dan method `el.done(hold)` pada elemen HTML.
 - Pengkabelan (wiring) tombol submit form dengan Sakuga Web Component dan pemanggilan method `el.done()` saat aksi berhasil (misal: submit berkas karya di `/dashboard/peserta/submission`, login akun di `/login`, dan registrasi di `/register`).

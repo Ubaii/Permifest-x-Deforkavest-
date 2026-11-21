@@ -24,7 +24,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successInfo, setSuccessInfo] = useState<string | null>(null);
-  const registerBtnRef = useRef<HTMLElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,12 +59,9 @@ export default function RegisterPage() {
 
       setSuccessInfo(res.message || 'Pendaftaran akun berhasil!');
 
-      // Panggil el.done() pada tombol Sakuga untuk menampilkan checklist anime saat registrasi sukses
-      registerBtnRef.current?.done?.();
-
       setTimeout(() => {
         router.push('/dashboard/peserta');
-      }, 1200);
+      }, 1000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Terjadi kegagalan koneksi.';
       setErrorMessage(msg);
@@ -185,15 +181,17 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className="pt-2 flex justify-center">
-                  <sakuga-button
-                    ref={registerBtnRef}
+                <div className="pt-2">
+                  <SakugaButton
                     type="submit"
-                    disabled={isLoading}
-                    style={{ width: '100%', textAlign: 'center' }}
+                    variant="brand"
+                    size="lg"
+                    isLoading={isLoading}
+                    className="w-full justify-center shadow-[0_4px_20px_rgba(155,107,242,0.4)]"
+                    rightIcon={<ArrowRight size={16} weight="bold" />}
                   >
-                    {isLoading ? 'Membuat Akun...' : 'Daftar Akun Sekarang'}
-                  </sakuga-button>
+                    Daftar Akun Sekarang
+                  </SakugaButton>
                 </div>
 
                 <div className="text-center text-xs text-[#A99FD1] pt-3 border-t border-[#2E2266]/80">

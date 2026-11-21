@@ -33,9 +33,9 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
       href,
       variant = 'brand',
       size = 'md',
-      sfxText = 'GASSS!!',
+      sfxText,
       vfxConfig,
-      disableVfx = false,
+      disableVfx = true,
       isLoading = false,
       leftIcon,
       rightIcon,
@@ -50,6 +50,7 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
     const handleTrigger = (e: React.MouseEvent<any>) => {
       if (disabled || isLoading) return;
 
+      // Pure CSS by default: Tidak memanggil canvas JS sama sekali demi performa maksimal
       if (!disableVfx && internalRef.current) {
         let palette: string[] | undefined = vfxConfig?.colors;
         if (!palette) {
@@ -66,7 +67,7 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
           sfxText,
           colors: palette,
           intensity: vfxConfig?.intensity ?? 1,
-          showSfxText: vfxConfig?.showSfxText ?? true,
+          showSfxText: vfxConfig?.showSfxText ?? false,
         });
       }
 
