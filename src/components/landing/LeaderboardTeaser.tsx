@@ -2,25 +2,24 @@
 
 import React from 'react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
-import { ArrowRight, Trophy } from '@phosphor-icons/react';
+import { ArrowRight } from '@phosphor-icons/react';
 
 export function LeaderboardTeaser() {
   return (
     <section
       id="peringkat"
-      aria-labelledby="leaderboard-heading"
+      aria-labelledby="benefits-heading"
       className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-2xl mb-10 text-left">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#1b2a07] text-[#C4F15A] border border-[#3b5912]/40 mb-3">
-          <span className="inline-block w-2 h-2 rounded-full bg-[#C4F15A] mr-2 live-dot" aria-hidden="true" />
-          Live
+      <div className="max-w-3xl mb-12 text-left">
+        <span className="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-[#140D33] text-[#FFE359] border border-[#524112]/50 mb-3 select-none">
+          Apresiasi & Hadiah Kompetisi
         </span>
         <h2
-          id="leaderboard-heading"
-          className="text-3xl sm:text-4xl font-extrabold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight"
+          id="benefits-heading"
+          className="text-3xl sm:text-4xl font-extrabold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight leading-tight"
         >
-          Papan peringkat,{' '}
+          Hadiah & apresiasi, untuk yang{' '}
           <span
             style={{
               background: 'linear-gradient(135deg, #9B6BF2, #D56BD9)',
@@ -29,83 +28,91 @@ export function LeaderboardTeaser() {
               backgroundClip: 'text',
             }}
           >
-            tanpa nunggu
+            berani unjuk gigi
           </span>
         </h2>
         <p className="mt-3 text-[#A99FD1] text-base leading-relaxed">
-          Skor masuk, posisi langsung berubah. Kalau belum ada skor, papannya masih bersih dan
-          siap diperebutkan.
+          Bukan cuma adu kemampuan teknis, karyamu diapresiasi dengan panggung nyata, hadiah jutaan rupiah, dan sertifikat berbobot nasional.
         </p>
       </div>
 
-      {/* Podium Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-end max-w-5xl mx-auto">
-        {/* Juara 2 (Kiri) */}
-        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33] p-6 text-center order-2 md:order-1 transition-all hover:border-[#7c4ddb]">
-          <p
-            className="font-[family-name:var(--font-jetbrains)] font-bold text-4xl mb-2"
-            style={{ color: '#C9C3E0' }}
-          >
-            2
-          </p>
-          <h3 className="text-lg font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF]">
-            Tim Contoh B
-          </h3>
-          <p className="text-xs text-[#A99FD1] mt-1 font-medium">
-            Menunggu skor
-          </p>
+      {/* 3 Benefit / Prize Highlight Cards (Arkavidia Style) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+        {/* Card 1: Total Prize Pool */}
+        <div className="comic-card-hover rounded-3xl border border-[#2E2266] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm">
+          <div>
+            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-4">
+              Total Hadiah
+            </div>
+            <h3 className="text-3xl sm:text-4xl font-black font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] leading-none mb-3">
+              Puluhan Juta
+            </h3>
+            <p className="text-sm text-[#A99FD1] leading-relaxed">
+              Uang tunai pembinaan dan piala juara untuk pemenang cabang akademik (UI/UX, ITSA, Esai) dan turnamen e-sport (PES, MLBB).
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#E6C978]">
+            Juara 1, 2, 3 & Kategori Spesial
+          </div>
         </div>
 
-        {/* Juara 1 (Tengah - Elevated) */}
-        <div
-          className="rounded-2xl border bg-[#140D33] p-8 sm:py-12 text-center order-1 md:order-2 shadow-[0_8px_32px_rgba(201,160,74,0.18)] transition-all hover:border-[#E6C978]"
-          style={{ borderColor: '#C9A04A' }}
-        >
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-3">
-            <Trophy size={14} weight="fill" />
-            Peringkat Pertama
-          </span>
-          <p
-            className="font-[family-name:var(--font-jetbrains)] font-bold leading-none mb-3"
-            style={{ color: '#E6C978', fontSize: '56px' }}
-          >
-            1
-          </p>
-          <h3 className="text-xl font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF]">
-            Tim Contoh A
-          </h3>
-          <p className="text-xs text-[#A99FD1] mt-1 font-medium">
-            Menunggu skor
-          </p>
+        {/* Card 2: Sertifikat Resmi & Pengakuan */}
+        <div className="comic-card-hover rounded-3xl border-2 border-[#9B6BF2] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm shadow-[0_12px_36px_rgba(155,107,242,0.2)]">
+          <div>
+            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#33113a] text-[#F0A6F2] border border-[#5c2466]/50 mb-4">
+              Rekam Jejak
+            </div>
+            <h3 className="text-3xl sm:text-4xl font-black font-[family-name:var(--font-bricolage)] text-[#F5F2FF] leading-none mb-3">
+              Sertifikat Resmi
+            </h3>
+            <p className="text-sm text-[#A99FD1] leading-relaxed">
+              Seluruh peserta dan finalis mendapatkan sertifikat resmi ber-SK penyelenggara yang sah untuk portofolio kampus dan beasiswa.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#F0A6F2]">
+            Diterbitkan Panitia Bersama
+          </div>
         </div>
 
-        {/* Juara 3 (Kanan) */}
-        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33] p-6 text-center order-3 transition-all hover:border-[#7c4ddb]">
-          <p
-            className="font-[family-name:var(--font-jetbrains)] font-bold text-4xl mb-2"
-            style={{ color: '#D98A5B' }}
-          >
-            3
-          </p>
-          <h3 className="text-lg font-bold font-[family-name:var(--font-bricolage)] text-[#F5F2FF]">
-            Tim Contoh C
-          </h3>
-          <p className="text-xs text-[#A99FD1] mt-1 font-medium">
-            Menunggu skor
-          </p>
+        {/* Card 3: Panggung & Relasi Komunitas */}
+        <div className="comic-card-hover-alt rounded-3xl border border-[#2E2266] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm">
+          <div>
+            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#082436] text-[#6CC4FF] border border-[#144766]/50 mb-4">
+              Networking
+            </div>
+            <h3 className="text-3xl sm:text-4xl font-black font-[family-name:var(--font-bricolage)] text-[#F5F2FF] leading-none mb-3">
+              Panggung Final
+            </h3>
+            <p className="text-sm text-[#A99FD1] leading-relaxed">
+              Kesempatan pitching langsung di hadapan dewan juri ahli dan terhubung dengan talenta mahasiswa teknologi se-Yogyakarta.
+            </p>
+          </div>
+          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#6CC4FF]">
+            Arena UST Yogyakarta
+          </div>
         </div>
       </div>
 
-      <div className="mt-10 text-center">
+      {/* Callout Status Leaderboard Live (Arkavidia Style) */}
+      <div className="mt-12 max-w-4xl mx-auto p-5 sm:p-6 rounded-2xl bg-[#0B0720] border border-[#2E2266] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div>
+          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-bold bg-[#140D33] text-[#C4F15A] border border-[#2E2266] mb-1">
+            Status: Papan Peringkat Live
+          </span>
+          <p className="text-xs sm:text-sm text-[#A99FD1]">
+            Klasemen peringkat interaktif akan dibuka secara live saat babak penjurian final dimulai pada <strong className="text-[#F5F2FF]">Desember 2026</strong>.
+          </p>
+        </div>
+
         <SakugaButton
           href="/leaderboard"
           variant="secondary"
-          size="md"
-          sfxText="LEADERBOARD!!"
-          className="border-[#2E2266] px-6 py-3"
-          rightIcon={<ArrowRight size={16} weight="bold" />}
+          size="sm"
+          sfxText="INTIP!!"
+          className="shrink-0 border-[#2E2266]"
+          rightIcon={<ArrowRight size={15} weight="bold" />}
         >
-          Buka Halaman Papan Peringkat Lengkap
+          Lihat Simulasi Leaderboard
         </SakugaButton>
       </div>
     </section>

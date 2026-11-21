@@ -38,16 +38,25 @@ export async function proxy(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    const demoRole = request.cookies.get('permifest_demo_role')?.value;
+    const isAuthenticated = Boolean(user || (demoRole && ['peserta', 'juri', 'panitia', 'super_admin'].includes(demoRole)));
+
     // 1. Redirect kasar jika pengguna belum login namun mengakses area dashboard
-    if (!user && pathname.startsWith('/dashboard')) {
+    if (!isAuthenticated && pathname.startsWith('/dashboard')) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
 
     // 2. Redirect jika pengguna yang sudah login mencoba mengakses /login atau /register
-    if (user && (pathname === '/login' || pathname === '/register')) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+    if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+      const targetDashboard =
+        demoRole === 'super_admin' || demoRole === 'panitia'
+          ? '/dashboard/admin'
+          : demoRole === 'juri'
+          ? '/dashboard/juri'
+          : '/dashboard/peserta';
+      return NextResponse.redirect(new URL(targetDashboard, request.url));
     }
   } catch {
     // Graceful fallback jika terjadi kegagalan jaringan

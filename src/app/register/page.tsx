@@ -5,13 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 import { useAppStore } from '@/lib/store';
 import { registerAction } from '@/features/auth/actions';
-import { Shield, ArrowRight, CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, ArrowRight } from '@phosphor-icons/react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -58,11 +57,11 @@ export default function RegisterPage() {
         email_verified: !res.data?.requiresVerification,
       });
 
-      setSuccessInfo(res.message || 'Pendaftaran berhasil!');
+      setSuccessInfo(res.message || 'Pendaftaran akun berhasil!');
 
       setTimeout(() => {
         router.push('/dashboard/peserta');
-      }, 1500);
+      }, 1400);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Terjadi kegagalan koneksi.';
       setErrorMessage(msg);
@@ -72,106 +71,141 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090d16]">
+    <div className="min-h-screen flex flex-col bg-[#0B0720] text-[#F5F2FF] relative overflow-hidden">
+      {/* ── Ambient Glow Atmosphere ── */}
+      <div
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(155, 107, 242, 0.2) 0%, rgba(213, 107, 217, 0.1) 50%, transparent 75%)',
+          filter: 'blur(90px)',
+        }}
+      />
+
       <Navbar />
 
-      <div className="flex-1 flex items-center justify-center p-4 cyber-grid py-12">
-        <Card className="w-full max-w-md border-cyan-500/30 glow-cyan">
-          <CardHeader className="text-center pb-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-cyan-500/20">
-              <Shield className="w-6 h-6 text-slate-950 stroke-[2.5]" />
+      <main className="flex-1 flex items-center justify-center p-4 py-16 relative z-10">
+        <div className="w-full max-w-lg">
+          {/* Card Box Manga Pop Art */}
+          <div className="relative rounded-3xl bg-[#140D33]/95 border-2 border-[#2E2266] p-7 sm:p-9 shadow-[0_16px_48px_rgba(0,0,0,0.6)] backdrop-blur-md">
+            {/* Washi Tape Header */}
+            <div className="inline-block px-3.5 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#C4F15A] shadow-sm mb-5 -rotate-2 select-none border border-black/20">
+              ★ Pendaftaran Peserta
             </div>
-            <CardTitle className="justify-center text-xl">Registrasi Akun Peserta</CardTitle>
-            <CardDescription>
-              Daftarkan diri Anda untuk mengikuti seluruh cabang kompetisi
-            </CardDescription>
-          </CardHeader>
 
-          <CardContent className="pt-4">
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] tracking-tight">
+              Daftar Akun Baru
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-[#A99FD1]">
+              Satu akun untuk mengikuti cabang akademik (UI/UX, ITSA, Esai) dan non-akademik (PES, MLBB).
+            </p>
+
             {successInfo ? (
-              <div className="p-6 text-center space-y-3">
-                <CheckCircle size={48} className="text-emerald-400 mx-auto" weight="fill" />
-                <h4 className="text-base font-bold text-white">Pendaftaran Akun Berhasil!</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
+              <div className="mt-6 p-6 rounded-2xl bg-[#0B0720] border border-[#2E2266] text-center space-y-3">
+                <CheckCircle size={44} className="text-[#C4F15A] mx-auto" weight="fill" />
+                <h4 className="text-base font-bold text-[#F5F2FF]">Pendaftaran Berhasil!</h4>
+                <p className="text-xs text-[#A99FD1] leading-relaxed">
                   {successInfo}
                 </p>
-                <p className="text-[11px] text-cyan-400">
-                  Mengalihkan Anda secara otomatis ke Dashboard Peserta...
+                <p className="text-[11px] text-[#6CC4FF] animate-pulse">
+                  Mengalihkan kamu ke Dashboard Peserta...
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 {errorMessage && (
                   <Alert variant="destructive" onClose={() => setErrorMessage(null)}>
-                    <AlertTitle>Pendaftaran Belum Berhasil</AlertTitle>
+                    <AlertTitle>Pendaftaran Gagal</AlertTitle>
                     <AlertDescription>{errorMessage}</AlertDescription>
                   </Alert>
                 )}
 
                 <Input
                   label="Nama Lengkap"
+                  type="text"
                   required
-                  placeholder="Contoh: Budi Pratama"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Nama Lengkapmu"
+                  className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
                 />
 
                 <Input
                   label="Alamat Email"
                   type="email"
                   required
-                  placeholder="nama@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nama@email.com"
+                  className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
                 />
 
-                <Input
-                  label="Instansi / Sekolah / Universitas"
-                  placeholder="Contoh: Universitas Gadjah Mada"
-                  value={institution}
-                  onChange={(e) => setInstitution(e.target.value)}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input
+                    label="Asal Instansi / Kampus"
+                    type="text"
+                    required
+                    value={institution}
+                    onChange={(e) => setInstitution(e.target.value)}
+                    placeholder="Contoh: UST Yogyakarta"
+                    className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
+                  />
+                  <Input
+                    label="Nomor WhatsApp (Aktif)"
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0812xxxxxxxx"
+                    className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
+                  />
+                </div>
 
-                <Input
-                  label="Nomor WhatsApp"
-                  placeholder="081234567890"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input
+                    label="Kata Sandi (Password)"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min. 8 karakter"
+                    className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
+                  />
+                  <Input
+                    label="Konfirmasi Kata Sandi"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Ulangi kata sandi"
+                    className="bg-[#0B0720] border-[#2E2266] focus:border-[#9B6BF2]"
+                  />
+                </div>
 
-                <Input
-                  label="Kata Sandi (Minimal 8 Karakter, Huruf & Angka)"
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="pt-2">
+                  <SakugaButton
+                    type="submit"
+                    variant="brand"
+                    size="lg"
+                    isLoading={isLoading}
+                    sfxText="DAFTAR!!"
+                    className="w-full justify-center shadow-[0_4px_20px_rgba(155,107,242,0.4)]"
+                    rightIcon={<ArrowRight size={16} weight="bold" />}
+                  >
+                    Daftar Akun Sekarang
+                  </SakugaButton>
+                </div>
 
-                <Input
-                  label="Konfirmasi Kata Sandi"
-                  type="password"
-                  required
-                  placeholder="Ulangi kata sandi"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-
-                <Button type="submit" variant="primary" className="w-full justify-center" isLoading={isLoading} rightIcon={<ArrowRight className="w-4 h-4" />}>
-                  Daftar Sekarang
-                </Button>
-
-                <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
-                  Sudah punya akun?{' '}
-                  <Link href="/login" className="text-cyan-400 font-semibold hover:underline">
-                    Masuk di sini
+                <div className="text-center text-xs text-[#A99FD1] pt-3 border-t border-[#2E2266]/80">
+                  Sudah memiliki akun?{' '}
+                  <Link href="/login" className="text-[#F5F2FF] font-bold hover:text-[#9B6BF2] transition-colors underline">
+                    Masuk ke akunmu
                   </Link>
                 </div>
               </form>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </main>
 
       <Footer />
     </div>

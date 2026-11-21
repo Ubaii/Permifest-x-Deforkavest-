@@ -181,10 +181,10 @@ export function HeroSection() {
 
             {/* Badges Info Ringkas */}
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50">
+              <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50">
                 Batas Daftar: {registrationDateLabel}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/50">
+              <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/50">
                 Biaya: Mulai Rp 35.000
               </span>
             </div>
@@ -193,8 +193,7 @@ export function HeroSection() {
             {nextDeadline && timeLeft && (
               <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_12px_36px_rgba(11,7,32,0.7)] backdrop-blur-md inline-block max-w-full">
                 <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#2E2266]/70">
-                  <span className="text-[11px] font-bold text-[#E6C978] uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkle size={13} weight="fill" className="text-[#FFE359]" />
+                  <span className="text-[11px] font-bold text-[#E6C978] uppercase tracking-wider">
                     Hitung Mundur Deadline Pendaftaran
                   </span>
                   <span className="text-[10px] font-mono text-[#A99FD1] bg-[#0B0720] px-2 py-0.5 rounded border border-[#2E2266]">
@@ -258,54 +257,43 @@ export function HeroSection() {
             {/* Parallax Floating Manga Action Badges */}
             {/* Floating Badge 1: 5 Cabang Lomba */}
             <div
-              className="comic-card-hover absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none cursor-default"
+              className="comic-card-hover absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge1Parallax}px)`,
               }}
             >
-              <div className="w-8 h-8 rounded-lg bg-[#9B6BF2]/20 flex items-center justify-center text-[#9B6BF2]">
-                <GameController size={18} weight="duotone" />
-              </div>
-              <div className="text-left">
-                <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
-                  5 Cabang Lomba
-                </span>
-                <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-0.5">
-                  Akademik & E-Sport
-                </span>
-              </div>
+              <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
+                5 Cabang Lomba
+              </span>
+              <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-1">
+                Akademik & E-Sport
+              </span>
             </div>
 
             {/* Floating Badge 2: Total Hadiah */}
             <div
-              className="comic-card-hover-alt absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none cursor-default"
+              className="comic-card-hover-alt absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge2Parallax}px)`,
               }}
             >
-              <div className="w-8 h-8 rounded-lg bg-[#FFE359]/20 flex items-center justify-center text-[#FFE359]">
-                <Trophy size={18} weight="duotone" />
-              </div>
-              <div className="text-left">
-                <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
-                  Hadiah Puluhan Juta
-                </span>
-                <span className="block text-[10px] text-[#E6C978] font-semibold mt-0.5">
-                  + Sertifikat Nasional
-                </span>
-              </div>
+              <span className="block text-[11px] font-extrabold text-[#F5F2FF] leading-none">
+                Hadiah Puluhan Juta
+              </span>
+              <span className="block text-[10px] text-[#E6C978] font-semibold mt-1">
+                + Sertifikat Resmi
+              </span>
             </div>
 
             {/* Floating Badge 3: Yogyakarta Arena */}
             <div
-              className="comic-card-hover hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md items-center gap-2 transition-transform duration-150 ease-out select-none cursor-default"
+              className="comic-card-hover hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge3Parallax}px)`,
               }}
             >
-              <MapPin size={16} weight="fill" className="text-[#EF4444]" />
               <span className="text-[11px] font-bold text-[#F5F2FF]">
-                UST Yogyakarta
+                UST Yogyakarta Arena
               </span>
             </div>
 

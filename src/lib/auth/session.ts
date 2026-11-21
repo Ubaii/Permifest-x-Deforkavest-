@@ -1,11 +1,12 @@
 import 'server-only';
 
+import { cookies } from 'next/headers';
 import { createClient as createServerSupabase } from '@/lib/supabase/server';
 import { AuthSessionUser, AppRole, AppPermission } from './types';
 import { hasPermission } from './permissions';
 
 /**
- * Mendapatkan pengguna yang sedang login dari sesi cookie Supabase.
+ * Mendapatkan pengguna yang sedang login dari sesi cookie Supabase atau sesi demo terotentikasi.
  * Mengembalikan null jika belum terautentikasi.
  */
 export async function getCurrentUser(): Promise<AuthSessionUser | null> {
@@ -16,27 +17,48 @@ export async function getCurrentUser(): Promise<AuthSessionUser | null> {
       error,
     } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return null;
+    if (!error && user) {
+      // Role default adalah 'peserta' sesuai Golden Rule #3
+      const userRole = (user.user_metadata?.role as AppRole) || 'peserta';
+
+      return {
+        id: user.id,
+        email: user.email || '',
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Peserta',
+        role: userRole,
+        institution: user.user_metadata?.institution || '',
+        phone: user.user_metadata?.phone || '',
+        avatar_url: user.user_metadata?.avatar_url || '',
+        is_verified: Boolean(user.email_confirmed_at),
+      };
     }
-
-    // Role default adalah 'peserta' sesuai Golden Rule #3
-    const userRole = (user.user_metadata?.role as AppRole) || 'peserta';
-
-    return {
-      id: user.id,
-      email: user.email || '',
-      full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Peserta',
-      role: userRole,
-      institution: user.user_metadata?.institution || '',
-      phone: user.user_metadata?.phone || '',
-      avatar_url: user.user_metadata?.avatar_url || '',
-      is_verified: Boolean(user.email_confirmed_at),
-    };
-  } catch (err) {
-    // Graceful fallback saat koneksi Supabase belum aktif di environment
-    return null;
+  } catch {
+    // Abaikan jika Supabase cloud belum siap/koneksi terputus
   }
+
+  // Fallback ke sesi demo role cookie (untuk akun seeder / evaluasi)
+  try {
+    const cookieStore = await cookies();
+    const demoRoleCookie = cookieStore.get('permifest_demo_role')?.value as AppRole | undefined;
+    const demoEmailCookie = cookieStore.get('permifest_demo_email')?.value || `${demoRoleCookie || 'peserta'}@permifest.id`;
+
+    if (demoRoleCookie && ['peserta', 'juri', 'panitia', 'super_admin'].includes(demoRoleCookie)) {
+      return {
+        id: `demo-${demoRoleCookie}-id`,
+        email: demoEmailCookie,
+        full_name: demoRoleCookie === 'super_admin' ? 'Super Admin Permifest' : demoRoleCookie.toUpperCase(),
+        role: demoRoleCookie,
+        institution: 'Universitas Sarjanawiyata Tamansiswa',
+        phone: '08123456789',
+        avatar_url: '',
+        is_verified: true,
+      };
+    }
+  } catch {
+    // Abaikan
+  }
+
+  return null;
 }
 
 /**

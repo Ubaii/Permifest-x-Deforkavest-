@@ -311,41 +311,40 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           onClick={() => setSelectedAgenda(null)}
         >
           <div
-            className="relative w-full max-w-lg rounded-3xl bg-[#140D33] border-2 border-[#9B6BF2] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-lg rounded-3xl bg-[#140D33] border-2 border-[#9B6BF2] p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Washi Tape / Manga Comic Tape Header Accent */}
-            <div
-              className="absolute -top-3 left-6 px-3.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider text-[#0B0720] shadow-md select-none"
-              style={{
-                backgroundColor: selectedAgenda.stickerBg,
-                transform: 'rotate(-2.5deg)',
-              }}
-            >
-              ★ {selectedAgenda.badgeType}
+            {/* Header dengan Badge Washi Tape & Tombol Tutup (Aman, Tidak Terpotong) */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div
+                className="inline-block px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-[#0B0720] shadow-sm select-none border border-black/20"
+                style={{
+                  backgroundColor: selectedAgenda.stickerBg,
+                  transform: 'rotate(-2deg)',
+                }}
+              >
+                ★ {selectedAgenda.badgeType}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedAgenda(null)}
+                className="p-2 rounded-xl text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+                aria-label="Tutup Detail"
+              >
+                <X size={20} weight="bold" />
+              </button>
             </div>
 
-            {/* Tombol Close */}
-            <button
-              type="button"
-              onClick={() => setSelectedAgenda(null)}
-              className="absolute top-4 right-4 p-2 rounded-xl text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
-              aria-label="Tutup Detail"
-            >
-              <X size={20} weight="bold" />
-            </button>
-
-            <div className="pt-2">
+            <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 {selectedAgenda.cabangNama && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#2E2266] text-[#6CC4FF] flex items-center gap-1.5">
-                    <Trophy size={14} className="text-[#E6C978]" />
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-[#2E2266] text-[#6CC4FF]">
                     {selectedAgenda.cabangNama}
                   </span>
                 )}
                 {selectedAgenda.isDeadline && (
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-rose-500/25 text-rose-300 border border-rose-500/40 flex items-center gap-1.5">
-                    <Alarm size={14} weight="fill" />
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-rose-500/25 text-rose-300 border border-rose-500/40">
                     Batas Akhir / Deadline
                   </span>
                 )}
@@ -353,7 +352,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
 
               <h3
                 id="calendar-modal-title"
-                className="text-2xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] pr-8 leading-snug"
+                className="text-2xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] leading-snug"
               >
                 {selectedAgenda.title}
               </h3>
@@ -362,41 +361,24 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
                 {selectedAgenda.desc}
               </p>
 
-              {/* Rincian Waktu & Tempat Box */}
-              <div className="mt-6 p-4 rounded-2xl bg-[#0B0720] border border-[#2E2266] space-y-3">
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
-                  <div className="w-8 h-8 rounded-lg bg-[#9B6BF2]/20 flex items-center justify-center text-[#9B6BF2] shrink-0">
-                    <CalendarIcon size={16} weight="duotone" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Tanggal</span>
-                    <span className="font-bold">{selectedAgenda.dateStr}</span>
-                  </div>
+              {/* Rincian Waktu & Tempat Box yang Bersih */}
+              <div className="mt-5 p-4 rounded-xl bg-[#0B0720] border border-[#2E2266] space-y-2.5">
+                <div className="flex justify-between items-center text-xs sm:text-sm">
+                  <span className="text-[#A99FD1]">Tanggal</span>
+                  <span className="font-bold text-[#F5F2FF]">{selectedAgenda.dateStr}</span>
                 </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
-                  <div className="w-8 h-8 rounded-lg bg-[#6CC4FF]/20 flex items-center justify-center text-[#6CC4FF] shrink-0">
-                    <Clock size={16} weight="duotone" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Waktu Pelaksanaan</span>
-                    <span className="font-bold">{selectedAgenda.timeStr}</span>
-                  </div>
+                <div className="flex justify-between items-center text-xs sm:text-sm">
+                  <span className="text-[#A99FD1]">Waktu Pelaksanaan</span>
+                  <span className="font-bold text-[#F5F2FF]">{selectedAgenda.timeStr}</span>
                 </div>
-
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
-                  <div className="w-8 h-8 rounded-lg bg-[#E6C978]/20 flex items-center justify-center text-[#E6C978] shrink-0">
-                    <MapPin size={16} weight="duotone" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Lokasi / Saluran</span>
-                    <span className="font-bold">{selectedAgenda.locationStr}</span>
-                  </div>
+                <div className="flex justify-between items-center text-xs sm:text-sm">
+                  <span className="text-[#A99FD1]">Lokasi / Saluran</span>
+                  <span className="font-bold text-[#6CC4FF]">{selectedAgenda.locationStr}</span>
                 </div>
               </div>
 
               {/* Actions Footer */}
-              <div className="mt-7 pt-4 border-t border-[#2E2266] flex flex-wrap items-center justify-end gap-3">
+              <div className="mt-6 pt-4 border-t border-[#2E2266] flex flex-wrap items-center justify-end gap-3">
                 <a
                   href={getGoogleCalendarUrl(selectedAgenda)}
                   target="_blank"
@@ -404,14 +386,14 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#6CC4FF] transition-all min-h-[44px]"
                 >
                   <ArrowSquareOut size={16} weight="bold" />
-                  Pasang di Google Calendar
+                  Simpan di Google Calendar
                 </a>
 
                 <SakugaButton
                   type="button"
                   variant="brand"
                   size="sm"
-                  sfxText="MANTAP!!"
+                  sfxText="OK!!"
                   onClick={() => setSelectedAgenda(null)}
                 >
                   Tutup Rincian

@@ -5,10 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
-- Utility class efek hover komik anime (`.comic-card-hover` dan `.comic-card-hover-alt`) dengan transformasi tilt `rotate(-1deg) skewX(-1.2deg)` dan pseudo-element `::before` offset border pink/violet ala manga pop art pada kartu kompetisi, langkah pendaftaran, dan floating badges.
-- Kalender interaktif di Landing Page (`TimelineSection.tsx`) dengan Manga Event Modal Popup yang menampilkan rincian agenda lengkap (tanggal WIB, lokasi, status deadline, deskripsi) serta integrasi tombol instan "Pasang di Google Calendar".
-- Peningkatan tata letak dan keterbacaan Countdown Timer Hero Section (`HeroSection.tsx`) bergaya digital cyber clock dengan pemisah waktu berkedip, digit tabular yang tajam, dan label batas akhir resmi.
-- Komponen latar belakang kinetik anime & parallax (`src/components/landing/SakugaHeroBackground.tsx`) dengan multi-layer depth (manga cyber grid, ambient energy atmosphere orbs, diagonal speed slash bars, dan partikel canvas anime motes halus) yang bereaksi terhadap scroll window.
+- Dukungan akun demo seeder dan auto-auth fallback pada `loginAction` (`src/features/auth/actions.ts`), `session.ts`, dan `proxy.ts` yang memungkinkan login instan untuk 4 role (`peserta@permifest.id`, `juri@permifest.id`, `panitia@permifest.id`, `admin@permifest.id`) dengan password `password123`.
+- Redesain halaman otentikasi publik (`/login` dan `/register`) bergaya Manga Pop Art Permifest x Deforkafest dengan kotak dialog komik, ambient atmosphere glow, tombol aksi Sakuga, dan tombol cepat One-Click Role Selector untuk pengujian.
+- Transformasi section peringkat beranda (`LeaderboardTeaser.tsx`) mengadopsi standar event nasional (referensi Arkavidia) menjadi "Apresiasi & Hadiah Kompetisi (Prize Pool & Benefit Showcase)" dengan 3 kartu benefit (Total Hadiah Puluhan Juta, Rekam Jejak Sertifikat Resmi, Panggung Final & Networking) serta callout transparan jadwal live leaderboard.
+- Perbaikan layout Manga Modal Kalender (`TimelineSection.tsx`) agar badge washi tape tidak terpotong tepi container, serta pembersihan elemen visual ikonik dekoratif yang berlebihan pada hero section dan kalender.
+- Hard Manga Pop Shadow dan penguatan efek hover kinetik anime (`.comic-card-hover` dan `.comic-card-hover-alt`) dengan transisi `translateY(-6px) rotate(-1.5deg) skewX(-1.5deg)` dan solid block shadow ganda (`7px 7px 0px #9B6BF2, 11px 11px 0px #D56BD9`).
 - Efek parallax interaktif pada Maskot Kupu-kupu Deforkafest di Hero Section dengan respons gerakan mouse 3D tilt, pulse neon aura glow, dan floating anime badges ("5 Cabang Lomba", "Hadiah Puluhan Juta", "UST Yogyakarta").
 - Peningkatan visual kartu kompetisi (`CompetitionsSection.tsx`) dengan efek manga corner slash flare, border glow hover, transisi scale, dan integrasi tombol aksi `<SakugaButton>` pada modal panduan.
 - Peningkatan UI pada alur pendaftaran 4 langkah (`HowToRegisterSection.tsx`), teaser leaderboard podium (`LeaderboardTeaser.tsx`), dan mobile quick-action bar (`StickyBottomBar.tsx`) dengan animasi kinetik bounce dan feedback partikel Sakuga.
