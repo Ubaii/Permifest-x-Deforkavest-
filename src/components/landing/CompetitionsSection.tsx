@@ -188,7 +188,7 @@ export function CompetitionsSection({
         {displayItems.map((comp) => (
           <article
             key={comp.id}
-            className="group relative flex flex-col justify-between rounded-3xl border-2 border-[#2E2266] bg-[#140D33]/95 p-6 comic-card-hover backdrop-blur-sm overflow-hidden"
+            className="group relative flex flex-col justify-between rounded-3xl border-2 border-[#2E2266] bg-[#140D33] p-6 comic-card-hover overflow-hidden"
           >
             <div>
               {/* Category Pill Tag */}
@@ -239,7 +239,7 @@ export function CompetitionsSection({
       {/* ── Dialog Detail Lomba Modal ── */}
       {selectedComp && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 animate-in fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"

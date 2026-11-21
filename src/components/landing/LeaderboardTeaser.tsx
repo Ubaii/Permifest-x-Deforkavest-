@@ -39,7 +39,7 @@ export function LeaderboardTeaser() {
       {/* 3 Benefit / Prize Highlight Cards (Arkavidia Style) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
         {/* Card 1: Total Prize Pool */}
-        <div className="comic-card-hover rounded-3xl border border-[#2E2266] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm">
+        <div className="comic-card-hover rounded-3xl border border-[#2E2266] bg-[#140D33] p-7 flex flex-col justify-between">
           <div>
             <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-4">
               Total Hadiah
@@ -57,7 +57,7 @@ export function LeaderboardTeaser() {
         </div>
 
         {/* Card 2: Sertifikat Resmi & Pengakuan */}
-        <div className="comic-card-hover rounded-3xl border-2 border-[#9B6BF2] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm shadow-[0_12px_36px_rgba(155,107,242,0.2)]">
+        <div className="comic-card-hover rounded-3xl border-2 border-[#9B6BF2] bg-[#140D33] p-7 flex flex-col justify-between shadow-[0_12px_36px_rgba(155,107,242,0.2)]">
           <div>
             <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#33113a] text-[#F0A6F2] border border-[#5c2466]/50 mb-4">
               Rekam Jejak
@@ -75,7 +75,7 @@ export function LeaderboardTeaser() {
         </div>
 
         {/* Card 3: Panggung & Relasi Komunitas */}
-        <div className="comic-card-hover-alt rounded-3xl border border-[#2E2266] bg-[#140D33]/95 p-7 flex flex-col justify-between backdrop-blur-sm">
+        <div className="comic-card-hover-alt rounded-3xl border border-[#2E2266] bg-[#140D33] p-7 flex flex-col justify-between">
           <div>
             <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#082436] text-[#6CC4FF] border border-[#144766]/50 mb-4">
               Networking

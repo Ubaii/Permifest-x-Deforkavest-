@@ -67,7 +67,7 @@ export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProp
         {STEPS.map((st, i) => (
           <div
             key={st.num}
-            className={`group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/95 p-6 backdrop-blur-sm ${
+            className={`group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33] p-6 ${
               i % 2 === 0 ? 'comic-card-hover' : 'comic-card-hover-alt'
             }`}
           >

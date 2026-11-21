@@ -8,18 +8,15 @@ export function StickyBottomBar() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Muncul setelah scroll lebih dari 450px (melewati hero)
-      // dan sembunyikan jika mendekati bagian paling bawah (dekat footer)
-      const scrollY = window.scrollY;
-      const documentHeight = document.documentElement.scrollHeight;
-      const windowHeight = window.innerHeight;
-      const nearBottom = scrollY + windowHeight > documentHeight - 350;
+    let ticking = false;
 
-      if (scrollY > 450 && !nearBottom) {
-        setVisible(true);
-      } else {
-        setVisible(false);
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setVisible(window.scrollY > 500);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -32,7 +29,7 @@ export function StickyBottomBar() {
   return (
     <aside
       aria-label="Aksi Cepat Pendaftaran"
-      className="fixed bottom-0 inset-x-0 z-40 md:hidden p-3 bg-card/95 backdrop-blur-md border-t border-border shadow-2xl safe-bottom transition-all duration-200"
+      className="fixed bottom-0 inset-x-0 z-40 md:hidden p-3 bg-[#140D33] border-t border-[#2E2266] shadow-2xl safe-bottom transition-all duration-200"
     >
       <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
         <div className="flex items-center gap-2">

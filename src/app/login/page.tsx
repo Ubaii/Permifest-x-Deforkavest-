@@ -76,7 +76,7 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center p-4 py-16 relative z-10">
         <div className="w-full max-w-md">
           {/* Card Box Manga Pop Art */}
-          <div className="relative rounded-3xl bg-[#140D33]/95 border-2 border-[#2E2266] p-7 sm:p-9 shadow-[0_16px_48px_rgba(0,0,0,0.6)] backdrop-blur-md">
+          <div className="relative rounded-3xl bg-[#140D33] border-2 border-[#2E2266] p-7 sm:p-9 shadow-[0_16px_48px_rgba(0,0,0,0.6)]">
             {/* Washi Tape Header */}
             <div className="inline-block px-3.5 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#FFE359] shadow-sm mb-5 -rotate-2 select-none border border-black/20">
               ★ Pintu Masuk Arena

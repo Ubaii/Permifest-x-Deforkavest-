@@ -141,7 +141,7 @@ export function HeroSection() {
 
             {/* Countdown Box Bergaya Cyber Anime HUD yang Rapi & Presisi */}
             {nextDeadline && timeLeft && (
-              <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_12px_36px_rgba(11,7,32,0.7)] backdrop-blur-md inline-block max-w-full">
+              <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-[#140D33] border border-[#2E2266] shadow-[0_12px_36px_rgba(11,7,32,0.7)] inline-block max-w-full">
                 <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#2E2266]/70">
                   <span className="text-[11px] font-bold text-[#E6C978] uppercase tracking-wider">
                     Hitung Mundur Deadline Pendaftaran
@@ -206,7 +206,7 @@ export function HeroSection() {
             <div
               className="w-full aspect-[520/480] relative z-10 fl group-hover:scale-105 group-hover:-rotate-1 transition-transform duration-300 ease-out will-change-transform"
             >
-              <MascotIllustration className="w-full h-full drop-shadow-[0_16px_36px_rgba(155,107,242,0.35)]" variant="hero" />
+              <MascotIllustration className="w-full h-full" variant="hero" />
             </div>
           </div>
         </div>

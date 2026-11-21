@@ -175,7 +175,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
       </div>
 
       {viewMode === 'calendar' ? (
-        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33]/90 backdrop-blur-sm p-4 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33] p-4 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#2E2266]/70">
             <div>
               <p className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl sm:text-2xl text-[#F5F2FF]">
@@ -265,7 +265,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
             <div
               key={ag.id}
               onClick={() => setSelectedAgenda(ag)}
-              className="p-5 rounded-2xl border border-[#2E2266] bg-[#140D33]/90 hover:border-[#9B6BF2] hover:-translate-y-1 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer backdrop-blur-sm"
+              className="p-5 rounded-2xl border border-[#2E2266] bg-[#140D33] hover:border-[#9B6BF2] hover:-translate-y-1 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -304,7 +304,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
       {/* ── Manga Event Interactive Modal Dialog ── */}
       {selectedAgenda && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 animate-in fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="calendar-modal-title"

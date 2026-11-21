@@ -33,7 +33,7 @@ export function Footer() {
     <footer className="relative border-t border-[#2E2266] bg-[#080517] text-[#A99FD1] text-sm overflow-hidden">
       {/* Subtle Glow Backdrop */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#9B6BF2]/10 to-transparent blur-2xl pointer-events-none"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#9B6BF2]/5 to-transparent pointer-events-none"
         aria-hidden="true"
       />
 
