@@ -1,0 +1,180 @@
+'use client';
+
+import React, { useMemo } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useAppStore } from '@/lib/store';
+import { Partner } from '@/lib/types';
+import { Handshake, ArrowSquareOut, EnvelopeSimple } from '@phosphor-icons/react';
+
+export function PartnersSection() {
+  const { partners } = useAppStore();
+
+  // Filter mitra yang berstatus aktif dan urutkan
+  const activePartners = useMemo(() => {
+    return partners
+      .filter((p: Partner) => p.is_active)
+      .sort((a: Partner, b: Partner) => a.order_index - b.order_index);
+  }, [partners]);
+
+  // Kelompokkan: Penyelenggara & Kabinet vs Sponsor & Media Partner
+  const organizers = useMemo(() => {
+    return activePartners.filter(
+      (p) => p.category === 'organizer' || p.category === 'kabinet' || p.category === 'co_host'
+    );
+  }, [activePartners]);
+
+  const sponsors = useMemo(() => {
+    return activePartners.filter((p) => p.category === 'sponsor' || p.category === 'media_partner');
+  }, [activePartners]);
+
+  return (
+    <section
+      id="mitra"
+      aria-labelledby="partners-heading"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 border-t border-[#2E2266]"
+    >
+      {/* ── Heading Terstruktur & Bersih (Antislop Design) ── */}
+      <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#140D33] text-[#A99FD1] border border-[#2E2266] mb-3">
+          <Handshake size={15} weight="bold" className="text-[#6CC4FF]" />
+          Penyelenggara &amp; Kolaborator
+        </div>
+        <h2
+          id="partners-heading"
+          className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] tracking-tight"
+        >
+          Kolaborasi Akbar &amp; Mitra Resmi
+        </h2>
+        <p className="mt-2 text-xs sm:text-sm text-[#A99FD1] leading-relaxed">
+          Sinergi antar komunitas mahasiswa teknologi Daerah Istimewa Yogyakarta bersama mitra industri untuk memajukan talenta digital nasional.
+        </p>
+      </div>
+
+      {/* ── 1. Penyelenggara Inti (Permikomnas DIY, Kabinet Nawasena, Deforkafest, IMPSI UST) ── */}
+      <div className="mb-10">
+        <p className="text-center text-xs font-bold uppercase tracking-widest text-[#6CC4FF] mb-5">
+          Entitas Penyelenggara
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {organizers.map((org) => {
+            const isClickable = !!org.website_url && org.website_url !== '#beranda';
+            const Wrapper = isClickable ? 'a' : 'div';
+            const wrapperProps = isClickable
+              ? { href: org.website_url, target: '_blank', rel: 'noopener noreferrer' }
+              : {};
+
+            return (
+              <Wrapper
+                key={org.id}
+                {...wrapperProps}
+                className="group relative flex flex-col items-center justify-center p-5 rounded-2xl border border-[#2E2266] bg-[#140D33] hover:border-[#9B6BF2] transition-colors text-center"
+              >
+                {/* Badge Kategori */}
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#0B0720] text-[#A99FD1] border border-[#2E2266] mb-3">
+                  {org.category === 'kabinet'
+                    ? 'Kabinet Wilayah'
+                    : org.category === 'co_host'
+                    ? 'Event Partner'
+                    : 'Penyelenggara'}
+                </span>
+
+                {/* Logo Box */}
+                <div className="w-full h-16 flex items-center justify-center px-2 py-1">
+                  {org.logo_url.endsWith('.svg') || org.logo_url.startsWith('/') ? (
+                    <Image
+                      src={org.logo_url}
+                      alt={org.name}
+                      width={160}
+                      height={48}
+                      className="max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                      onError={(e) => {
+                        // Fallback teks jika logo belum diupload
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="text-sm font-black text-[#F5F2FF] tracking-wide">
+                      {org.name}
+                    </div>
+                  )}
+                </div>
+
+                <span className="mt-3 text-xs font-bold text-[#F5F2FF] group-hover:text-[#6CC4FF] transition-colors line-clamp-1">
+                  {org.name}
+                </span>
+
+                {org.description && (
+                  <p className="mt-1 text-[11px] text-[#A99FD1] line-clamp-2 leading-tight">
+                    {org.description}
+                  </p>
+                )}
+
+                {isClickable && (
+                  <span className="mt-2 text-[10px] text-[#6CC4FF] font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Kunjungi tautan <ArrowSquareOut size={12} weight="bold" />
+                  </span>
+                )}
+              </Wrapper>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── 2. Sponsor & Media Partner (Dinamis dari Admin Panel) ── */}
+      {sponsors.length > 0 && (
+        <div className="pt-6 border-t border-[#2E2266]/70">
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-[#E6C978] mb-5">
+            Sponsor &amp; Mitra Pendukung
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            {sponsors.map((sp) => (
+              <a
+                key={sp.id}
+                href={sp.website_url || '#'}
+                target={sp.website_url ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                className="group p-4 px-6 rounded-xl border border-[#2E2266] bg-[#0E0826] hover:bg-[#140D33] hover:border-[#FFE359] transition-all flex flex-col items-center justify-center min-w-[140px]"
+              >
+                {sp.tier && (
+                  <span className="text-[9px] font-black uppercase tracking-wider text-[#FFE359] mb-1.5">
+                    {sp.tier} Partner
+                  </span>
+                )}
+                <span className="text-sm font-bold text-[#F5F2FF] group-hover:text-white transition-colors">
+                  {sp.name}
+                </span>
+                {sp.description && (
+                  <span className="text-[10px] text-[#A99FD1] mt-0.5">
+                    {sp.description}
+                  </span>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Callout Sponsoring & Media Partnership ── */}
+      <div className="mt-10 p-5 rounded-2xl bg-[#0B0720] border border-[#2E2266] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div>
+          <span className="text-xs font-bold text-[#F5F2FF] block">
+            Ingin Berkolaborasi atau Menjadi Sponsor Permifest x Deforkafest 2026?
+          </span>
+          <span className="text-[11px] text-[#A99FD1] block mt-0.5">
+            Dapatkan eksposur luas ke ribuan mahasiswa dan pegiat teknologi di D.I. Yogyakarta dan nasional.
+          </span>
+        </div>
+
+        <a
+          href="mailto:partnership@permifest.id?subject=Kerjasama%20Sponsorship%20Permifest%20x%20Deforkafest%202026"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0720] bg-[#FFE359] hover:bg-[#ffd83d] transition-colors shrink-0 shadow-[2px_2px_0px_#0B0720]"
+        >
+          <EnvelopeSimple size={16} weight="bold" />
+          Hubungi Divisi Partnership
+        </a>
+      </div>
+    </section>
+  );
+}

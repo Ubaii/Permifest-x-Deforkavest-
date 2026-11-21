@@ -22,6 +22,7 @@ const ROUTE_SEGMENT_LABELS: Record<string, string> = {
   hasil: 'Hasil E-Sport',
   timeline: 'Timeline & Kalender',
   pengumuman: 'Pengumuman Resmi',
+  mitra: 'Mitra & Sponsor',
   pengguna: 'Manajemen Pengguna',
   'koreksi-darurat': 'Koreksi Darurat',
   'audit-log': 'Audit Trail',

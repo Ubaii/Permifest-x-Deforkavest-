@@ -16,6 +16,7 @@ import {
   SystemSettings,
   ScoreChange,
   TimelineEvent,
+  Partner,
 } from './types';
 import { 
   MOCK_USERS, 
@@ -25,7 +26,8 @@ import {
   MOCK_ANNOUNCEMENTS, 
   MOCK_AUDIT_LOGS, 
   MOCK_MATCH_RESULTS,
-  MOCK_RUBRIC_CRITERIA
+  MOCK_RUBRIC_CRITERIA,
+  MOCK_PARTNERS,
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
 import { getTimelineEvents } from './landing-data';
@@ -111,6 +113,13 @@ interface AppContextType {
   updateTimelineEvent: (id: string, updates: Partial<TimelineEvent>) => Promise<void>;
   deleteTimelineEvent: (id: string) => Promise<void>;
   syncTimelineFromCompetitions: () => Promise<{ addedCount: number }>;
+
+  // Actions - Mitra & Sponsor CRUD
+  partners: Partner[];
+  addPartner: (partner: Omit<Partner, 'id'>) => Promise<Partner>;
+  updatePartner: (id: string, updates: Partial<Partner>) => Promise<void>;
+  deletePartner: (id: string) => Promise<void>;
+  togglePartnerActive: (id: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -129,6 +138,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [systemSettings, setSystemSettings] = useState<SystemSettings>(DEFAULT_SYSTEM_SETTINGS);
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>(() => getTimelineEvents());
+  const [partners, setPartners] = useState<Partner[]>(MOCK_PARTNERS);
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
@@ -700,6 +710,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return { addedCount: count };
   };
 
+  // ─── CRUD Mitra & Sponsor ─────────────────────────────────────────────
+  const addPartner = async (p: Omit<Partner, 'id'>): Promise<Partner> => {
+    const newPartner: Partner = {
+      ...p,
+      id: `partner-${Date.now()}`,
+    };
+    setPartners(prev => [...prev, newPartner]);
+    logAudit('ADD_PARTNER', 'partner', newPartner.id, { name: p.name, category: p.category });
+    return newPartner;
+  };
+
+  const updatePartner = async (id: string, updates: Partial<Partner>): Promise<void> => {
+    setPartners(prev => prev.map(p => (p.id === id ? { ...p, ...updates } : p)));
+    logAudit('UPDATE_PARTNER', 'partner', id, updates);
+  };
+
+  const deletePartner = async (id: string): Promise<void> => {
+    setPartners(prev => prev.filter(p => p.id !== id));
+    logAudit('DELETE_PARTNER', 'partner', id, { id });
+  };
+
+  const togglePartnerActive = async (id: string): Promise<void> => {
+    setPartners(prev => prev.map(p => (p.id === id ? { ...p, is_active: !p.is_active } : p)));
+    logAudit('TOGGLE_PARTNER_ACTIVE', 'partner', id, {});
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -751,6 +787,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateTimelineEvent,
       deleteTimelineEvent,
       syncTimelineFromCompetitions,
+      partners,
+      addPartner,
+      updatePartner,
+      deletePartner,
+      togglePartnerActive,
     }}>
       {children}
     </AppContext.Provider>

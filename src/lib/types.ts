@@ -285,4 +285,18 @@ export interface TimelineEvent {
   is_deadline?: boolean;
 }
 
+export type PartnerCategory = 'organizer' | 'kabinet' | 'co_host' | 'sponsor' | 'media_partner';
+
+export interface Partner {
+  id: string;
+  name: string;
+  category: PartnerCategory;
+  logo_url: string;
+  website_url?: string;
+  description?: string;
+  tier?: 'utama' | 'platinum' | 'gold' | 'silver' | 'partner';
+  order_index: number;
+  is_active: boolean;
+}
+
 

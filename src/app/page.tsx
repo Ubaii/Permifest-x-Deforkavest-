@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from '@/components/landing/HeroSection';
-import { OrganizerStrip } from '@/components/landing/OrganizerStrip';
+import { PartnersSection } from '@/components/landing/PartnersSection';
 import { CompetitionsSection } from '@/components/landing/CompetitionsSection';
 import { TimelineSection } from '@/components/landing/TimelineSection';
 import { LeaderboardTeaser } from '@/components/landing/LeaderboardTeaser';
@@ -33,7 +33,7 @@ export default async function HomePage() {
       {/* ── Main Landing Content ── */}
       <main id="main-content" className="flex-1">
         <HeroSection />
-        <OrganizerStrip />
+        <PartnersSection />
         <CompetitionsSection id="lomba" initialCompetitions={competitions} />
         <TimelineSection id="jadwal" />
         <LeaderboardTeaser />
