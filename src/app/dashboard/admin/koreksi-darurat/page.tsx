@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -68,33 +69,54 @@ export default function AdminKoreksiDaruratPage() {
     }
   };
 
+  const isSuperAdmin = currentUser.role === 'super_admin';
+
   return (
     <DashboardLayout
       title="Koreksi Darurat Nilai Juri (Break-Glass Protocol)"
       subtitle="Protokol eskalasi super admin untuk mengoreksi nilai karya yang telah dikunci. Setiap tindakan diaudit secara permanen."
     >
       <div className="space-y-6">
-        {alertSuccess && (
-          <Alert variant="success" onClose={() => setAlertSuccess(null)}>
-            <AlertTitle>Override Berhasil Dicatat</AlertTitle>
-            <AlertDescription>{alertSuccess}</AlertDescription>
-          </Alert>
-        )}
+        {!isSuperAdmin ? (
+          <div className="p-8 border border-[var(--border)] rounded-2xl bg-[var(--card)] text-center max-w-xl mx-auto space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--destructive)]/10 text-[var(--destructive)] flex items-center justify-center mx-auto">
+              <ShieldWarning className="w-8 h-8" weight="fill" />
+            </div>
+            <h3 className="text-lg font-bold text-[var(--foreground)]">Akses Khusus Super Admin</h3>
+            <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              Protokol darurat Break-Glass hanya diizinkan untuk peran <strong>Super Administrator</strong>. Akun Panitia reguler tidak diperkenankan mengubah nilai yang telah dikunci oleh dewan juri demi menjaga integritas kompetisi.
+            </p>
+            <div className="pt-2">
+              <Link href="/dashboard/admin">
+                <Button variant="outline" size="sm">
+                  Kembali ke Dashboard Admin
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            {alertSuccess && (
+              <Alert variant="success" onClose={() => setAlertSuccess(null)}>
+                <AlertTitle>Override Berhasil Dicatat</AlertTitle>
+                <AlertDescription>{alertSuccess}</AlertDescription>
+              </Alert>
+            )}
 
-        {formError && (
-          <Alert variant="destructive" onClose={() => setFormError(null)}>
-            <AlertTitle>Validasi Gagal</AlertTitle>
-            <AlertDescription>{formError}</AlertDescription>
-          </Alert>
-        )}
+            {formError && (
+              <Alert variant="destructive" onClose={() => setFormError(null)}>
+                <AlertTitle>Validasi Gagal</AlertTitle>
+                <AlertDescription>{formError}</AlertDescription>
+              </Alert>
+            )}
 
-        {/* Banner Peringatan Keamanan Kritis */}
-        <Alert variant="destructive" icon={<WarningOctagon className="w-5 h-5 text-[var(--destructive)]" weight="fill" />}>
-          <AlertTitle>PERINGATAN PROTOKOL BREAK-GLASS SUPER ADMIN</AlertTitle>
-          <AlertDescription>
-            Fitur ini secara sepihak menimpa (*override*) nilai akhir hasil pertimbangan dewan juri. Sesuai kontrak keamanan sistem (SECURITY.md), alasan penulisan wajib minimal 20 karakter dan seluruh detail pergantian nilai akan disimpan ke rekam jejak append-only tanpa dapat dihapus.
-          </AlertDescription>
-        </Alert>
+            {/* Banner Peringatan Keamanan Kritis */}
+            <Alert variant="destructive" icon={<WarningOctagon className="w-5 h-5 text-[var(--destructive)]" weight="fill" />}>
+              <AlertTitle>PERINGATAN PROTOKOL BREAK-GLASS SUPER ADMIN</AlertTitle>
+              <AlertDescription>
+                Fitur ini secara sepihak menimpa (*override*) nilai akhir hasil pertimbangan dewan juri. Sesuai kontrak keamanan sistem (SECURITY.md), alasan penulisan wajib minimal 20 karakter dan seluruh detail pergantian nilai akan disimpan ke rekam jejak append-only tanpa dapat dihapus.
+              </AlertDescription>
+            </Alert>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Formulir Break Glass */}
@@ -241,6 +263,8 @@ export default function AdminKoreksiDaruratPage() {
             </Card>
           </div>
         </div>
+      </>
+    )}
 
         {/* Dialog Konfirmasi Eksekusi Override */}
         <ConfirmDialog

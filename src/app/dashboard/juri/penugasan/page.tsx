@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -207,14 +208,15 @@ export default function JuriPenugasanPage() {
                           </Button>
                         ) : null}
 
-                        <Button
-                          size="sm"
-                          variant={isCompleted ? 'secondary' : 'primary'}
-                          leftIcon={<Scales size={16} weight="bold" />}
-                          onClick={() => openScoringModal(assignment.id)}
-                        >
-                          {locked ? 'Lihat Lembar Nilai' : isCompleted ? 'Edit / Cek Nilai' : 'Mulai Menilai'}
-                        </Button>
+                        <Link href={`/dashboard/juri/penugasan/${assignment.id}`}>
+                          <Button
+                            size="sm"
+                            variant={isCompleted ? 'secondary' : 'primary'}
+                            leftIcon={<Scales size={16} weight="bold" />}
+                          >
+                            {locked ? 'Buka Lembar Nilai' : isCompleted ? 'Edit / Cek Nilai' : 'Mulai Menilai'}
+                          </Button>
+                        </Link>
                       </div>
                     </div>
 

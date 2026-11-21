@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Halaman Lembar Penilaian Juri Dedikasi (`/dashboard/juri/penugasan/[assignmentId]`) dengan split view viewer dokumen karya/Figma dan form rubrik penilaian dengan kalkulasi skor terbobot otomatis.
+- Rute Pengaturan Juri (`/dashboard/juri/pengaturan`) untuk navigasi profil akun juri.
+- Guard otorisasi khusus peran `super_admin` pada halaman Koreksi Darurat Break-Glass (`/dashboard/admin/koreksi-darurat`) sesuai mandat protokol `docs/SECURITY.md`.
 - Mesin validasi form dinamis Zod (`src/lib/config/dynamic-form.ts`) yang membangun validator dari JSONB `form_fields` untuk klien dan server.
 - Modul konfigurasi kebijakan event (`src/lib/config/settings.ts`) mematuhi Golden Rule #2 dan DECISIONS.md C-01 s/d C-17 (kebijakan partisipasi ganda, filter benturan instansi juri, mode leaderboard).
 - Halaman Detail Pendaftaran Lomba Peserta (`/dashboard/peserta/kompetisi/[id]`) untuk melihat berkas pendaftaran, kode undangan tim, dan anggota tim.

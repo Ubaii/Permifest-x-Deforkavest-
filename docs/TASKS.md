@@ -8,7 +8,7 @@ Status: `[ ]` belum, `[~]` dikerjakan, `[x]` selesai. Satu tugas = satu branch =
 |---|---|---|---|---|
 | T0.1 | Rapikan branch `yuum`: pecah perubahan uncommitted jadi commit logis, rebase ke branch utama | Working tree bersih, riwayat bermakna | - | [ ] |
 | T0.2 | Tempatkan dokumen ini di repo (`AGENTS.md`, `docs/*`), salin PRD ke `docs/PRD.md` | Semua tautan di AGENTS.md valid | - | [ ] |
-| T0.3 | Inventaris rute kode vs `SITEMAP_RBAC.md`; buat stub rute berstatus `baru` | Tabel selisih di PR; stub dengan guard dan EmptyState | T0.2 | [ ] |
+| T0.3 | Inventaris rute kode vs `SITEMAP_RBAC.md`; buat stub rute berstatus `baru` | Tabel selisih di PR; stub dengan guard dan EmptyState | T0.2 | [x] |
 | T0.4 | Audit `supabase/schema.sql` vs `SCHEMA.md`; satu sumber di `supabase/migrations/` | Selisih tercatat; satu lokasi skema; `db reset` lolos | T0.2 | [ ] |
 | T0.5 | Pindahkan nilai keputusan terbuka (biaya, anggota tim, partisipasi ganda, tanggal) dari `constants.ts` ke seed + konfigurasi | Tidak ada angka bisnis di kode; seed bertanda placeholder | T0.4 | [ ] |
 | T0.6 | Role-switcher: hanya non-production, tidak memengaruhi otorisasi | Build production tidak memuatnya (diverifikasi) | - | [x] |
