@@ -207,6 +207,48 @@ export async function forgotPasswordAction(
 }
 
 /**
+ * Server Action: Pembaruan Kata Sandi Baru (Reset Password)
+ */
+export async function updatePasswordAction(
+  rawInput: ResetPasswordInput
+): Promise<AuthActionResult> {
+  try {
+    const parsed = ResetPasswordSchema.safeParse(rawInput);
+    if (!parsed.success) {
+      const flattened = parsed.error.flatten();
+      return {
+        success: false,
+        message: Object.values(flattened.fieldErrors)[0]?.[0] || 'Validasi kata sandi gagal',
+        fieldErrors: flattened.fieldErrors,
+      };
+    }
+
+    const { password } = parsed.data;
+    const supabase = await createServerSupabase();
+
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message || 'Gagal memperbarui kata sandi.',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Kata sandi berhasil diperbarui! Silakan masuk dengan kata sandi baru Anda.',
+    };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Terjadi kegagalan saat memperbarui kata sandi.';
+    return {
+      success: false,
+      message: msg,
+    };
+  }
+}
+
+/**
  * Server Action: Keluar Akun (Logout)
  */
 export async function logoutAction(): Promise<void> {

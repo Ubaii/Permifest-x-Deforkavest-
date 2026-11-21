@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Server-side Layout Guards (`src/app/dashboard/admin/layout.tsx`, `src/app/dashboard/juri/layout.tsx`, `src/app/dashboard/peserta/layout.tsx`) menerapkan prinsip Defense-in-Depth dengan `requireRole` di level Server Component.
+- Halaman Reset Kata Sandi publik (`/reset-password`) terhubung dengan Server Action `updatePasswordAction`.
+- Halaman konfirmasi email baru (`/verifikasi-email`) dengan panduan langkah aktivasi akun.
+- Security Headers di `next.config.ts` (HSTS, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy, Permissions-Policy).
 - Modul Supabase Auth SSR lengkap: skema validasi Zod (`src/features/auth/schema.ts`), Server Actions (`loginAction`, `registerAction`, `logoutAction`, `forgotPasswordAction` di `src/features/auth/actions.ts`), serta session helper server-only (`src/lib/auth/session.ts`).
 - Penegakan Golden Rule #3: pendaftaran akun publik secara server-side selalu menghasilkan role `peserta`.
 - Matriks izin RBAC granular (`src/lib/auth/permissions.ts`) dan helper `hasPermission()`, `can()`, `requireRole()`, `requirePermission()`.
