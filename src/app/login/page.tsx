@@ -8,8 +8,10 @@ import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
-import { Shield, Lock, ArrowRight } from '@phosphor-icons/react';
+import { loginAction } from '@/features/auth/actions';
+import { Shield, ArrowRight } from '@phosphor-icons/react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,24 +19,40 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('peserta@permifest.id');
   const [password, setPassword] = useState('password123');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      // Determine role by email for testing
-      if (email.includes('juri')) {
+    setErrorMessage(null);
+
+    try {
+      const result = await loginAction({ email, password });
+      if (!result.success || !result.data) {
+        setErrorMessage(result.message || 'Gagal masuk akun. Periksa email dan password.');
+        return;
+      }
+
+      // Sinkronkan role store demo agar konsisten
+      const detectedRole = result.data.role;
+      if (detectedRole === 'juri' || detectedRole === 'panitia' || detectedRole === 'super_admin' || detectedRole === 'peserta') {
+        switchRole(detectedRole);
+      } else if (email.includes('juri')) {
         switchRole('juri');
-        router.push('/dashboard/juri');
       } else if (email.includes('panitia') || email.includes('admin')) {
         switchRole('panitia');
-        router.push('/dashboard/admin');
       } else {
         switchRole('peserta');
-        router.push('/dashboard/peserta');
       }
-    }, 600);
+
+      router.push(result.data.redirectUrl);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan sistem';
+      setErrorMessage(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,6 +73,13 @@ export default function LoginPage() {
 
           <CardContent className="pt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errorMessage && (
+                <Alert variant="destructive" onClose={() => setErrorMessage(null)}>
+                  <AlertTitle>Gagal Masuk</AlertTitle>
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+
               <Input
                 label="Alamat Email"
                 type="email"

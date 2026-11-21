@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Modul Supabase Auth SSR lengkap: skema validasi Zod (`src/features/auth/schema.ts`), Server Actions (`loginAction`, `registerAction`, `logoutAction`, `forgotPasswordAction` di `src/features/auth/actions.ts`), serta session helper server-only (`src/lib/auth/session.ts`).
+- Penegakan Golden Rule #3: pendaftaran akun publik secara server-side selalu menghasilkan role `peserta`.
+- Matriks izin RBAC granular (`src/lib/auth/permissions.ts`) dan helper `hasPermission()`, `can()`, `requireRole()`, `requirePermission()`.
+- Lapisan Database Repository (`src/lib/repositories/`): abstraksi antarmuka `ICompetitionRepository`, `IRegistrationRepository`, `ISubmissionRepository`, `IScoreRepository`, `IUserRepository`.
+- Implementasi ganda repository: `MockRepository` (dev/offline) dan `SupabaseRepository` (live Postgres query via client SSR & Admin Service Role).
+- Next.js Proxy Middleware (`src/proxy.ts`): penyegaran cookie sesi Supabase dan route guard redirection otomatis untuk `/dashboard/*` serta rute auth publik.
 - Arsitektur Supabase Storage lengkap untuk 4 bucket (`payment-proofs`, `submissions`, `identity-docs`, `public-assets`) dengan batasan ukuran berkas dan MIME whitelist.
 - RLS Policies granular pada `storage.objects` dengan helper Postgres `is_staff()` dan `is_assigned_judge_for_submission()`.
 - Validasi Zod skema berkas (`SignedUploadUrlSchema`, `SignedDownloadUrlSchema`, `ConfirmUaploadSchema`) dengan verifikasi ukuran, anti path-traversal nama berkas (`sanitizeFilename`), dan kesesuaian ekstensi-MIME.

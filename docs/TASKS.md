@@ -25,9 +25,9 @@ Status: `[ ]` belum, `[~]` dikerjakan, `[x]` selesai. Satu tugas = satu branch =
 |---|---|---|---|---|
 | T1.1 | Proyek Supabase dev/staging/prod + env Vercel | Tiga lingkungan terpisah, tanpa secret di repo | T0.10 | [ ] |
 | T1.2 | Migrasi 22 tabel, enum, RLS, fungsi, trigger, bucket, seed | Semua tabel RLS aktif; seed jalan | T0.4 | [ ] |
-| T1.3 | Antarmuka repository + implementasi Supabase untuk `users`, `competitions` | Mock dan Supabase lewat satu antarmuka | T1.2 | [ ] |
-| T1.4 | Auth: register, login, verifikasi email, lupa/reset password | Registrasi selalu `peserta`; pesan tidak membocorkan akun | T1.2 | [ ] |
-| T1.5 | `requireRole`, `requirePermission`, guard layout per area | Peserta ke URL admin ditolak | T1.4 | [ ] |
+| T1.3 | Antarmuka repository + implementasi Supabase untuk `users`, `competitions` | Mock dan Supabase lewat satu antarmuka | T1.2 | [x] |
+| T1.4 | Auth: register, login, verifikasi email, lupa/reset password | Registrasi selalu `peserta`; pesan tidak membocorkan akun | T1.2 | [x] |
+| T1.5 | `requireRole`, `requirePermission`, guard layout per area | Peserta ke URL admin ditolak | T1.4 | [x] |
 | T1.6 | Akun super admin pertama lewat skrip; 2FA wajib | `aal2` dicek di server | T1.5 | [ ] |
 | T1.7 | Uji RLS matriks `TESTING.md` bagian 2 | Semua lulus di CI | T1.2 | [ ] |
 

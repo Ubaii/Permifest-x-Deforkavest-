@@ -8,44 +8,67 @@ import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
+import { registerAction } from '@/features/auth/actions';
 import { Shield, ArrowRight, CheckCircle } from '@phosphor-icons/react';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { switchRole, setCurrentUser } = useAppStore();
+  const { setCurrentUser } = useAppStore();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [institution, setInstitution] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successInfo, setSuccessInfo] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(null);
 
-    setTimeout(() => {
-      // Create new user & log in
-      const newUser = {
+    try {
+      const res = await registerAction({
+        fullName,
+        email,
+        institution,
+        phone,
+        password,
+        confirmPassword,
+      });
+
+      if (!res.success) {
+        setErrorMessage(res.message || 'Pendaftaran gagal.');
+        return;
+      }
+
+      // Sinkronkan ke store demo
+      setCurrentUser({
         id: `user-${Date.now()}`,
         email,
         full_name: fullName,
         institution,
         phone,
-        role: 'peserta' as const,
-        email_verified: true,
-      };
+        role: 'peserta',
+        email_verified: !res.data?.requiresVerification,
+      });
 
-      setCurrentUser(newUser);
-      setIsSuccess(true);
+      setSuccessInfo(res.message || 'Pendaftaran berhasil!');
 
       setTimeout(() => {
         router.push('/dashboard/peserta');
       }, 1500);
-    }, 700);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kegagalan koneksi.';
+      setErrorMessage(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,16 +88,26 @@ export default function RegisterPage() {
           </CardHeader>
 
           <CardContent className="pt-4">
-            {isSuccess ? (
+            {successInfo ? (
               <div className="p-6 text-center space-y-3">
                 <CheckCircle size={48} className="text-emerald-400 mx-auto" weight="fill" />
-                <h4 className="text-base font-bold text-white">Akun Berhasil Didaftarkan!</h4>
-                <p className="text-xs text-slate-400">
+                <h4 className="text-base font-bold text-white">Pendaftaran Akun Berhasil!</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  {successInfo}
+                </p>
+                <p className="text-[11px] text-cyan-400">
                   Mengalihkan Anda secara otomatis ke Dashboard Peserta...
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {errorMessage && (
+                  <Alert variant="destructive" onClose={() => setErrorMessage(null)}>
+                    <AlertTitle>Pendaftaran Belum Berhasil</AlertTitle>
+                    <AlertDescription>{errorMessage}</AlertDescription>
+                  </Alert>
+                )}
+
                 <Input
                   label="Nama Lengkap"
                   required
@@ -94,8 +127,7 @@ export default function RegisterPage() {
 
                 <Input
                   label="Instansi / Sekolah / Universitas"
-                  required
-                  placeholder="Contoh: Universitas Indonesia"
+                  placeholder="Contoh: Universitas Gadjah Mada"
                   value={institution}
                   onChange={(e) => setInstitution(e.target.value)}
                 />
@@ -108,12 +140,21 @@ export default function RegisterPage() {
                 />
 
                 <Input
-                  label="Kata Sandi (Password)"
+                  label="Kata Sandi (Minimal 8 Karakter, Huruf & Angka)"
                   type="password"
                   required
-                  placeholder="Minimal 8 karakter"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <Input
+                  label="Konfirmasi Kata Sandi"
+                  type="password"
+                  required
+                  placeholder="Ulangi kata sandi"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
 
                 <Button type="submit" variant="primary" className="w-full justify-center" isLoading={isLoading} rightIcon={<ArrowRight className="w-4 h-4" />}>
