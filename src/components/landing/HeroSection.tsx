@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { SakugaHeroBackground } from './SakugaHeroBackground';
@@ -41,18 +41,8 @@ export function HeroSection() {
   const nextDeadline = getNextDeadline();
   const nearestClose = getNearestRegistrationClose();
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [scrollY, setScrollY] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const heroRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mediaQuery.matches);
-
-    const handleMotion = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mediaQuery.addEventListener('change', handleMotion);
-
     if (nextDeadline) {
       const timer = setTimeout(() => {
         setTimeLeft(computeTimeLeft(nextDeadline.date));
@@ -63,51 +53,16 @@ export function HeroSection() {
       }, 1000);
 
       return () => {
-        mediaQuery.removeEventListener('change', handleMotion);
         clearTimeout(timer);
         clearInterval(interval);
       };
     }
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleMotion);
-    };
   }, [nextDeadline]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY < 900) {
-        setScrollY(window.scrollY);
-      }
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (reducedMotion) return;
-      const { innerWidth, innerHeight } = window;
-      const nx = (e.clientX / innerWidth - 0.5) * 2;
-      const ny = (e.clientY / innerHeight - 0.5) * 2;
-      setMousePos({ x: nx, y: ny });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [reducedMotion]);
 
   const registrationDateLabel = nearestClose?.dateFormatted ?? '11 Desember 2026';
 
-  // Parallax transform calculations untuk maskot
-  const mascotParallaxY = reducedMotion ? 0 : scrollY * -0.12;
-  const mascotTiltX = reducedMotion ? 0 : mousePos.y * -5;
-  const mascotTiltY = reducedMotion ? 0 : mousePos.x * 6;
-
   return (
     <section
-      ref={heroRef}
       id="beranda"
       className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-28"
       aria-labelledby="hero-heading"
@@ -239,27 +194,21 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu (Bersih, Proporsional & Elegan) ── */}
-          <div className="flex-1 w-full max-w-[480px] flex justify-center items-center relative">
-            {/* Anime Aura Glow di belakang maskot */}
+          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu (Ringan, Halus & Berjalan di GPU) ── */}
+          <div className="flex-1 w-full max-w-[480px] flex justify-center items-center relative group">
+            {/* Anime Aura Glow di belakang maskot (soft radial tanpa blur berat) */}
             <div
-              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none transition-transform duration-300"
+              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none opacity-60 group-hover:opacity-85 transition-opacity duration-500"
               style={{
-                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.4) 0%, rgba(213, 107, 217, 0.2) 45%, transparent 70%)',
-                filter: 'blur(60px)',
-                transform: `translateY(${mascotParallaxY * 0.5}px)`,
+                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.45) 0%, rgba(213, 107, 217, 0.2) 45%, transparent 70%)',
               }}
             />
 
-            {/* Container Maskot dengan tilt 3D interaktif yang menyatu */}
+            {/* Container Maskot dengan CSS Floating Animation (.fl) & respons Hover GPU */}
             <div
-              className="w-full aspect-[520/480] relative z-10 transition-transform duration-200 ease-out"
-              style={{
-                transform: `translateY(${mascotParallaxY}px) rotateX(${mascotTiltX}deg) rotateY(${mascotTiltY}deg)`,
-                perspective: '1000px',
-              }}
+              className="w-full aspect-[520/480] relative z-10 fl group-hover:scale-105 group-hover:-rotate-1 transition-transform duration-300 ease-out will-change-transform"
             >
-              <MascotIllustration className="w-full h-full drop-shadow-[0_16px_40px_rgba(155,107,242,0.4)]" variant="hero" />
+              <MascotIllustration className="w-full h-full drop-shadow-[0_16px_36px_rgba(155,107,242,0.35)]" variant="hero" />
             </div>
           </div>
         </div>
