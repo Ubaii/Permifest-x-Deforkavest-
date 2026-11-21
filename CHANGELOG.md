@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Standardisasi migrasi database Supabase di `supabase/migrations/` (Schema, Functions & Triggers, RLS, Storage).
+- Skema 20 tabel PostgreSQL, custom enum, constraints, dan index performa sesuai `docs/SCHEMA.md`.
+- Fungsi keamanan dan trigger: `has_role` berlingkup lomba, `handle_new_user` (default registrasi selalu peserta), `guard_locked_scores` (kunci nilai), `admin_override_score` (audit darurat), serta view `v_final_scores`.
+- Row Level Security (RLS) aktif pada seluruh tabel dengan kebijakan bertingkat (Peserta, Juri, Panitia, Super Admin).
+- Konfigurasi bucket Supabase Storage (`payment-proofs`, `submissions`, `identity-docs`, `public-assets`) dengan storage policies.
+- Data awal `supabase/seed.sql` berisi peran, event Permifest x Deforkafest, tema, 5 cabang lomba, tahapan, dan contoh rubrik penilaian berbobot 100%.
 - Halaman Lembar Penilaian Juri Dedikasi (`/dashboard/juri/penugasan/[assignmentId]`) dengan split view viewer dokumen karya/Figma dan form rubrik penilaian dengan kalkulasi skor terbobot otomatis.
 - Rute Pengaturan Juri (`/dashboard/juri/pengaturan`) untuk navigasi profil akun juri.
 - Guard otorisasi khusus peran `super_admin` pada halaman Koreksi Darurat Break-Glass (`/dashboard/admin/koreksi-darurat`) sesuai mandat protokol `docs/SECURITY.md`.
@@ -24,7 +30,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 - Next.js Proxy Middleware (`src/proxy.ts`): penyegaran cookie sesi Supabase dan route guard redirection otomatis untuk `/dashboard/*` serta rute auth publik.
 - Arsitektur Supabase Storage lengkap untuk 4 bucket (`payment-proofs`, `submissions`, `identity-docs`, `public-assets`) dengan batasan ukuran berkas dan MIME whitelist.
 - RLS Policies granular pada `storage.objects` dengan helper Postgres `is_staff()` dan `is_assigned_judge_for_submission()`.
-- Validasi Zod skema berkas (`SignedUploadUrlSchema`, `SignedDownloadUrlSchema`, `ConfirmUaploadSchema`) dengan verifikasi ukuran, anti path-traversal nama berkas (`sanitizeFilename`), dan kesesuaian ekstensi-MIME.
+- Validasi Zod skema berkas (`SignedUploadUrlSchema`, `SignedDownloadUrlSchema`, `ConfirmUploadSchema`) dengan verifikasi ukuran, anti path-traversal nama berkas (`sanitizeFilename`), dan kesesuaian ekstensi-MIME.
 - Server Actions (`getSignedUploadUrlAction`, `getSignedDownloadUrlAction`, `verifyAndConfirmUploadAction`) dengan arsitektur server-only via `createAdminClient()`.
 - Client helper `uploadFileDirectly` (browser -> direct PUT signed URL) dan `getFileDownloadUrl` (signed download URL privat berumur pendek).
 - Integrasi direct upload dan indikator progress pada form upload bukti pembayaran (`/dashboard/peserta/pembayaran`) dan form pengumpulan karya (`/dashboard/peserta/submission`).

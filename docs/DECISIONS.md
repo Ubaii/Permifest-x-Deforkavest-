@@ -35,7 +35,7 @@ Tiga bagian: **A** catatan keputusan (ADR), **B** rekonsiliasi PRD vs laporan pr
 | R7 | Peserta melihat kelolosan | Hanya hasil akhir | "Hasil kelolosan" | Tampilkan hanya flag `advanced`, tanpa skor/komentar | Usulan, konfirmasi |
 | R8 | Dashboard admin | Satu dashboard per izin | Satu rute campur | Gating per izin + scope | SITEMAP_RBAC |
 | R9 | Notifikasi email | Opsional | Dashboard | Notifikasi dashboard dulu | C-08 |
-| R10 | Lokasi skema | - | `schema.sql` di dua tempat | `supabase/migrations/` | T0.4 |
+| R10 | Lokasi skema | - | `schema.sql` di dua tempat | `supabase/migrations/` | Selesai (T0.4, T1.2 dipecah ke 4 migrasi + seed) |
 
 ### B.2 Temuan audit sistem saat ini
 
