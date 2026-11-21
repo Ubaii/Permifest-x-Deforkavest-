@@ -12,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateWIB } from '@/lib/utils';
+import { getFileDownloadUrl } from '@/lib/supabase/storage-client';
 import { 
   ClipboardText, 
   ArrowSquareOut, 
@@ -30,6 +31,7 @@ export default function JuriPenugasanPage() {
   const [activeAssignmentId, setActiveAssignmentId] = useState<string | null>(null);
   const [scoresInput, setScoresInput] = useState<Record<string, { score: number; comment: string }>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
 
@@ -99,6 +101,25 @@ export default function JuriPenugasanPage() {
       setModalError(message);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDownloadSubmission = async (assignmentId: string, rawPath: string) => {
+    if (!rawPath) return;
+    if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
+      window.open(rawPath, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    setDownloadingFileId(assignmentId);
+    try {
+      const res = await getFileDownloadUrl('submissions', rawPath, { expiresInSeconds: 1800, isDownload: true });
+      if (res.success && res.url) {
+        window.open(res.url, '_blank', 'noopener,noreferrer');
+      } else {
+        alert(res.error || 'Gagal mengunduh berkas karya.');
+      }
+    } finally {
+      setDownloadingFileId(null);
     }
   };
 
@@ -175,11 +196,15 @@ export default function JuriPenugasanPage() {
                             </Button>
                           </a>
                         ) : sub?.file_url ? (
-                          <a href={sub.file_url} target="_blank" rel="noreferrer">
-                            <Button size="sm" variant="outline" leftIcon={<DownloadSimple size={16} />}>
-                              Unduh File
-                            </Button>
-                          </a>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            leftIcon={<DownloadSimple size={16} />}
+                            isLoading={downloadingFileId === assignment.id}
+                            onClick={() => handleDownloadSubmission(assignment.id, sub.file_url || '')}
+                          >
+                            Unduh File
+                          </Button>
                         ) : null}
 
                         <Button

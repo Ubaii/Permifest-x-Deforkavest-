@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateShort } from '@/lib/utils';
 import { Registration } from '@/lib/types';
+import { getFileDownloadUrl } from '@/lib/supabase/storage-client';
 import {
   CreditCard,
   CheckCircle,
@@ -31,6 +32,9 @@ import {
   PencilSimple,
   Trash,
   CurrencyCircleDollar,
+  ArrowSquareOut,
+  FileText,
+  DownloadSimple,
 } from '@phosphor-icons/react';
 
 export default function AdminPembayaranPage() {
@@ -39,12 +43,40 @@ export default function AdminPembayaranPage() {
 
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
   const [reviewDrawerReg, setReviewDrawerReg] = useState<Registration | null>(null);
+  const [proofSignedUrl, setProofSignedUrl] = useState<string | null>(null);
+  const [loadingProof, setLoadingProof] = useState<boolean>(false);
   const [approveConfirmReg, setApproveConfirmReg] = useState<Registration | null>(null);
   const [deleteConfirmReg, setDeleteConfirmReg] = useState<Registration | null>(null);
   const [editAmountReg, setEditAmountReg] = useState<Registration | null>(null);
   const [newAmountInput, setNewAmountInput] = useState<number>(0);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!reviewDrawerReg?.payment?.proof_url) {
+      setProofSignedUrl(null);
+      return;
+    }
+    const rawUrl = reviewDrawerReg.payment.proof_url;
+    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+      setProofSignedUrl(rawUrl);
+      return;
+    }
+    let isCancelled = false;
+    setLoadingProof(true);
+    getFileDownloadUrl('payment-proofs', rawUrl, { expiresInSeconds: 1800 })
+      .then((res) => {
+        if (!isCancelled && res.success && res.url) {
+          setProofSignedUrl(res.url);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setLoadingProof(false);
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [reviewDrawerReg]);
 
   const registrationsWithPayment = registrations.filter((r) => r.payment);
 
@@ -330,19 +362,64 @@ export default function AdminPembayaranPage() {
               <DrawerContent className="space-y-6">
                 {/* Pratinjau Resi Bukti Transfer Besar */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
-                    <CreditCard className="w-4 h-4 text-[var(--primary)]" />
-                    Bukti Transfer / Resi QRIS
-                  </span>
-                  {reviewDrawerReg.payment?.proof_url ? (
-                    <div className="border border-[var(--border)] rounded-[var(--radius-lg)] bg-[var(--accent)]/20 p-2 flex items-center justify-center overflow-hidden max-h-[380px]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={reviewDrawerReg.payment.proof_url}
-                        alt="Bukti Transfer Peserta"
-                        className="max-w-full max-h-[360px] object-contain rounded-md shadow-sm"
-                      />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4 text-[var(--primary)]" />
+                      Bukti Transfer / Resi QRIS
+                    </span>
+                    {proofSignedUrl && (
+                      <a href={proofSignedUrl} target="_blank" rel="noreferrer" className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1">
+                        <span>Buka Tab Baru</span>
+                        <ArrowSquareOut className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+
+                  {loadingProof ? (
+                    <div className="p-8 border border-[var(--border)] rounded-[var(--radius-lg)] bg-[var(--accent)]/10 text-center text-xs text-[var(--muted-foreground)] flex items-center justify-center gap-2">
+                      <Clock className="w-4 h-4 animate-spin text-[var(--primary)]" />
+                      <span>Memuat tautan aman berkas dari Supabase Storage...</span>
                     </div>
+                  ) : reviewDrawerReg.payment?.proof_url ? (
+                    (() => {
+                      const fileName = reviewDrawerReg.payment.proof_name || reviewDrawerReg.payment.proof_url;
+                      const isPdf = fileName.toLowerCase().endsWith('.pdf');
+
+                      if (isPdf) {
+                        return (
+                          <div className="border border-[var(--border)] rounded-[var(--radius-lg)] bg-[var(--card)] p-4 space-y-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center shrink-0">
+                                <FileText className="w-6 h-6" />
+                              </div>
+                              <div className="truncate">
+                                <div className="font-bold text-xs text-[var(--foreground)] truncate">{fileName}</div>
+                                <span className="text-[11px] text-[var(--muted-foreground)]">Dokumen PDF Terverifikasi</span>
+                              </div>
+                            </div>
+                            {proofSignedUrl ? (
+                              <a href={proofSignedUrl} target="_blank" rel="noreferrer" className="block">
+                                <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs">
+                                  <ArrowSquareOut className="w-4 h-4" />
+                                  <span>Buka &amp; Periksa Dokumen PDF</span>
+                                </Button>
+                              </a>
+                            ) : null}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="border border-[var(--border)] rounded-[var(--radius-lg)] bg-[var(--accent)]/20 p-2 flex flex-col items-center justify-center overflow-hidden max-h-[420px]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={proofSignedUrl || reviewDrawerReg.payment.proof_url}
+                            alt="Bukti Transfer Peserta"
+                            className="max-w-full max-h-[360px] object-contain rounded-md shadow-sm"
+                          />
+                        </div>
+                      );
+                    })()
                   ) : (
                     <div className="p-8 border border-dashed border-[var(--border)] rounded-[var(--radius-lg)] text-center text-xs text-[var(--muted-foreground)]">
                       Peserta belum mengunggah berkas bukti transfer pembayaran.
