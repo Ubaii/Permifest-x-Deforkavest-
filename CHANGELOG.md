@@ -5,6 +5,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Mesin validasi form dinamis Zod (`src/lib/config/dynamic-form.ts`) yang membangun validator dari JSONB `form_fields` untuk klien dan server.
+- Modul konfigurasi kebijakan event (`src/lib/config/settings.ts`) mematuhi Golden Rule #2 dan DECISIONS.md C-01 s/d C-17 (kebijakan partisipasi ganda, filter benturan instansi juri, mode leaderboard).
+- Halaman Detail Pendaftaran Lomba Peserta (`/dashboard/peserta/kompetisi/[id]`) untuk melihat berkas pendaftaran, kode undangan tim, dan anggota tim.
+- Hardening keamanan Role Switcher: disembunyikan secara otomatis di environment produksi (`process.env.NODE_ENV === 'production'`) untuk mencegah eskalasi peran demo.
 - Server-side Layout Guards (`src/app/dashboard/admin/layout.tsx`, `src/app/dashboard/juri/layout.tsx`, `src/app/dashboard/peserta/layout.tsx`) menerapkan prinsip Defense-in-Depth dengan `requireRole` di level Server Component.
 - Halaman Reset Kata Sandi publik (`/reset-password`) terhubung dengan Server Action `updatePasswordAction`.
 - Halaman konfirmasi email baru (`/verifikasi-email`) dengan panduan langkah aktivasi akun.

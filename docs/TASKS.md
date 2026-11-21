@@ -11,7 +11,7 @@ Status: `[ ]` belum, `[~]` dikerjakan, `[x]` selesai. Satu tugas = satu branch =
 | T0.3 | Inventaris rute kode vs `SITEMAP_RBAC.md`; buat stub rute berstatus `baru` | Tabel selisih di PR; stub dengan guard dan EmptyState | T0.2 | [ ] |
 | T0.4 | Audit `supabase/schema.sql` vs `SCHEMA.md`; satu sumber di `supabase/migrations/` | Selisih tercatat; satu lokasi skema; `db reset` lolos | T0.2 | [ ] |
 | T0.5 | Pindahkan nilai keputusan terbuka (biaya, anggota tim, partisipasi ganda, tanggal) dari `constants.ts` ke seed + konfigurasi | Tidak ada angka bisnis di kode; seed bertanda placeholder | T0.4 | [ ] |
-| T0.6 | Role-switcher: hanya non-production, tidak memengaruhi otorisasi | Build production tidak memuatnya (diverifikasi) | - | [ ] |
+| T0.6 | Role-switcher: hanya non-production, tidak memengaruhi otorisasi | Build production tidak memuatnya (diverifikasi) | - | [x] |
 | T0.7 | Konsolidasi UI: token tunggal di `globals.css`, shell per permukaan (publik, peserta, admin/juri), hapus komponen duplikat | Tanpa hex tertanam; 3 layout shell | T0.2 | [ ] |
 | T0.8 | Satu pustaka ikon (Phosphor); hapus `lucide-react` bila memungkinkan | Impor lucide nol atau terdokumentasi | T0.7 | [ ] |
 | T0.9 | Verifikasi dependensi dan versi di `package.json` (Next, Tailwind v4 dan plugin-nya, Supabase) | Ringkasan versi nyata di CHANGELOG | - | [ ] |

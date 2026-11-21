@@ -170,28 +170,35 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
           </div>
         </div>
 
-        {/* Demo Switcher */}
-        <div className="mt-3 pt-3 border-t border-[var(--border)]/70">
-          <div className="text-[10px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider mb-1.5">
-            Ganti Role Demo:
+        {/* Demo Switcher - Hanya aktif di non-production (T0.6 & AGENTS.md Bagian 11) */}
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mt-3 pt-3 border-t border-[var(--border)]/70">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] text-[var(--muted-foreground)] font-semibold uppercase tracking-wider">
+                Ganti Role Demo:
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--primary)] font-bold">
+                DEV ONLY
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {roles.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => switchRole(r)}
+                  className={`text-[10px] py-1 px-2 rounded-md text-left transition-colors truncate min-h-[28px] ${
+                    currentUser.role === r
+                      ? 'bg-[var(--primary)] text-white font-bold'
+                      : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
+                  }`}
+                >
+                  {ROLE_LABELS[r]}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {roles.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => switchRole(r)}
-                className={`text-[10px] py-1 px-2 rounded-md text-left transition-colors truncate min-h-[28px] ${
-                  currentUser.role === r
-                    ? 'bg-[var(--primary)] text-white font-bold'
-                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-                }`}
-              >
-                {ROLE_LABELS[r]}
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Navigation Groups */}

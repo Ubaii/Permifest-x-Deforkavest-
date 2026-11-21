@@ -113,6 +113,12 @@ export default function PesertaKompetisiPage() {
                     </Link>
 
                     <div className="flex items-center gap-2">
+                      <Link href={`/dashboard/peserta/kompetisi/${reg.id}`}>
+                        <Button size="sm" variant="outline">
+                          Detail Pendaftaran
+                        </Button>
+                      </Link>
+
                       <Link href="/dashboard/peserta/pembayaran">
                         <Button size="sm" variant="secondary" leftIcon={<CreditCard size={16} />}>
                           Rincian Bayar
