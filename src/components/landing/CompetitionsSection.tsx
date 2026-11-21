@@ -174,7 +174,7 @@ export function CompetitionsSection({ id = 'lomba' }: CompetitionsSectionProps) 
         {COMPETITIONS_DATA.map((comp) => (
           <article
             key={comp.id}
-            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/90 p-5 sm:p-6 transition-all duration-200 hover:border-[#9B6BF2] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(155,107,242,0.18)] backdrop-blur-sm overflow-hidden"
+            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/95 p-5 sm:p-6 comic-card-hover backdrop-blur-sm overflow-hidden"
           >
             {/* Manga Corner Slash Flare Accent */}
             <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">

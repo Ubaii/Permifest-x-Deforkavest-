@@ -163,6 +163,78 @@ button:disabled,
   overflow: clip;
 }
 
+/* ── Efek Hover Anime / Komik (Rotate + Skew + Pseudo-element Offset) ── */
+.comic-card-hover {
+  position: relative;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comic-card-hover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid #9B6BF2;
+  background: transparent;
+  transform: translate(0px, 0px);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+}
+
+.comic-card-hover:hover {
+  transform: translateY(-5px) rotate(-1deg) skewX(-1.2deg);
+  border-color: #9B6BF2;
+}
+
+.comic-card-hover:hover::before {
+  opacity: 0.9;
+  transform: translate(6px, 6px);
+  border-color: #D56BD9;
+}
+
+/* Varian Skew Kanan untuk Variasi Komik Dinamis */
+.comic-card-hover-alt {
+  position: relative;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comic-card-hover-alt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid #6CC4FF;
+  background: transparent;
+  transform: translate(0px, 0px);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, border-color 0.2s ease;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+}
+
+.comic-card-hover-alt:hover {
+  transform: translateY(-5px) rotate(1deg) skewX(1.2deg);
+  border-color: #6CC4FF;
+}
+
+.comic-card-hover-alt:hover::before {
+  opacity: 0.9;
+  transform: translate(-6px, 6px);
+  border-color: #9B6BF2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comic-card-hover,
+  .comic-card-hover::before,
+  .comic-card-hover-alt,
+  .comic-card-hover-alt::before {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 /* Glow hero - hanya 1 elemen */
 .glow-hero {
   box-shadow: 0 0 0 1px var(--border), 0 0 48px -12px var(--brand-violet-600);

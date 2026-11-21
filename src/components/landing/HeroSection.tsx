@@ -9,7 +9,7 @@ import {
   getNextDeadline,
 } from '@/lib/landing-data';
 import { MascotIllustration } from './MascotIllustration';
-import { Sparkle, Trophy, GameController, MapPin } from '@phosphor-icons/react';
+import { Sparkle, Trophy, GameController, MapPin, Clock } from '@phosphor-icons/react';
 
 // ─── Countdown helpers ─────────────────────────────────────────────────────
 
@@ -126,10 +126,6 @@ export function HeroSection() {
           <div className="flex-1 max-w-2xl text-left">
             {/* Live Indicator Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#140D33]/90 text-[#F5F2FF] border border-[#2E2266] shadow-sm mb-5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4F15A] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C4F15A]" />
-              </span>
               <span className="tracking-wide">Pendaftaran Gelombang 1 Dibuka</span>
               <span className="text-[#A99FD1]/50">|</span>
               <span className="text-[#C4F15A]">Yogyakarta</span>
@@ -186,43 +182,62 @@ export function HeroSection() {
             {/* Badges Info Ringkas */}
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#E6C978]" />
                 Batas Daftar: {registrationDateLabel}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/50">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6CC4FF]" />
                 Biaya: Mulai Rp 35.000
               </span>
             </div>
 
-            {/* Countdown Box Bergaya Cyber Manga HUD */}
+            {/* Countdown Box Bergaya Cyber Anime HUD yang Rapi & Presisi */}
             {nextDeadline && timeLeft && (
-              <div className="mt-7 p-4 rounded-2xl bg-[#140D33]/90 border border-[#2E2266] shadow-[0_8px_30px_rgba(11,7,32,0.6)] backdrop-blur-sm inline-block">
-                <div className="flex items-center justify-between gap-4 mb-2">
-                  <span className="text-[11px] font-bold text-[#A99FD1] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_12px_36px_rgba(11,7,32,0.7)] backdrop-blur-md inline-block max-w-full">
+                <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#2E2266]/70">
+                  <span className="text-[11px] font-bold text-[#E6C978] uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkle size={13} weight="fill" className="text-[#FFE359]" />
-                    Hitung Mundur Penutupan Pendaftaran
+                    Hitung Mundur Deadline Pendaftaran
+                  </span>
+                  <span className="text-[10px] font-mono text-[#A99FD1] bg-[#0B0720] px-2 py-0.5 rounded border border-[#2E2266]">
+                    WIB (UTC+7)
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2.5">
                   {[
                     { label: 'Hari', val: timeLeft.hari },
                     { label: 'Jam', val: timeLeft.jam },
                     { label: 'Menit', val: timeLeft.menit },
                     { label: 'Detik', val: timeLeft.detik },
-                  ].map(({ label, val }) => (
-                    <div
-                      key={label}
-                      className="px-3 py-1.5 rounded-xl bg-[#0B0720] border border-[#2E2266]/80 text-center min-w-[54px] shadow-inner"
-                    >
-                      <span className="tabular-nums text-xl font-extrabold font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] leading-none block">
-                        {pad(val)}
-                      </span>
-                      <span className="text-[9px] text-[#A99FD1] font-semibold uppercase tracking-wider mt-1 block">
-                        {label}
-                      </span>
-                    </div>
+                  ].map(({ label, val }, i) => (
+                    <React.Fragment key={label}>
+                      <div className="flex flex-col items-center">
+                        <div className="w-13 sm:w-16 h-14 sm:h-16 rounded-xl bg-[#0B0720] border border-[#2E2266] flex items-center justify-center shadow-inner group-hover:border-[#9B6BF2] transition-colors">
+                          <span className="tabular-nums text-xl sm:text-2xl font-black font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] tracking-tight">
+                            {pad(val)}
+                          </span>
+                        </div>
+                        <span className="text-[9px] sm:text-[10px] text-[#A99FD1] font-bold uppercase tracking-wider mt-1.5">
+                          {label}
+                        </span>
+                      </div>
+
+                      {/* Pemisah titik dua digital (kecuali di akhir) */}
+                      {i < 3 && (
+                        <div className="flex flex-col justify-center items-center pb-5 select-none" aria-hidden="true">
+                          <span className="text-sm sm:text-base font-bold text-[#9B6BF2] animate-pulse">
+                            :
+                          </span>
+                        </div>
+                      )}
+                    </React.Fragment>
                   ))}
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-[#2E2266]/70 flex items-center justify-between text-[11px] text-[#A99FD1]">
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={12} className="text-[#6CC4FF]" />
+                    Batas akhir: {registrationDateLabel}, 23:59 WIB
+                  </span>
                 </div>
               </div>
             )}
@@ -243,7 +258,7 @@ export function HeroSection() {
             {/* Parallax Floating Manga Action Badges */}
             {/* Floating Badge 1: 5 Cabang Lomba */}
             <div
-              className="absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none"
+              className="comic-card-hover absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge1Parallax}px)`,
               }}
@@ -263,7 +278,7 @@ export function HeroSection() {
 
             {/* Floating Badge 2: Total Hadiah */}
             <div
-              className="absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none"
+              className="comic-card-hover-alt absolute -bottom-4 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center gap-2.5 transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge2Parallax}px)`,
               }}
@@ -283,7 +298,7 @@ export function HeroSection() {
 
             {/* Floating Badge 3: Yogyakarta Arena */}
             <div
-              className="hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md items-center gap-2 transition-transform duration-150 ease-out select-none"
+              className="comic-card-hover hidden sm:flex absolute top-1/2 -right-8 z-20 px-3 py-1.5 rounded-xl bg-[#140D33]/95 border border-[#2E2266] shadow-[0_8px_24px_rgba(0,0,0,0.5)] backdrop-blur-md items-center gap-2 transition-transform duration-150 ease-out select-none cursor-default"
               style={{
                 transform: `translateY(${badge3Parallax}px)`,
               }}

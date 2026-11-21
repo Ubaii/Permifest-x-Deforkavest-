@@ -64,10 +64,12 @@ export function HowToRegisterSection({ id = 'daftar' }: HowToRegisterSectionProp
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {STEPS.map((st) => (
+        {STEPS.map((st, i) => (
           <div
             key={st.num}
-            className="group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/90 p-6 transition-all duration-200 hover:border-[#9B6BF2] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(155,107,242,0.15)] backdrop-blur-sm"
+            className={`group relative flex flex-col justify-between rounded-2xl border border-[#2E2266] bg-[#140D33]/95 p-6 backdrop-blur-sm ${
+              i % 2 === 0 ? 'comic-card-hover' : 'comic-card-hover-alt'
+            }`}
           >
             <div>
               <p

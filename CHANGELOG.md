@@ -5,6 +5,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Utility class efek hover komik anime (`.comic-card-hover` dan `.comic-card-hover-alt`) dengan transformasi tilt `rotate(-1deg) skewX(-1.2deg)` dan pseudo-element `::before` offset border pink/violet ala manga pop art pada kartu kompetisi, langkah pendaftaran, dan floating badges.
+- Kalender interaktif di Landing Page (`TimelineSection.tsx`) dengan Manga Event Modal Popup yang menampilkan rincian agenda lengkap (tanggal WIB, lokasi, status deadline, deskripsi) serta integrasi tombol instan "Pasang di Google Calendar".
+- Peningkatan tata letak dan keterbacaan Countdown Timer Hero Section (`HeroSection.tsx`) bergaya digital cyber clock dengan pemisah waktu berkedip, digit tabular yang tajam, dan label batas akhir resmi.
 - Komponen latar belakang kinetik anime & parallax (`src/components/landing/SakugaHeroBackground.tsx`) dengan multi-layer depth (manga cyber grid, ambient energy atmosphere orbs, diagonal speed slash bars, dan partikel canvas anime motes halus) yang bereaksi terhadap scroll window.
 - Efek parallax interaktif pada Maskot Kupu-kupu Deforkafest di Hero Section dengan respons gerakan mouse 3D tilt, pulse neon aura glow, dan floating anime badges ("5 Cabang Lomba", "Hadiah Puluhan Juta", "UST Yogyakarta").
 - Peningkatan visual kartu kompetisi (`CompetitionsSection.tsx`) dengan efek manga corner slash flare, border glow hover, transisi scale, dan integrasi tombol aksi `<SakugaButton>` pada modal panduan.

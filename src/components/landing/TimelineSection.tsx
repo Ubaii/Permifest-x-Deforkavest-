@@ -8,15 +8,20 @@ import {
   MapPin,
   Alarm,
   Trophy,
+  X,
+  ArrowSquareOut,
+  Sparkle,
 } from '@phosphor-icons/react';
 import { useAppStore } from '@/lib/store';
 import { TimelineEvent, TimelineEventType } from '@/lib/types';
+import { SakugaButton } from '@/components/ui/sakuga-button';
 
 interface AgendaItem {
   id: string;
   day: number;
   month: number; // 1-12
   year: number;
+  isoDate: string;
   title: string;
   stickerBg: string;
   badgeType: string;
@@ -29,11 +34,11 @@ interface AgendaItem {
 }
 
 const EVENT_TYPE_MAP: Record<TimelineEventType, { stickerBg: string; badgeType: string }> = {
-  'daftar': { stickerBg: '#F0A6F2', badgeType: 'Pendaftaran' },
+  daftar: { stickerBg: '#F0A6F2', badgeType: 'Pendaftaran' },
   'technical-meeting': { stickerBg: '#6CC4FF', badgeType: 'Pengarahan TM' },
-  'penyisihan': { stickerBg: '#9B6BF2', badgeType: 'Babak Lomba' },
-  'final': { stickerBg: '#C4F15A', badgeType: 'Puncak Acara' },
-  'pengumuman': { stickerBg: '#E6C978', badgeType: 'Pengumuman' },
+  penyisihan: { stickerBg: '#9B6BF2', badgeType: 'Babak Lomba' },
+  final: { stickerBg: '#C4F15A', badgeType: 'Puncak Acara' },
+  pengumuman: { stickerBg: '#E6C978', badgeType: 'Pengumuman' },
 };
 
 interface TimelineSectionProps {
@@ -55,10 +60,9 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
 
       const meta = EVENT_TYPE_MAP[ev.jenis] || { stickerBg: '#E6C978', badgeType: 'Agenda Event' };
 
-      // Format nama bulan
       const monthNames = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
       ];
       const dateFormatted = `${d} ${monthNames[m - 1] || 'Desember'} ${y}`;
 
@@ -67,7 +71,11 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
         day: d,
         month: m,
         year: y,
-        title: ev.judul.replace(/^(Buka Pendaftaran: |Tutup Pendaftaran & Pembayaran: |Batas Pengumpulan Berkas: |Babak Final & Presentasi: )/, ''),
+        isoDate: ev.tanggal_mulai,
+        title: ev.judul.replace(
+          /^(Buka Pendaftaran: |Tutup Pendaftaran & Pembayaran: |Batas Pengumpulan Berkas: |Babak Final & Presentasi: )/,
+          ''
+        ),
         stickerBg: meta.stickerBg,
         badgeType: meta.badgeType,
         desc: ev.deskripsi || ev.judul,
@@ -80,7 +88,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
     });
   }, [timelineEvents]);
 
-  // Petakan event ke hari Desember 2026 untuk grid 28-31 hari
+  // Petakan event ke hari Desember 2026
   const agendaMap = useMemo(() => {
     const map: Record<number, AgendaItem[]> = {};
     for (const a of agendaList) {
@@ -94,6 +102,16 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
     return map;
   }, [agendaList]);
 
+  // Helper membuat Google Calendar URL
+  const getGoogleCalendarUrl = (item: AgendaItem) => {
+    const title = encodeURIComponent(`[Permifest x Deforkafest] ${item.title}`);
+    const details = encodeURIComponent(`${item.desc}\n\nCabang: ${item.cabangNama || 'Umum'}\nLokasi: ${item.locationStr}`);
+    const location = encodeURIComponent(item.locationStr);
+    // YYYYMMDD format
+    const ymd = `${item.year}${String(item.month).padStart(2, '0')}${String(item.day).padStart(2, '0')}`;
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${ymd}/${ymd}`;
+  };
+
   return (
     <section
       id={id}
@@ -102,6 +120,10 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
     >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div className="max-w-2xl text-left">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#140D33] text-[#D56BD9] border border-[#2E2266] mb-3">
+            <Sparkle size={13} weight="fill" className="text-[#FFE359]" />
+            Jadwal Rangkaian Acara 2026
+          </span>
           <h2
             id="timeline-heading"
             className="text-3xl sm:text-4xl font-extrabold font-[family-name:var(--font-bricolage)] text-foreground tracking-tight"
@@ -119,7 +141,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
             </span>
           </h2>
           <p className="mt-3 text-[#A99FD1] text-base leading-relaxed">
-            Kalender terintegrasi yang diselaraskan langsung oleh panitia event. Klik tanggal atau item untuk melihat rincian agenda.
+            Klik pada tanggal mana pun di kalender untuk membuka rincian agenda, countdown, dan reminder jadwal resmi.
           </p>
         </div>
 
@@ -128,9 +150,9 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           <button
             type="button"
             onClick={() => setViewMode('calendar')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${
               viewMode === 'calendar'
-                ? 'bg-[#7c4ddb] text-[#F5F2FF]'
+                ? 'bg-[#7c4ddb] text-[#F5F2FF] shadow-sm'
                 : 'text-[#A99FD1] hover:text-[#F5F2FF]'
             }`}
           >
@@ -140,9 +162,9 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           <button
             type="button"
             onClick={() => setViewMode('list')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${
               viewMode === 'list'
-                ? 'bg-[#7c4ddb] text-[#F5F2FF]'
+                ? 'bg-[#7c4ddb] text-[#F5F2FF] shadow-sm'
                 : 'text-[#A99FD1] hover:text-[#F5F2FF]'
             }`}
           >
@@ -153,31 +175,34 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
       </div>
 
       {viewMode === 'calendar' ? (
-        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33] p-5 sm:p-7">
-          <div className="flex items-center justify-between mb-5">
-            <p className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl sm:text-2xl text-[#F5F2FF]">
-              Desember 2026
-            </p>
-            <span className="text-xs text-[#A99FD1] font-mono">
-              Waktu Indonesia Barat (WIB)
+        <div className="rounded-2xl border border-[#2E2266] bg-[#140D33]/90 backdrop-blur-sm p-4 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#2E2266]/70">
+            <div>
+              <p className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl sm:text-2xl text-[#F5F2FF]">
+                Desember 2026
+              </p>
+              <p className="text-xs text-[#A99FD1]">Klik kotak tanggal untuk melihat pop-up rincian acara</p>
+            </div>
+            <span className="text-[11px] text-[#A99FD1] font-mono bg-[#0B0720] px-2.5 py-1 rounded-lg border border-[#2E2266]">
+              WIB (UTC+7)
             </span>
           </div>
 
           {/* Day Headers (Sen - Min) */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-xs font-bold text-[#A99FD1] font-[family-name:var(--font-jetbrains)] mb-2">
-            <span>Sen</span>
-            <span>Sel</span>
-            <span>Rab</span>
-            <span>Kam</span>
-            <span>Jum</span>
-            <span>Sab</span>
-            <span>Min</span>
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5 text-center text-xs font-bold text-[#A99FD1] font-[family-name:var(--font-jetbrains)] mb-2.5">
+            <span className="text-[#A99FD1]">Sen</span>
+            <span className="text-[#A99FD1]">Sel</span>
+            <span className="text-[#A99FD1]">Rab</span>
+            <span className="text-[#A99FD1]">Kam</span>
+            <span className="text-[#A99FD1]">Jum</span>
+            <span className="text-[#6CC4FF]">Sab</span>
+            <span className="text-[#D56BD9]">Min</span>
           </div>
 
-          {/* Grid Hari Desember 2026 (1 Des 2026 adalah Selasa => ada 1 offset kosong di hari Senin) */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {/* Offset hari pertama: 1 Des 2026 = Selasa, offset 1 sel */}
-            <div className="min-h-[64px] sm:min-h-[86px] rounded-xl border border-transparent bg-[#140D33]/30 p-1.5 opacity-30 select-none">
+          {/* Grid Hari Desember 2026 (1 Des 2026 adalah Selasa => offset 1 sel di hari Senin) */}
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
+            {/* Offset hari pertama: 30 Nov */}
+            <div className="min-h-[70px] sm:min-h-[96px] rounded-xl border border-transparent bg-[#140D33]/30 p-2 opacity-30 select-none">
               <span className="font-[family-name:var(--font-jetbrains)] text-xs text-[#A99FD1]/40">30</span>
             </div>
 
@@ -185,97 +210,62 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
               const day = idx + 1;
               const dayAgendas = agendaMap[day] || [];
               const primaryAgenda = dayAgendas[0];
+              const hasEvents = dayAgendas.length > 0;
 
               return (
                 <div
                   key={day}
-                  onClick={() => primaryAgenda && setSelectedAgenda(primaryAgenda)}
-                  className={`min-h-[64px] sm:min-h-[86px] rounded-xl border p-1.5 sm:p-2 transition-all flex flex-col justify-between ${
-                    dayAgendas.length > 0
-                      ? 'bg-[#140D33] border-[#7c4ddb]/80 hover:border-[#7c4ddb] hover:shadow-lg hover:shadow-[#7c4ddb]/20 cursor-pointer'
+                  onClick={() => {
+                    if (primaryAgenda) setSelectedAgenda(primaryAgenda);
+                  }}
+                  className={`min-h-[70px] sm:min-h-[96px] rounded-xl border p-1.5 sm:p-2.5 transition-all duration-200 flex flex-col justify-between ${
+                    hasEvents
+                      ? 'bg-[#18103c] border-[#7c4ddb]/70 hover:border-[#9B6BF2] hover:-translate-y-1 hover:rotate-[-0.8deg] hover:scale-[1.02] hover:shadow-[0_6px_20px_rgba(155,107,242,0.3)] cursor-pointer'
                       : 'bg-[#140D33]/60 border-[#2E2266]/40'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-[family-name:var(--font-jetbrains)] font-bold text-xs sm:text-sm text-[#A99FD1] tabular-nums">
+                    <span
+                      className={`font-[family-name:var(--font-jetbrains)] font-bold text-xs sm:text-sm tabular-nums ${
+                        hasEvents ? 'text-[#F5F2FF] font-black' : 'text-[#A99FD1]/80'
+                      }`}
+                    >
                       {day}
                     </span>
                     {dayAgendas.length > 1 && (
-                      <span className="text-[9px] font-bold px-1 rounded bg-[#7c4ddb]/40 text-[#F5F2FF]">
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#9B6BF2] text-[#0B0720]">
                         +{dayAgendas.length}
                       </span>
                     )}
                   </div>
 
                   {primaryAgenda && (
-                    <span
-                      className="block mt-1 px-1.5 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-bold text-[#0B0720] truncate text-center leading-tight shadow-xs"
-                      style={{
-                        backgroundColor: primaryAgenda.stickerBg,
-                        transform: 'rotate(-2deg)',
-                      }}
-                      title={`${primaryAgenda.title} (${primaryAgenda.badgeType})`}
-                    >
-                      {primaryAgenda.title}
-                    </span>
+                    <div className="mt-1">
+                      <span
+                        className="block px-1.5 py-1 rounded-lg text-[9px] sm:text-[11px] font-extrabold text-[#0B0720] truncate text-center leading-tight shadow-sm transition-transform hover:scale-105"
+                        style={{
+                          backgroundColor: primaryAgenda.stickerBg,
+                          transform: 'rotate(-1.5deg)',
+                        }}
+                        title={`${primaryAgenda.title} (${primaryAgenda.badgeType})`}
+                      >
+                        {primaryAgenda.title}
+                      </span>
+                    </div>
                   )}
                 </div>
               );
             })}
           </div>
-
-          {/* Agenda Popover / Detail Bar */}
-          {selectedAgenda && (
-            <div className="mt-6 p-4 rounded-xl border border-[#7c4ddb] bg-[#1d1347] flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#A99FD1]">
-                    Detail Agenda: {selectedAgenda.dateStr}
-                  </span>
-                  {selectedAgenda.cabangNama && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#7c4ddb]/40 text-[#F5F2FF] flex items-center gap-1">
-                      <Trophy size={11} /> {selectedAgenda.cabangNama}
-                    </span>
-                  )}
-                  {selectedAgenda.isDeadline && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1">
-                      <Alarm size={11} weight="fill" /> Deadline
-                    </span>
-                  )}
-                </div>
-
-                <h4 className="text-base font-bold text-[#F5F2FF]">
-                  {selectedAgenda.title}: {selectedAgenda.badgeType}
-                </h4>
-                <p className="text-xs text-[#A99FD1] max-w-2xl">{selectedAgenda.desc}</p>
-                
-                <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-[#E6C978]">
-                  <span className="flex items-center gap-1">
-                    <Clock size={14} /> {selectedAgenda.timeStr}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin size={14} /> {selectedAgenda.locationStr}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedAgenda(null)}
-                className="px-3 py-1.5 rounded-lg bg-[#140D33] text-xs font-semibold text-[#A99FD1] hover:text-[#F5F2FF] self-start sm:self-auto min-h-[36px]"
-              >
-                Tutup
-              </button>
-            </div>
-          )}
         </div>
       ) : (
         /* List Mode */
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {agendaList.map((ag) => (
             <div
               key={ag.id}
-              className="p-5 rounded-2xl border border-[#2E2266] bg-[#140D33] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              onClick={() => setSelectedAgenda(ag)}
+              className="p-5 rounded-2xl border border-[#2E2266] bg-[#140D33]/90 hover:border-[#9B6BF2] hover:-translate-y-1 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer backdrop-blur-sm"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -292,8 +282,8 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
                     </span>
                   )}
                   {ag.isDeadline && (
-                    <span className="text-xs font-bold text-[#D56BD9] flex items-center gap-1">
-                      <Alarm size={14} weight="fill" />
+                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1">
+                      <Alarm size={13} weight="fill" />
                       Deadline
                     </span>
                   )}
@@ -308,6 +298,127 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── Manga Event Interactive Modal Dialog ── */}
+      {selectedAgenda && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="calendar-modal-title"
+          onClick={() => setSelectedAgenda(null)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-3xl bg-[#140D33] border-2 border-[#9B6BF2] p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.85)] max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Washi Tape / Manga Comic Tape Header Accent */}
+            <div
+              className="absolute -top-3 left-6 px-3.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider text-[#0B0720] shadow-md select-none"
+              style={{
+                backgroundColor: selectedAgenda.stickerBg,
+                transform: 'rotate(-2.5deg)',
+              }}
+            >
+              ★ {selectedAgenda.badgeType}
+            </div>
+
+            {/* Tombol Close */}
+            <button
+              type="button"
+              onClick={() => setSelectedAgenda(null)}
+              className="absolute top-4 right-4 p-2 rounded-xl text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
+              aria-label="Tutup Detail"
+            >
+              <X size={20} weight="bold" />
+            </button>
+
+            <div className="pt-2">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                {selectedAgenda.cabangNama && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#2E2266] text-[#6CC4FF] flex items-center gap-1.5">
+                    <Trophy size={14} className="text-[#E6C978]" />
+                    {selectedAgenda.cabangNama}
+                  </span>
+                )}
+                {selectedAgenda.isDeadline && (
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-rose-500/25 text-rose-300 border border-rose-500/40 flex items-center gap-1.5">
+                    <Alarm size={14} weight="fill" />
+                    Batas Akhir / Deadline
+                  </span>
+                )}
+              </div>
+
+              <h3
+                id="calendar-modal-title"
+                className="text-2xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] pr-8 leading-snug"
+              >
+                {selectedAgenda.title}
+              </h3>
+
+              <p className="mt-3 text-sm text-[#A99FD1] leading-relaxed">
+                {selectedAgenda.desc}
+              </p>
+
+              {/* Rincian Waktu & Tempat Box */}
+              <div className="mt-6 p-4 rounded-2xl bg-[#0B0720] border border-[#2E2266] space-y-3">
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
+                  <div className="w-8 h-8 rounded-lg bg-[#9B6BF2]/20 flex items-center justify-center text-[#9B6BF2] shrink-0">
+                    <CalendarIcon size={16} weight="duotone" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Tanggal</span>
+                    <span className="font-bold">{selectedAgenda.dateStr}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
+                  <div className="w-8 h-8 rounded-lg bg-[#6CC4FF]/20 flex items-center justify-center text-[#6CC4FF] shrink-0">
+                    <Clock size={16} weight="duotone" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Waktu Pelaksanaan</span>
+                    <span className="font-bold">{selectedAgenda.timeStr}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-[#F5F2FF]">
+                  <div className="w-8 h-8 rounded-lg bg-[#E6C978]/20 flex items-center justify-center text-[#E6C978] shrink-0">
+                    <MapPin size={16} weight="duotone" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#A99FD1] font-semibold uppercase block">Lokasi / Saluran</span>
+                    <span className="font-bold">{selectedAgenda.locationStr}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions Footer */}
+              <div className="mt-7 pt-4 border-t border-[#2E2266] flex flex-wrap items-center justify-end gap-3">
+                <a
+                  href={getGoogleCalendarUrl(selectedAgenda)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#6CC4FF] transition-all min-h-[44px]"
+                >
+                  <ArrowSquareOut size={16} weight="bold" />
+                  Pasang di Google Calendar
+                </a>
+
+                <SakugaButton
+                  type="button"
+                  variant="brand"
+                  size="sm"
+                  sfxText="MANTAP!!"
+                  onClick={() => setSelectedAgenda(null)}
+                >
+                  Tutup Rincian
+                </SakugaButton>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </section>
