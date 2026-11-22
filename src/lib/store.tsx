@@ -166,14 +166,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       id: '',
       email: '',
       full_name: '',
-      role: '' as any,
+      role: '' as UserRole,
       email_verified: false,
     });
     if (typeof window !== 'undefined') {
       localStorage.removeItem('permifest_user');
       document.cookie = 'permifest_demo_role=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       document.cookie = 'permifest_demo_email=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      window.location.href = '/login';
     }
   };
 

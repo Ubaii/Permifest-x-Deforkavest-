@@ -14,10 +14,7 @@ import {
   ShieldCheck, 
   Buildings, 
   Phone, 
-  Envelope, 
   ClipboardText, 
-  CheckCircle, 
-  Clock,
   Certificate,
   Handshake
 } from '@phosphor-icons/react';

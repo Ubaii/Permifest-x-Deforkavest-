@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
@@ -14,9 +14,6 @@ import {
   DownloadSimple as Download, 
   CaretDown as ChevronDown, 
   CaretUp as ChevronUp, 
-  FileText,
-  MapPin,
-  ArrowSquareOut as ExternalLink
 } from '@phosphor-icons/react';
 
 export default function InformasiPage() {

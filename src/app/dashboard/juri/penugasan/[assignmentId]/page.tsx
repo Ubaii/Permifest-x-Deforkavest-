@@ -20,11 +20,10 @@ import {
   Scales,
   Lock,
   ChatCenteredText,
-  Clock,
   Buildings,
 } from '@phosphor-icons/react';
 
-export default function JuriAssignmentDetailPage() {
+function JuriAssignmentDetailContent() {
   const params = useParams();
   const router = useRouter();
   const assignmentId = params?.assignmentId as string;
@@ -387,5 +386,13 @@ export default function JuriAssignmentDetailPage() {
         </div>
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function JuriAssignmentDetailPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <JuriAssignmentDetailContent />
+    </React.Suspense>
   );
 }

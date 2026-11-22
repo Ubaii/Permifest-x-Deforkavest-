@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAppStore } from '@/lib/store';
 import { ROLE_LABELS } from '@/lib/constants';
 import { UserRole } from '@/lib/types';
@@ -23,7 +23,6 @@ import {
   ArrowLeft,
   CaretRight,
   SignOut,
-  ShieldCheck,
   CheckCircle,
   Gear,
   WarningOctagon,
@@ -51,7 +50,12 @@ interface MenuGroup {
 
 export function Sidebar({ onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { currentUser, switchRole, logout } = useAppStore();
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
+  };
 
   const getMenuGroups = (): MenuGroup[] => {
     switch (currentUser.role) {
@@ -240,7 +244,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
       <div className="p-3 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)] flex items-center justify-between">
         <button
           type="button"
-          onClick={() => logout()}
+          onClick={handleLogout}
           className="hover:text-rose-400 flex items-center gap-1.5 transition-colors cursor-pointer text-left"
           title="Keluar dari akun Anda"
         >

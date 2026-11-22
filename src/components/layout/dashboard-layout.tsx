@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './sidebar';
 import { List, Sun, Moon, CaretRight, House, User, SignOut } from '@phosphor-icons/react';
 import { useAppStore } from '@/lib/store';
-import { ROLE_LABELS } from '@/lib/constants';
 
 const ROUTE_SEGMENT_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -55,6 +54,7 @@ export function DashboardLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const pathname = usePathname();
+  const router = useRouter();
   const { currentUser, logout } = useAppStore();
 
   // Sinkronisasi tema dengan localStorage dan DOM class
@@ -88,6 +88,11 @@ export function DashboardLayout({
     } else {
       document.documentElement.classList.remove('dark');
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/login');
   };
 
   // Tentukan path profil berdasarkan role pengguna
@@ -224,7 +229,7 @@ export function DashboardLayout({
             {/* Tombol Logout Cepat di Header */}
             <button
               type="button"
-              onClick={() => logout()}
+              onClick={handleLogout}
               className="inline-flex items-center justify-center w-8 h-8 rounded-xl border border-border bg-muted/40 hover:bg-rose-500/15 hover:text-rose-400 text-muted-foreground transition-all text-xs font-semibold"
               title="Keluar dari akun (Logout)"
             >

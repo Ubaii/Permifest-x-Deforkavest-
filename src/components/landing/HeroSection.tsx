@@ -10,14 +10,14 @@ export function HeroSection() {
   return (
     <section
       id="beranda"
-      className="relative overflow-hidden pt-10 pb-12 lg:pt-16 lg:pb-20"
+      className="relative overflow-hidden pt-0 pb-12 md:pt-24 lg:pt-28 lg:pb-20"
       aria-labelledby="hero-heading"
     >
       {/* ── Ambient Background Canvas CSS ── */}
       <SakugaHeroBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-10 lg:gap-14">
           {/* ── Kolom Kiri: Teks & Aksi ── */}
           <div className="flex-1 max-w-2xl text-left">
             {/* Washi-Tape Status Pill (Playful Manga Style) */}
@@ -80,7 +80,7 @@ export function HeroSection() {
             />
 
             {/* ── Floating Badge 1: 5 Cabang Lomba (Kiri Atas) ── */}
-            <div className="absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-2xl bg-[#140D33]/95 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] flex items-center gap-3 transition-transform duration-200 hover:scale-105 select-none cursor-default">
+            <div className="absolute top-0 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-2xl bg-[#140D33]/95 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] flex items-center gap-3 transition-transform duration-200 hover:scale-105 select-none cursor-default">
               <div className="w-8 h-8 rounded-xl bg-[#9B6BF2]/20 border border-[#9B6BF2]/40 flex items-center justify-center text-[#9B6BF2] shrink-0">
                 <GameController size={20} weight="duotone" />
               </div>

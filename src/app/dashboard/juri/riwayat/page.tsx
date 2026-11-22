@@ -4,11 +4,10 @@ import React from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { ClockCounterClockwise, Lock, CheckCircle } from '@phosphor-icons/react';
+import { ClockCounterClockwise, Lock } from '@phosphor-icons/react';
 
 export default function JuriRiwayatPage() {
   const { judgeAssignments } = useAppStore();

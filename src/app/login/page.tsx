@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -41,8 +40,13 @@ export default function LoginPage() {
 
       // Sinkronkan role store demo agar konsisten
       const detectedRole = result.data.role;
-      if (['peserta', 'juri', 'panitia', 'super_admin'].includes(detectedRole)) {
-        switchRole(detectedRole as any);
+      if (
+        detectedRole === 'peserta' ||
+        detectedRole === 'juri' ||
+        detectedRole === 'panitia' ||
+        detectedRole === 'super_admin'
+      ) {
+        switchRole(detectedRole);
       } else if (email.includes('juri')) {
         switchRole('juri');
       } else if (email.includes('panitia') || email.includes('admin')) {

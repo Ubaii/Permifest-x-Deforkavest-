@@ -6,7 +6,6 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
 import { Trophy, Medal, Megaphone, ArrowRight, Sparkle, SealCheck } from '@phosphor-icons/react';

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/modal';
@@ -13,7 +13,7 @@ import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
 import { Announcement } from '@/lib/types';
-import { Megaphone, Plus, PencilSimple, Trash, Eye, PushPin, Calendar, User } from '@phosphor-icons/react';
+import { Megaphone, Plus, PencilSimple, Trash, Calendar, User } from '@phosphor-icons/react';
 
 interface AnnouncementFormData {
   title: string;

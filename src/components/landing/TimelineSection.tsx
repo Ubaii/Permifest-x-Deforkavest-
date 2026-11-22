@@ -4,17 +4,13 @@ import React, { useState, useMemo } from 'react';
 import {
   Calendar as CalendarIcon,
   ListBullets,
-  Clock,
-  MapPin,
   Alarm,
   Trophy,
   X,
   ArrowSquareOut,
-  Sparkle,
 } from '@phosphor-icons/react';
 import { useAppStore } from '@/lib/store';
 import { TimelineEvent, TimelineEventType } from '@/lib/types';
-import { SakugaButton } from '@/components/ui/sakuga-button';
 
 interface AgendaItem {
   id: string;

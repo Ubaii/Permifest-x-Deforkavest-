@@ -2,7 +2,7 @@
 
 import React, { useEffect, createContext, useContext } from 'react';
 import { cn } from '@/lib/utils';
-import { X, Warning, Info, CheckCircle } from '@phosphor-icons/react';
+import { X, Warning, Info } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 
 interface ModalContextType {

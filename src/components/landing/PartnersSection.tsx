@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Image from 'next/image';
 import { useAppStore } from '@/lib/store';
 import { Partner } from '@/lib/types';
 
@@ -69,9 +70,13 @@ export function PartnersSection() {
                 {/* Logo Box: Bersih tanpa badge tumpuk */}
                 <div className="w-full h-16 flex items-center justify-center px-2 py-1">
                   {org.logo_url ? (
-                    <img
+                    <Image
                       src={org.logo_url}
                       alt={org.name}
+                      width={160}
+                      height={48}
+                      unoptimized
+                      style={{ width: 'auto', height: 'auto' }}
                       className="max-h-12 max-w-[160px] object-contain transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLElement).style.display = 'none';
@@ -133,9 +138,13 @@ export function PartnersSection() {
               >
                 {sp.logo_url && (
                   <div className="h-10 w-full flex items-center justify-center mb-2">
-                    <img
+                    <Image
                       src={sp.logo_url}
                       alt={sp.name}
+                      width={120}
+                      height={32}
+                      unoptimized
+                      style={{ width: 'auto', height: 'auto' }}
                       className="max-h-8 max-w-[120px] object-contain opacity-85 group-hover:opacity-100 transition-opacity"
                     />
                   </div>

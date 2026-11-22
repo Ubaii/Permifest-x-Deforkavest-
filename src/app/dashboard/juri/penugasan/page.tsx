@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
@@ -12,18 +12,14 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
-import { formatDateWIB } from '@/lib/utils';
 import { getFileDownloadUrl } from '@/lib/supabase/storage-client';
 import { 
   ClipboardText, 
   ArrowSquareOut, 
   DownloadSimple, 
-  CheckCircle, 
   Lock, 
   Scales, 
   UserCircle,
-  EyeSlash,
-  ChatCenteredText
 } from '@phosphor-icons/react';
 
 export default function JuriPenugasanPage() {
@@ -42,21 +38,6 @@ export default function JuriPenugasanPage() {
 
   // Periksa apakah nilai sudah dikunci
   const isLocked = activeAssignment?.scores?.some((s) => s.is_locked);
-
-  const openScoringModal = (assignmentId: string) => {
-    setActiveAssignmentId(assignmentId);
-    setModalError(null);
-    const assign = judgeAssignments.find((a) => a.id === assignmentId);
-    
-    // Pre-populate nilai yang tersimpan sebelumnya
-    const initial: Record<string, { score: number; comment: string }> = {};
-    if (assign?.scores) {
-      assign.scores.forEach((s) => {
-        initial[s.rubric_criteria_id] = { score: s.score, comment: s.comment || '' };
-      });
-    }
-    setScoresInput(initial);
-  };
 
   const handleScoreChange = (critId: string, val: number) => {
     if (isLocked) return;

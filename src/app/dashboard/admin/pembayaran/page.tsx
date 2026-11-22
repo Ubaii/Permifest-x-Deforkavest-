@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,6 @@ import {
   CurrencyCircleDollar,
   ArrowSquareOut,
   FileText,
-  DownloadSimple,
 } from '@phosphor-icons/react';
 
 export default function AdminPembayaranPage() {
@@ -43,8 +42,8 @@ export default function AdminPembayaranPage() {
 
   const [activeRegId, setActiveRegId] = useState<string | null>(null);
   const [reviewDrawerReg, setReviewDrawerReg] = useState<Registration | null>(null);
-  const [proofSignedUrl, setProofSignedUrl] = useState<string | null>(null);
-  const [loadingProof, setLoadingProof] = useState<boolean>(false);
+  const [proofResolution, setProofResolution] = useState<{ rawUrl: string; url: string | null } | null>(null);
+  const [isProofPending, startProofTransition] = useTransition();
   const [approveConfirmReg, setApproveConfirmReg] = useState<Registration | null>(null);
   const [deleteConfirmReg, setDeleteConfirmReg] = useState<Registration | null>(null);
   const [editAmountReg, setEditAmountReg] = useState<Registration | null>(null);
@@ -52,31 +51,41 @@ export default function AdminPembayaranPage() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
 
+  const closeReviewDrawer = () => {
+    setReviewDrawerReg(null);
+    setProofResolution(null);
+  };
+
+  const rawProofUrl = reviewDrawerReg?.payment?.proof_url ?? null;
+  const directProofUrl =
+    rawProofUrl?.startsWith('http://') || rawProofUrl?.startsWith('https://')
+      ? rawProofUrl
+      : null;
+  const proofSignedUrl = directProofUrl ??
+    (proofResolution?.rawUrl === rawProofUrl ? proofResolution.url : null);
+  const loadingProof = Boolean(
+    rawProofUrl && !directProofUrl &&
+    (isProofPending || proofResolution?.rawUrl !== rawProofUrl)
+  );
+
   React.useEffect(() => {
-    if (!reviewDrawerReg?.payment?.proof_url) {
-      setProofSignedUrl(null);
-      return;
-    }
-    const rawUrl = reviewDrawerReg.payment.proof_url;
-    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
-      setProofSignedUrl(rawUrl);
-      return;
-    }
+    if (!rawProofUrl || directProofUrl) return;
     let isCancelled = false;
-    setLoadingProof(true);
-    getFileDownloadUrl('payment-proofs', rawUrl, { expiresInSeconds: 1800 })
-      .then((res) => {
-        if (!isCancelled && res.success && res.url) {
-          setProofSignedUrl(res.url);
+    startProofTransition(async () => {
+      let resolvedUrl: string | null = null;
+      try {
+        const res = await getFileDownloadUrl('payment-proofs', rawProofUrl, { expiresInSeconds: 1800 });
+        if (res.success && res.url) resolvedUrl = res.url;
+      } finally {
+        if (!isCancelled) {
+          setProofResolution({ rawUrl: rawProofUrl, url: resolvedUrl });
         }
-      })
-      .finally(() => {
-        if (!isCancelled) setLoadingProof(false);
-      });
+      }
+    });
     return () => {
       isCancelled = true;
     };
-  }, [reviewDrawerReg]);
+  }, [rawProofUrl, directProofUrl, startProofTransition]);
 
   const registrationsWithPayment = registrations.filter((r) => r.payment);
 
@@ -98,7 +107,7 @@ export default function AdminPembayaranPage() {
     await verifyPayment(approveConfirmReg.id, 'verified');
     setAlertSuccess(`Pembayaran ${approveConfirmReg.user?.full_name} berhasil disetujui! Status pendaftaran kini Terverifikasi.`);
     if (reviewDrawerReg?.id === approveConfirmReg.id) {
-      setReviewDrawerReg(null);
+      closeReviewDrawer();
     }
     setApproveConfirmReg(null);
   };
@@ -112,7 +121,7 @@ export default function AdminPembayaranPage() {
     if (!activeRegId) return;
     await verifyPayment(activeRegId, 'rejected', reason);
     if (reviewDrawerReg?.id === activeRegId) {
-      setReviewDrawerReg(null);
+      closeReviewDrawer();
     }
     setActiveRegId(null);
     setAlertSuccess('Pembayaran telah ditolak. Alasan penolakan telah dicatat dan terkirim ke peserta.');
@@ -130,7 +139,7 @@ export default function AdminPembayaranPage() {
     if (!deleteConfirmReg) return;
     await deleteRegistration(deleteConfirmReg.id);
     if (reviewDrawerReg?.id === deleteConfirmReg.id) {
-      setReviewDrawerReg(null);
+      closeReviewDrawer();
     }
     setAlertSuccess(`Data transaksi pembayaran ${deleteConfirmReg.user?.full_name} telah dihapus.`);
     setDeleteConfirmReg(null);
@@ -346,7 +355,7 @@ export default function AdminPembayaranPage() {
         {/* PaymentReviewPanel Drawer */}
         <Drawer
           isOpen={!!reviewDrawerReg}
-          onClose={() => setReviewDrawerReg(null)}
+          onClose={closeReviewDrawer}
           size="xl"
         >
           {reviewDrawerReg && (
@@ -494,7 +503,7 @@ export default function AdminPembayaranPage() {
 
               <DrawerFooter>
                 <div className="flex items-center justify-between w-full gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setReviewDrawerReg(null)}>
+                  <Button variant="outline" size="sm" onClick={closeReviewDrawer}>
                     Tutup
                   </Button>
 

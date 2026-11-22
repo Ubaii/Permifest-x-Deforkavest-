@@ -7,7 +7,7 @@
 // It fires an ordinary click. With type="submit" inside a form, it submits the form.
 (() => {
 function component(fx) {
-const { rnd, later, at, esc, squashy, Spring, ticks, wob, lines, burst, shards, puff, sfx, donut, kira } = fx;
+const { rnd, later, at, squashy, Spring, ticks, wob, lines, burst, shards, puff, sfx, donut, kira } = fx;
 
 class SakugaButton extends fx.Base {
   static delegates = true;

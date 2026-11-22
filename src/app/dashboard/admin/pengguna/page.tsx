@@ -5,7 +5,6 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/ui/stat-card';
-import { Modal } from '@/components/ui/modal';
 import { ConfirmDialog } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';

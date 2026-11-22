@@ -7,9 +7,6 @@ import {
   WhatsappLogo,
   MapPin,
   EnvelopeSimple,
-  ShieldCheck,
-  FileText,
-  Sparkle,
 } from '@phosphor-icons/react';
 
 const LOMBA_LINKS = [

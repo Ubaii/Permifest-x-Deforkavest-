@@ -14,15 +14,9 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateWIB } from '@/lib/utils';
 import { 
-  Shield, 
   ArrowLeft, 
-  Clock, 
-  Users, 
   CheckCircle as CheckCircle2, 
-  FileText as FileCheck, 
   WarningCircle as AlertCircle, 
-  QrCode, 
-  CaretRight as ChevronRight,
   PaperPlaneRight as Send
 } from '@phosphor-icons/react';
 

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,6 @@ import {
   CaretRight,
   CheckCircle,
   WarningCircle,
-  FileText,
   Sliders,
 } from '@phosphor-icons/react';
 

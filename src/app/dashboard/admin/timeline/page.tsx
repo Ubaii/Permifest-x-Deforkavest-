@@ -24,8 +24,6 @@ import {
   CaretRight, 
   Alarm, 
   Trophy, 
-  Info,
-  CheckCircle,
   Funnel
 } from '@phosphor-icons/react';
 

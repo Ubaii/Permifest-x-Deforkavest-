@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
 import {
-  Gear,
   CreditCard,
   QrCode,
   WhatsappLogo,
@@ -18,8 +17,6 @@ import {
   UploadSimple,
   Trash,
   Bank,
-  Envelope,
-  Warning,
   Eye,
   Sliders,
 } from '@phosphor-icons/react';
