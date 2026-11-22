@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { GameController, Trophy, MapPin } from '@phosphor-icons/react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { SakugaHeroBackground } from './SakugaHeroBackground';
 
@@ -20,7 +21,7 @@ export function HeroSection() {
           {/* ── Kolom Kiri: Teks & Aksi ── */}
           <div className="flex-1 max-w-2xl text-left">
             {/* Washi-Tape Status Pill (Playful Manga Style) */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#140D33] text-[#FFE359] border-2 border-[#524112] shadow-[3px_3px_0px_#0B0720] mb-5 -rotate-1 hover:rotate-0 transition-transform cursor-default">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#140D33] text-[#FFE359] border-2 border-[#524112] shadow-[3px_3px_0px_#0B0720] mb-5 -rotate-1 hover:rotate-0 transition-transform cursor-default select-none">
               <span>Pendaftaran Gelombang 1 Dibuka</span>
             </div>
 
@@ -31,7 +32,7 @@ export function HeroSection() {
             >
               Permifest{' '}
               <span
-                className="inline-block relative"
+                className="inline-block relative select-none"
                 style={{
                   background: 'linear-gradient(135deg, #9B6BF2 0%, #D56BD9 100%)',
                   WebkitBackgroundClip: 'text',
@@ -49,7 +50,7 @@ export function HeroSection() {
             </p>
 
             {/* CTA Buttons: Pop-Art CSS Murni */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center gap-4 select-none">
               <SakugaButton
                 href="/register"
                 variant="brand"
@@ -68,34 +69,58 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* ── Kolom Kanan: Ilustrasi Maskot Playful dengan Stiker Manga Interaktif ── */}
+          {/* ── Kolom Kanan: Ilustrasi Maskot dengan Floating Badge Ber-Ikon ── */}
           <div className="flex-1 w-full max-w-[560px] lg:max-w-[620px] flex justify-center items-center relative group">
             {/* Ambient Radial Atmosphere */}
             <div
-              className="absolute w-[440px] h-[440px] rounded-full pointer-events-none opacity-40"
+              className="absolute w-[440px] h-[440px] rounded-full pointer-events-none opacity-40 select-none"
               style={{
                 background: 'radial-gradient(circle, rgba(155, 107, 242, 0.45) 0%, rgba(213, 107, 217, 0.2) 50%, transparent 70%)',
               }}
             />
 
-            {/* ── Playful Sticker 1: 5 Cabang Lomba (Kanan Atas) ── */}
-            <div className="absolute -top-3 right-4 sm:right-8 z-20 transform rotate-6 hover:rotate-2 hover:scale-110 transition-all duration-200 cursor-pointer select-none">
-              <div className="px-3.5 py-1.5 rounded-xl bg-[#C4F15A] text-[#0B0720] font-black text-xs uppercase tracking-wider border-2 border-[#0B0720] shadow-[4px_4px_0px_#0B0720]">
-                5 Cabang Lomba!
+            {/* ── Floating Badge 1: 5 Cabang Lomba (Kiri Atas) ── */}
+            <div className="absolute -top-4 -left-2 sm:-left-6 z-20 px-3.5 py-2 rounded-2xl bg-[#140D33]/95 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] flex items-center gap-3 transition-transform duration-200 hover:scale-105 select-none cursor-default">
+              <div className="w-8 h-8 rounded-xl bg-[#9B6BF2]/20 border border-[#9B6BF2]/40 flex items-center justify-center text-[#9B6BF2] shrink-0">
+                <GameController size={20} weight="duotone" />
+              </div>
+              <div className="text-left">
+                <span className="block text-xs font-black text-[#F5F2FF] uppercase tracking-wide leading-none">
+                  5 Cabang Lomba
+                </span>
+                <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-1">
+                  Akademik &amp; E-Sport
+                </span>
               </div>
             </div>
 
-            {/* ── Playful Sticker 2: Total Hadiah (Kiri Bawah) ── */}
-            <div className="absolute -bottom-2 -left-2 sm:left-4 z-20 transform -rotate-6 hover:-rotate-1 hover:scale-110 transition-all duration-200 cursor-pointer select-none">
-              <div className="px-3.5 py-1.5 rounded-xl bg-[#FFE359] text-[#0B0720] font-black text-xs uppercase tracking-wider border-2 border-[#0B0720] shadow-[4px_4px_0px_#0B0720]">
-                Total Hadiah Puluhan Juta!
+            {/* ── Floating Badge 2: Total Hadiah (Kanan Bawah) ── */}
+            <div className="absolute -bottom-3 -right-2 sm:-right-4 z-20 px-3.5 py-2 rounded-2xl bg-[#140D33]/95 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] flex items-center gap-3 transition-transform duration-200 hover:scale-105 select-none cursor-default">
+              <div className="w-8 h-8 rounded-xl bg-[#FFE359]/20 border border-[#FFE359]/40 flex items-center justify-center text-[#FFE359] shrink-0">
+                <Trophy size={20} weight="duotone" />
+              </div>
+              <div className="text-left">
+                <span className="block text-xs font-black text-[#F5F2FF] uppercase tracking-wide leading-none">
+                  Hadiah Puluhan Juta
+                </span>
+                <span className="block text-[10px] text-[#FFE359] font-semibold mt-1">
+                  + Sertifikat Resmi
+                </span>
               </div>
             </div>
 
-            {/* ── Playful Sticker 3: Venue UST (Kanan Bawah) ── */}
-            <div className="absolute bottom-6 right-2 sm:right-6 z-20 transform rotate-3 hover:rotate-0 hover:scale-110 transition-all duration-200 cursor-pointer select-none">
-              <div className="px-3 py-1.5 rounded-xl bg-[#6CC4FF] text-[#0B0720] font-black text-[11px] uppercase tracking-wider border-2 border-[#0B0720] shadow-[4px_4px_0px_#0B0720]">
-                Arena Kampus UST
+            {/* ── Floating Badge 3: Venue UST (Kanan Tengah) ── */}
+            <div className="hidden sm:flex absolute top-1/2 -right-4 sm:-right-8 -translate-y-1/2 z-20 px-3 py-2 rounded-2xl bg-[#140D33]/95 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] items-center gap-2.5 transition-transform duration-200 hover:scale-105 select-none cursor-default">
+              <div className="w-7 h-7 rounded-lg bg-[#6CC4FF]/20 border border-[#6CC4FF]/40 flex items-center justify-center text-[#6CC4FF] shrink-0">
+                <MapPin size={17} weight="bold" />
+              </div>
+              <div className="text-left">
+                <span className="block text-xs font-bold text-[#F5F2FF] leading-none">
+                  UST Yogyakarta
+                </span>
+                <span className="block text-[10px] text-[#A99FD1] mt-0.5">
+                  Arena Grand Final
+                </span>
               </div>
             </div>
 

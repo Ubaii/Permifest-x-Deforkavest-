@@ -192,7 +192,7 @@ export function CompetitionsSection({
           >
             <div>
               {/* Category Pill Tag */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 select-none">
                 <span
                   className={`inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
                     comp.categoryType === 'gold'
@@ -252,7 +252,7 @@ export function CompetitionsSection({
             {/* Header Modal */}
             <div className="flex items-center justify-between mb-3">
               <span
-                className={`inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
+                className={`inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider select-none ${
                   selectedComp.categoryType === 'gold'
                     ? 'bg-[#2a2108] text-[#E6C978]'
                     : 'bg-[#082436] text-[#6CC4FF]'

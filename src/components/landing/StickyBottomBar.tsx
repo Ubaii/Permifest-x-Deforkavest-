@@ -32,7 +32,7 @@ export function StickyBottomBar() {
       aria-label="Aksi Cepat Pendaftaran"
       className="fixed bottom-0 inset-x-0 z-40 md:hidden p-3 bg-[#140D33] border-t border-[#2E2266] shadow-2xl safe-bottom transition-all duration-200"
     >
-      <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
+      <div className="flex items-center justify-between gap-3 max-w-md mx-auto select-none">
         <div>
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[#C4F15A]" />

@@ -33,7 +33,7 @@ export function PartnersSection() {
     >
       {/* ── Heading Terstruktur & Bersih (Antislop Design) ── */}
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <div className="inline-block px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#140D33] text-[#FFE359] border border-[#524112] mb-3">
+        <div className="inline-block px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#140D33] text-[#FFE359] border border-[#524112] mb-3 select-none">
           Penyelenggara &amp; Kolaborator
         </div>
         <h2

@@ -42,18 +42,13 @@ export function Footer() {
           {/* Kolom 1 & 2: Brand, Kolaborasi & Narasi */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              {/* <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9B6BF2] to-[#D56BD9] p-0.5 shadow-[2px_2px_0px_#FFE359]">
-                <div className="w-full h-full bg-[#0B0720] rounded-[10px] flex items-center justify-center text-white font-black text-lg">
-                  P
-                </div>
-              </div> */}
-              <div>
+              <div className="select-none">
                 <span className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl text-[#F5F2FF] tracking-tight block">
                   Permifest <span className="text-[#D56BD9]">x</span> Deforkafest
                 </span>
-                <span className="text-[11px] font-semibold tracking-wider uppercase text-[#6CC4FF]">
+                {/* <span className="text-[11px] font-semibold tracking-wider uppercase text-[#6CC4FF]">
                   National Tech &amp; E-Sport Arena 2026
-                </span>
+                </span> */}
               </div>
             </div>
 
@@ -69,18 +64,18 @@ export function Footer() {
                 href="https://instagram.com/permikomnas.diy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#D56BD9] hover:bg-[#1E134D] transition-all min-h-[36px]"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] hover:bg-[#1E134D] transition-all min-h-[36px]"
               >
-                <InstagramLogo size={16} weight="bold" className="text-[#D56BD9]" />
+                <InstagramLogo size={16} weight="bold" className="text-[#9B6BF2]" />
                 @permikomnas.diy
               </a>
               <a
                 href="https://instagram.com/impsi_ust"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#6CC4FF] hover:bg-[#1E134D] transition-all min-h-[36px]"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] hover:bg-[#1E134D] transition-all min-h-[36px]"
               >
-                <InstagramLogo size={16} weight="bold" className="text-[#6CC4FF]" />
+                <InstagramLogo size={16} weight="bold" className="text-[#9B6BF2]" />
                 @impsi_ust
               </a>
             </div>
@@ -88,7 +83,7 @@ export function Footer() {
 
           {/* Kolom 3: Cabang Kompetisi */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs select-none">
               Cabang Lomba
             </h4>
             <ul className="space-y-2.5">
@@ -107,7 +102,7 @@ export function Footer() {
 
           {/* Kolom 4: Navigasi Cepat & Dokumen */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs select-none">
               Tautan &amp; Panduan
             </h4>
             <ul className="space-y-2.5">
@@ -126,18 +121,22 @@ export function Footer() {
 
           {/* Kolom 5: Sekretariat & Helpdesk */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs select-none">
               Narahubung &amp; Venue
             </h4>
             <div className="space-y-3 text-xs text-[#A99FD1] leading-relaxed">
-              <div className="flex items-start gap-2">
-                <MapPin size={16} weight="bold" className="text-[#D56BD9] shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-lg bg-[#9B6BF2]/10 border border-[#9B6BF2]/25 flex items-center justify-center shrink-0 mt-0.5 select-none">
+                  <MapPin size={14} weight="bold" className="text-[#9B6BF2]" />
+                </div>
                 <span>
                   Kampus Pusat UST Yogyakarta, Jl. Batikan, Tahunan, Umbulharjo, Kota Yogyakarta, D.I. Yogyakarta 55167
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <WhatsappLogo size={16} weight="bold" className="text-[#25D366] shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-lg bg-[#9B6BF2]/10 border border-[#9B6BF2]/25 flex items-center justify-center shrink-0 select-none">
+                  <WhatsappLogo size={14} weight="bold" className="text-[#9B6BF2]" />
+                </div>
                 <a
                   href="https://wa.me/6281234567890"
                   target="_blank"
@@ -147,14 +146,16 @@ export function Footer() {
                   Helpdesk WA: +62 812-3456-7890
                 </a>
               </div>
-              <div className="flex items-center gap-2">
-                <EnvelopeSimple size={16} weight="bold" className="text-[#6CC4FF] shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-lg bg-[#9B6BF2]/10 border border-[#9B6BF2]/25 flex items-center justify-center shrink-0 select-none">
+                  <EnvelopeSimple size={14} weight="bold" className="text-[#9B6BF2]" />
+                </div>
                 <span>halo@permifest.id</span>
               </div>
             </div>
 
             {/* CTA Daftar di Footer */}
-            <div className="mt-5">
+            <div className="mt-5 select-none">
               <Link
                 href="/register"
                 className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-black text-[#0B0720] bg-gradient-to-r from-[#9B6BF2] via-[#D56BD9] to-[#FFE359] shadow-[3px_3px_0px_#0B0720] hover:brightness-110 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
@@ -166,13 +167,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar / Copyright */}
-        <div className="mt-12 pt-6 border-t border-[#2E2266] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8A7FB8]">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Sistem Operasional &amp; Pendaftaran Terbuka</span>
-          </div>
+        <div className="mt-12 pt-6 border-t border-[#2E2266] flex flex-col sm:flex-row items-center justify-end gap-4 text-xs text-[#8A7FB8]">
 
-          <p className="text-center sm:text-right">
+          <p className="text-center sm:text-right select-none">
             &copy; 2026 <strong>Permifest x Deforkafest</strong>. Seluruh hak cipta dilindungi undang-undang.
           </p>
         </div>

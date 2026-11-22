@@ -13,22 +13,42 @@ export function SakugaHeroBackground() {
       aria-hidden="true"
       className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0"
     >
-      {/* ── Layer 1: Ambient Vignette & Deep Cosmic Atmosphere (CSS radial statis murni) ── */}
+      {/* ── Layer 1: Subtle CSS Diagonal Grid Pattern (Ringan, Murni CSS, Tanpa Repaint) ── */}
       <div
-        className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full opacity-35"
+        className="absolute inset-0 opacity-[0.05]"
         style={{
-          background: 'radial-gradient(circle, rgba(155, 107, 242, 0.25) 0%, rgba(124, 77, 219, 0.08) 50%, transparent 70%)',
-        }}
-      />
-      <div
-        className="absolute top-36 -right-24 w-[460px] h-[460px] rounded-full opacity-30"
-        style={{
-          background: 'radial-gradient(circle, rgba(213, 107, 217, 0.2) 0%, rgba(108, 196, 255, 0.06) 50%, transparent 70%)',
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            #9B6BF2 0,
+            #9B6BF2 1px,
+            transparent 1px,
+            transparent 28px
+          )`,
         }}
       />
 
-      {/* ── Layer 2: Subtle Horizontal Ambient Divider (Statis & Halus) ── */}
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#9B6BF2]/20 to-transparent" />
+      {/* ── Layer 2: Ambient Atmosphere Gradients (Ringan, Halus & Murni CSS Statis) ── */}
+      <div
+        className="absolute -top-28 -left-28 w-[520px] h-[520px] rounded-full opacity-40"
+        style={{
+          background: 'radial-gradient(circle at 30% 30%, rgba(155, 107, 242, 0.28) 0%, rgba(124, 77, 219, 0.1) 45%, transparent 70%)',
+        }}
+      />
+      <div
+        className="absolute top-28 -right-24 w-[500px] h-[500px] rounded-full opacity-35"
+        style={{
+          background: 'radial-gradient(circle at 70% 30%, rgba(213, 107, 217, 0.22) 0%, rgba(108, 196, 255, 0.08) 50%, transparent 70%)',
+        }}
+      />
+      <div
+        className="absolute -bottom-16 left-1/3 w-[420px] h-[280px] rounded-full opacity-20"
+        style={{
+          background: 'radial-gradient(circle, rgba(108, 196, 255, 0.18) 0%, transparent 65%)',
+        }}
+      />
+
+      {/* ── Layer 3: Subtle Horizontal Ambient Divider (Statis & Halus) ── */}
+      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#9B6BF2]/25 to-transparent" />
     </div>
   );
 }

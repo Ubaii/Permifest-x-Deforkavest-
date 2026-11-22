@@ -84,7 +84,7 @@ export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionPro
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 select-none">
                 <span className="font-[family-name:var(--font-jetbrains)] font-black text-3xl sm:text-4xl leading-none text-[#FFE359]">
                   {st.num}
                 </span>
@@ -102,7 +102,7 @@ export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionPro
               </p>
             </div>
 
-            <div className="mt-6 pt-3 border-t border-[#2E2266]/60 text-[11px] font-mono text-[#A99FD1]/70">
+            <div className="mt-6 pt-3 border-t border-[#2E2266]/60 text-[11px] font-mono text-[#A99FD1]/70 select-none">
               Langkah {i + 1} dari 4
             </div>
           </div>
@@ -113,7 +113,7 @@ export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionPro
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Box 1: Ketentuan Tim Beregu */}
         <div className="rounded-2xl bg-[#0B0720] border border-[#2E2266] p-6">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#C4F15A] block mb-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#C4F15A] block mb-1 select-none">
             Ketentuan Tim Beregu
           </span>
           <h4 className="text-base font-bold text-[#F5F2FF] mb-2 font-[family-name:var(--font-bricolage)]">
@@ -127,7 +127,7 @@ export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionPro
         {/* Box 2: Dokumen Persyaratan & Rulebook */}
         <div className="rounded-2xl bg-[#0B0720] border border-[#2E2266] p-6 flex flex-col justify-between">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#6CC4FF] block mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#6CC4FF] block mb-1 select-none">
               Dokumen Persyaratan
             </span>
             <h4 className="text-base font-bold text-[#F5F2FF] mb-2 font-[family-name:var(--font-bricolage)]">

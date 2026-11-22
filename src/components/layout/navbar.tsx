@@ -34,7 +34,7 @@ export function Navbar() {
           {/* Logo Brand */}
           <Link
             href="/"
-            className="flex items-center gap-1 group font-[family-name:var(--font-bricolage)] font-extrabold text-xl text-[#F5F2FF] tracking-tight hover:scale-105 transition-transform"
+            className="flex items-center gap-1 group font-[family-name:var(--font-bricolage)] font-extrabold text-xl text-[#F5F2FF] tracking-tight hover:scale-105 transition-transform select-none"
             aria-label="Permifest x Deforkafest Halaman Utama"
           >
             <span>Permifest</span>
@@ -52,7 +52,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop nav links */}
-          <nav className="hidden md:flex items-center gap-7" aria-label="Navigasi utama">
+          <nav className="hidden md:flex items-center gap-7 select-none" aria-label="Navigasi utama">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}

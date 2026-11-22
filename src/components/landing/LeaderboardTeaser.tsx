@@ -40,7 +40,7 @@ export function LeaderboardTeaser() {
         {/* Card 1: Total Prize Pool */}
         <div className="comic-card-hover rounded-3xl border border-[#2E2266] bg-[#140D33] p-7 flex flex-col justify-between">
           <div>
-            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-4">
+            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#2a2108] text-[#E6C978] border border-[#524112]/50 mb-4 select-none">
               Total Hadiah
             </div>
             <h3 className="text-3xl sm:text-4xl font-black font-[family-name:var(--font-jetbrains)] text-[#F5F2FF] leading-none mb-3">
@@ -50,7 +50,7 @@ export function LeaderboardTeaser() {
               Uang tunai pembinaan dan piala juara untuk pemenang cabang akademik (UI/UX, ITSA, Esai) dan turnamen e-sport (PES, MLBB).
             </p>
           </div>
-          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#E6C978]">
+          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#E6C978] select-none">
             Juara 1, 2, 3 & Kategori Spesial
           </div>
         </div>
@@ -58,7 +58,7 @@ export function LeaderboardTeaser() {
         {/* Card 2: Sertifikat Resmi & Pengakuan */}
         <div className="comic-card-hover rounded-3xl border-2 border-[#9B6BF2] bg-[#140D33] p-7 flex flex-col justify-between shadow-[0_12px_36px_rgba(155,107,242,0.2)]">
           <div>
-            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#33113a] text-[#F0A6F2] border border-[#5c2466]/50 mb-4">
+            <div className="inline-block px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider bg-[#33113a] text-[#F0A6F2] border border-[#5c2466]/50 mb-4 select-none">
               Rekam Jejak
             </div>
             <h3 className="text-3xl sm:text-4xl font-black font-[family-name:var(--font-bricolage)] text-[#F5F2FF] leading-none mb-3">
@@ -68,7 +68,7 @@ export function LeaderboardTeaser() {
               Seluruh peserta dan finalis mendapatkan sertifikat resmi ber-SK penyelenggara yang sah untuk portofolio kampus dan beasiswa.
             </p>
           </div>
-          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#F0A6F2]">
+          <div className="mt-6 pt-4 border-t border-[#2E2266]/70 text-xs font-bold text-[#F0A6F2] select-none">
             Diterbitkan Panitia Bersama
           </div>
         </div>

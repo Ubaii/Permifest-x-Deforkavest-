@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Background pop-art bertema Landing Page pada halaman autentikasi (`/login` dan `/register`): pola CSS grid diagonal ultra-ringan, ambient atmosphere glow ganda, dan manga pop stamps mengambang statis di luar form card pada layar desktop.
+- Pola grid diagonal halus murni CSS dan ambient gradient lembut di latar belakang Hero Section (`SakugaHeroBackground.tsx`) tanpa beban repaint GPU.
+- Pengembalian format badge hiasan ber-ikon pop-art (`GameController`, `Trophy`, `MapPin`) di sekitar ilustrasi maskot Hero Section (`HeroSection.tsx`) sesuai konsep visual sebelumnya.
+- Penetapan atribut `select-none` pada berbagai elemen teks dekoratif (badge washi-tape, digit hitung mundur, brand title, header kalender, nomor langkah, dan tag kategori) untuk kenyamanan dan kesan interaksi solid layaknya aplikasi profesional.
+
+### Changed
+- Penyeragaman warna seluruh ikon pada section Narahubung & Venue serta media sosial di Footer (`footer.tsx`) menjadi warna aksen brand ungu `#9B6BF2` dalam container rounded yang rapi dan konsisten.
+
 - Relokasi `CountdownTimer` menjadi Banner Hitung Mundur Horisontal (`CountdownBanner`) yang ditempatkan secara strategis di antara `HeroSection` dan `PartnersSection` dengan digit waktu tabular kontras tinggi, aksen washi-tape emas-ungu, dan tombol call-to-action cepat.
 - Efek playful interaktif pada `HeroSection.tsx`: stiker pop-art manga kinetik bertema washi-tape (*"5 Cabang Lomba!"*, *"Total Hadiah Puluhan Juta!"*, dan *"Arena Kampus UST"*) dengan efek hover kinetik membal (`scale-110 rotate-x`) di sekitar ilustrasi maskot.
 - Panduan mekanisme pendaftaran komprehensif di `HowToRegisterSection.tsx`: 4 tahapan alur registrasi yang jelas, callout khusus mekanisme tim beregu & kode undangan (*team invite code*), daftar berkas wajib (KTM/Kartu Pelajar, pas foto, bukti bayar), dan tautan rulebook resmi.

@@ -186,7 +186,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           </div>
 
           {/* Day Headers (Sen - Min) */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5 text-center text-xs font-bold text-[#A99FD1] font-[family-name:var(--font-jetbrains)] mb-2.5">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5 text-center text-xs font-bold text-[#A99FD1] font-[family-name:var(--font-jetbrains)] mb-2.5 select-none">
             <span className="text-[#A99FD1]">Sen</span>
             <span className="text-[#A99FD1]">Sel</span>
             <span className="text-[#A99FD1]">Rab</span>
@@ -197,7 +197,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           </div>
 
           {/* Grid Hari Desember 2026 (1 Des 2026 adalah Selasa => offset 1 sel di hari Senin) */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5 select-none">
             {/* Offset hari pertama: 30 Nov */}
             <div className="min-h-[70px] sm:min-h-[96px] rounded-xl border border-transparent bg-[#140D33]/30 p-2 opacity-30 select-none">
               <span className="font-[family-name:var(--font-jetbrains)] text-xs text-[#A99FD1]/40">30</span>

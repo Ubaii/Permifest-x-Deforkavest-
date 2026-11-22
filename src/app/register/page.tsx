@@ -72,13 +72,67 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0B0720] text-[#F5F2FF] relative overflow-hidden">
-      {/* ── Ambient Radial Atmosphere (Ringan Tanpa Blur Berat) ── */}
+      {/* ── Background Layer 1: Subtle CSS Diagonal Grid Pattern (Ringan Murni CSS) ── */}
       <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[540px] rounded-full pointer-events-none opacity-30"
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none select-none opacity-[0.05]"
         style={{
-          background: 'radial-gradient(circle, rgba(155, 107, 242, 0.4) 0%, rgba(213, 107, 217, 0.15) 50%, transparent 70%)',
+          backgroundImage: `repeating-linear-gradient(
+            -45deg,
+            #9B6BF2 0,
+            #9B6BF2 1px,
+            transparent 1px,
+            transparent 28px
+          )`,
         }}
       />
+
+      {/* ── Background Layer 2: Ambient Atmosphere Gradients (Ringan & Halus) ── */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-32 -left-32 w-[580px] h-[580px] rounded-full pointer-events-none opacity-30 select-none"
+        style={{
+          background: 'radial-gradient(circle at 40% 40%, rgba(196, 241, 90, 0.25) 0%, rgba(155, 107, 242, 0.12) 50%, transparent 70%)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-24 -right-24 w-[540px] h-[540px] rounded-full pointer-events-none opacity-25 select-none"
+        style={{
+          background: 'radial-gradient(circle at 60% 60%, rgba(108, 196, 255, 0.28) 0%, rgba(213, 107, 217, 0.1) 50%, transparent 70%)',
+        }}
+      />
+
+      {/* ── Background Layer 3: Manga Pop Stamps Luar Card (Kiri & Kanan Layar Desktop) ── */}
+      <div
+        aria-hidden="true"
+        className="hidden lg:flex flex-col items-start gap-1.5 absolute top-36 left-10 xl:left-24 z-0 -rotate-3 select-none opacity-75 pointer-events-none"
+      >
+        <div className="px-4 py-2 rounded-2xl bg-[#140D33]/90 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720]">
+          <span className="block text-[11px] font-black uppercase tracking-widest text-[#C4F15A]">
+            REGISTRATION
+          </span>
+          <span className="block text-[10px] text-[#A99FD1] font-semibold mt-0.5">
+            Pendaftaran Peserta Baru
+          </span>
+        </div>
+        <div className="w-12 h-1 bg-[#C4F15A]/30 rounded-full ml-2" />
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="hidden lg:flex flex-col items-end gap-1.5 absolute bottom-28 right-10 xl:right-24 z-0 rotate-3 select-none opacity-75 pointer-events-none"
+      >
+        <div className="px-4 py-2 rounded-2xl bg-[#140D33]/90 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720] text-right">
+          <span className="block text-[11px] font-black uppercase tracking-widest text-[#FFE359]">
+            5 CABANG LOMBA
+          </span>
+          <span className="block text-[10px] text-[#A99FD1] font-semibold mt-0.5">
+            Akademik &amp; E-Sport
+          </span>
+        </div>
+        <div className="w-12 h-1 bg-[#FFE359]/30 rounded-full mr-2" />
+      </div>
 
       <Navbar />
 
@@ -87,7 +141,7 @@ export default function RegisterPage() {
           {/* Card Box Manga Pop Art */}
           <div className="relative rounded-3xl bg-[#140D33] border-2 border-[#2E2266] p-7 sm:p-9 shadow-[6px_6px_0px_#0B0720,8px_8px_0px_#C4F15A]">
             {/* Header dengan Maskot & Washi Tape */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 select-none">
               <div className="inline-block px-3.5 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#C4F15A] shadow-sm -rotate-2 select-none border border-black/20">
                 Pendaftaran Peserta
               </div>
