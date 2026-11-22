@@ -21,10 +21,7 @@ export function HeroSection() {
           <div className="flex-1 max-w-2xl text-left">
             {/* Washi-Tape Status Pill (Playful Manga Style) */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#140D33] text-[#FFE359] border-2 border-[#524112] shadow-[3px_3px_0px_#0B0720] mb-5 -rotate-1 hover:rotate-0 transition-transform cursor-default">
-              <span className="w-2 h-2 rounded-full bg-[#C4F15A]" />
               <span>Pendaftaran Gelombang 1 Dibuka</span>
-              <span className="text-[#A99FD1]/40">·</span>
-              <span className="text-[#6CC4FF]">Yogyakarta</span>
             </div>
 
             <h1
@@ -68,16 +65,6 @@ export function HeroSection() {
               >
                 Panduan pendaftaran
               </SakugaButton>
-            </div>
-
-            {/* Badges Info Ringkas Tanpa Ikon Menumpuk */}
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="inline-block px-3 py-1.5 rounded-xl text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/60 shadow-[2px_2px_0px_#0B0720]">
-                Batas Daftar: 11 Desember 2026
-              </span>
-              <span className="inline-block px-3 py-1.5 rounded-xl text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/60 shadow-[2px_2px_0px_#0B0720]">
-                Biaya: Mulai Rp 35.000
-              </span>
             </div>
           </div>
 

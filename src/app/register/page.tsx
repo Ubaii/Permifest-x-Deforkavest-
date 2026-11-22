@@ -91,15 +91,6 @@ export default function RegisterPage() {
               <div className="inline-block px-3.5 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#C4F15A] shadow-sm -rotate-2 select-none border border-black/20">
                 Pendaftaran Peserta
               </div>
-              <div className="w-12 h-12 relative">
-                <Image
-                  src="/ilustrasi.png"
-                  alt="Maskot Permifest"
-                  width={48}
-                  height={48}
-                  className="w-full h-full object-contain pointer-events-none select-none"
-                />
-              </div>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] tracking-tight">

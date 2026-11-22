@@ -121,7 +121,6 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div className="max-w-2xl text-left">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#140D33] text-[#D56BD9] border border-[#2E2266] mb-3">
-            <Sparkle size={13} weight="fill" className="text-[#FFE359]" />
             Jadwal Rangkaian Acara 2026
           </span>
           <h2
@@ -150,11 +149,10 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           <button
             type="button"
             onClick={() => setViewMode('calendar')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${
-              viewMode === 'calendar'
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${viewMode === 'calendar'
                 ? 'bg-[#7c4ddb] text-[#F5F2FF] shadow-sm'
                 : 'text-[#A99FD1] hover:text-[#F5F2FF]'
-            }`}
+              }`}
           >
             <CalendarIcon size={16} weight="bold" />
             <span>Kalender</span>
@@ -162,11 +160,10 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
           <button
             type="button"
             onClick={() => setViewMode('list')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${
-              viewMode === 'list'
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${viewMode === 'list'
                 ? 'bg-[#7c4ddb] text-[#F5F2FF] shadow-sm'
                 : 'text-[#A99FD1] hover:text-[#F5F2FF]'
-            }`}
+              }`}
           >
             <ListBullets size={16} weight="bold" />
             <span>Daftar ({agendaList.length})</span>
@@ -218,17 +215,15 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
                   onClick={() => {
                     if (primaryAgenda) setSelectedAgenda(primaryAgenda);
                   }}
-                  className={`min-h-[70px] sm:min-h-[96px] rounded-xl border p-1.5 sm:p-2.5 transition-all duration-200 flex flex-col justify-between ${
-                    hasEvents
+                  className={`min-h-[70px] sm:min-h-[96px] rounded-xl border p-1.5 sm:p-2.5 transition-all duration-200 flex flex-col justify-between ${hasEvents
                       ? 'bg-[#18103c] border-[#7c4ddb]/70 hover:border-[#9B6BF2] hover:-translate-y-1 hover:rotate-[-0.8deg] hover:scale-[1.02] hover:shadow-[0_6px_20px_rgba(155,107,242,0.3)] cursor-pointer'
                       : 'bg-[#140D33]/60 border-[#2E2266]/40'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`font-[family-name:var(--font-jetbrains)] font-bold text-xs sm:text-sm tabular-nums ${
-                        hasEvents ? 'text-[#F5F2FF] font-black' : 'text-[#A99FD1]/80'
-                      }`}
+                      className={`font-[family-name:var(--font-jetbrains)] font-bold text-xs sm:text-sm tabular-nums ${hasEvents ? 'text-[#F5F2FF] font-black' : 'text-[#A99FD1]/80'
+                        }`}
                     >
                       {day}
                     </span>
