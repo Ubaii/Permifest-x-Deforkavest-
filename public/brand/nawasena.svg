@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" fill="none" role="img" aria-label="Kabinet Nawasena Logo">
+  <rect width="160" height="48" rx="8" fill="#140D33"/>
+  <circle cx="24" cy="24" r="14" fill="#D56BD9" fill-opacity="0.2" stroke="#D56BD9" stroke-width="1.5"/>
+  <path d="M17 26C19 20 23 18 27 20C30 22 31 28 24 29C20 30 18 27 17 26Z" stroke="#FFE359" stroke-width="1.75" stroke-linejoin="round"/>
+  <text x="46" y="22" fill="#F5F2FF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="0.5">NAWASENA</text>
+  <text x="46" y="34" fill="#A99FD1" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" letter-spacing="0.2">KABINET PERMIKOMNAS</text>
+</svg>

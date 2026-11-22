@@ -108,10 +108,6 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -218,21 +214,12 @@ button:disabled,
   box-shadow: 0 0 0 1px var(--border), 0 0 48px -12px var(--brand-violet-600);
 }
 
-/* Live dot pulse - hanya untuk status live nyata */
+/* Live dot statis */
 .live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--support-lime);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .live-dot {
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.85); }
 }
 
 /* Scroll-reveal - sekali, bukan loop */
@@ -280,16 +267,4 @@ button:disabled,
 }
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; background: var(--muted); }
-}
-
-/* Floating animation untuk maskot */
-@keyframes fl {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-.fl {
-  animation: fl 6s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .fl { animation: none; }
 }

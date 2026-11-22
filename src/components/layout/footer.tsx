@@ -42,11 +42,11 @@ export function Footer() {
           {/* Kolom 1 & 2: Brand, Kolaborasi & Narasi */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9B6BF2] to-[#D56BD9] p-0.5 shadow-[2px_2px_0px_#FFE359]">
+              {/* <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9B6BF2] to-[#D56BD9] p-0.5 shadow-[2px_2px_0px_#FFE359]">
                 <div className="w-full h-full bg-[#0B0720] rounded-[10px] flex items-center justify-center text-white font-black text-lg">
                   P
                 </div>
-              </div>
+              </div> */}
               <div>
                 <span className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl text-[#F5F2FF] tracking-tight block">
                   Permifest <span className="text-[#D56BD9]">x</span> Deforkafest
@@ -171,7 +171,7 @@ export function Footer() {
         {/* Bottom Bar / Copyright */}
         <div className="mt-12 pt-6 border-t border-[#2E2266] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8A7FB8]">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span>Sistem Operasional &amp; Pendaftaran Terbuka</span>
           </div>
 

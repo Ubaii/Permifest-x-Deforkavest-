@@ -31,7 +31,6 @@ export function HeroSection() {
           <div className="flex-1 max-w-2xl text-left">
             {/* Badge Status Resmi */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#140D33] text-[#F5F2FF] border border-[#2E2266] mb-5">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#C4F15A]" />
               <span className="tracking-wide">Pendaftaran Gelombang 1 Dibuka</span>
               <span className="text-[#A99FD1]/40">·</span>
               <span className="text-[#C4F15A] font-bold">Yogyakarta</span>

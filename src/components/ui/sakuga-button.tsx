@@ -1,23 +1,18 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { getSakugaVfx, SakugaConfig } from '@/lib/sakuga/sakuga-engine';
 
 export interface SakugaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Rute URL Next.js jika tombol bertindak sebagai link navigasi */
   href?: string;
-  /** Varian visual tombol bergaya Sakuga Anime */
+  /** Varian visual tombol bergaya Sakuga Pop-Art */
   variant?: 'brand' | 'primary' | 'secondary' | 'gold' | 'outline';
   /** Ukuran tombol */
   size?: 'sm' | 'md' | 'lg';
-  /** Teks efek onomatopoeia manga (contoh: "GASSS!!", "BOOM!!", "IKUZO!!") */
+  /** Teks efek onomatopoeia manga (opsional) */
   sfxText?: string;
-  /** Konfigurasi warna atau intensitas partikel */
-  vfxConfig?: Partial<SakugaConfig>;
-  /** Nonaktifkan efek sakuga jika diinginkan */
-  disableVfx?: boolean;
   /** Status loading */
   isLoading?: boolean;
   /** Ikon kiri atau kanan */
@@ -34,8 +29,6 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
       variant = 'brand',
       size = 'md',
       sfxText,
-      vfxConfig,
-      disableVfx = true,
       isLoading = false,
       leftIcon,
       rightIcon,
@@ -45,43 +38,14 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
     },
     ref
   ) => {
-    const internalRef = useRef<HTMLButtonElement | HTMLAnchorElement | null>(null);
-
-    const handleTrigger = (e: React.MouseEvent<any>) => {
-      if (disabled || isLoading) return;
-
-      // Pure CSS by default: Tidak memanggil canvas JS sama sekali demi performa maksimal
-      if (!disableVfx && internalRef.current) {
-        let palette: string[] | undefined = vfxConfig?.colors;
-        if (!palette) {
-          if (variant === 'brand') {
-            palette = ['#9B6BF2', '#D56BD9', '#FFE359', '#FFFFFF', '#6CC4FF'];
-          } else if (variant === 'gold') {
-            palette = ['#FFE359', '#FFB703', '#FFFFFF', '#FB8500', '#D56BD9'];
-          } else if (variant === 'primary') {
-            palette = ['#6CC4FF', '#9B6BF2', '#00F0FF', '#FFFFFF'];
-          }
-        }
-
-        getSakugaVfx().trigger(internalRef.current, {
-          sfxText,
-          colors: palette,
-          intensity: vfxConfig?.intensity ?? 1,
-          showSfxText: vfxConfig?.showSfxText ?? false,
-        });
-      }
-
-      onClick?.(e);
-    };
-
-    // Styling Sakuga VFX sejati: Hard Anime Border, Manga Solid Pop Shadow, Tilt & Skew Hover
+    // Styling Pop-Art CSS Murni: 100% diproses di GPU Compositor Thread (0% CPU, 60 FPS)
     const baseStyles = cn(
       'relative inline-flex items-center justify-center font-black select-none cursor-pointer',
       'rounded-xl transition-all duration-150',
-      'ease-[cubic-bezier(0.34,1.56,0.64,1)]', // Spring snappy curve
-      // Efek Anime Hover: miring, skew, terangkat ke kiri atas
+      'ease-[cubic-bezier(0.34,1.56,0.64,1)]',
+      // Efek Anime Hover: miring halus & terangkat
       'hover:-translate-y-1 hover:-translate-x-0.5 hover:-rotate-1.5 hover:skew-x-[-2deg]',
-      // Efek Anime Active (Press): menekan ke kanan bawah, kembali tegak, shadow mengecil
+      // Efek Active Press: tactile push
       'active:translate-y-0.5 active:translate-x-0.5 active:rotate-0 active:skew-x-0 active:scale-95',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9B6BF2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0720]',
       'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none',
@@ -156,10 +120,7 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
       return (
         <Link
           href={href}
-          ref={(node) => {
-            internalRef.current = node;
-          }}
-          onClick={handleTrigger}
+          onClick={onClick as any}
           className={cn(baseStyles, variants[variant], sizes[size], className)}
           style={brandGradientStyle}
         >
@@ -170,14 +131,10 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
 
     return (
       <button
-        ref={(node) => {
-          internalRef.current = node;
-          if (typeof ref === 'function') ref(node);
-          else if (ref) (ref as any).current = node;
-        }}
+        ref={ref}
         type={props.type || 'button'}
-        onClick={handleTrigger}
         disabled={disabled || isLoading}
+        onClick={onClick}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         style={brandGradientStyle}
         {...props}

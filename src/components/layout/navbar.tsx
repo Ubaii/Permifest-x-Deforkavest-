@@ -16,29 +16,6 @@ const NAV_LINKS = [
 export function Navbar() {
   const { currentUser } = useAppStore();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    let ticking = false;
-    let prev = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const isScrolled = window.scrollY > 8;
-          if (isScrolled !== prev) {
-            prev = isScrolled;
-            setScrolled(isScrolled);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Lock scroll saat mobile menu terbuka
   useEffect(() => {
@@ -52,14 +29,7 @@ export function Navbar() {
 
   return (
     <>
-      <header
-        className={[
-          'sticky top-0 z-40 w-full transition-all duration-200',
-          scrolled
-            ? 'border-b border-[#2E2266] bg-[#0B0720]/95 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
-            : 'bg-transparent',
-        ].join(' ')}
-      >
+      <header className="sticky top-0 z-40 w-full border-b border-[#2E2266] bg-[#0B0720]/95 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           {/* Logo Brand */}
           <Link

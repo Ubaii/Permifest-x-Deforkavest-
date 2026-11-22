@@ -8,20 +8,22 @@ export function StickyBottomBar() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    let ticking = false;
+    const heroEl = document.getElementById('beranda');
+    if (!heroEl) {
+      setVisible(true);
+      return;
+    }
 
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setVisible(window.scrollY > 500);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Tampilkan sticky bar hanya saat user sudah scroll melewati hero section
+        setVisible(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    observer.observe(heroEl);
+    return () => observer.disconnect();
   }, []);
 
   if (!visible) return null;

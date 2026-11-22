@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { SakugaButton } from '@/components/ui/sakuga-button';
-import { MascotIllustration } from './MascotIllustration';
 
 export function CtaClosingSection() {
   return (
@@ -11,14 +11,17 @@ export function CtaClosingSection() {
       className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
     >
       <div
-        className="rounded-3xl border border-[#2E2266] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 text-left"
-        style={{
-          background: 'linear-gradient(135deg, #241a57, #33113a)',
-        }}
+        className="rounded-3xl border border-[#2E2266] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 text-left bg-gradient-to-br from-[#241a57] to-[#33113a]"
       >
-        {/* Maskot Kupu-kupu */}
-        <div className="w-48 sm:w-56 shrink-0 aspect-[400/360]">
-          <MascotIllustration variant="simple" className="w-full h-full" />
+        {/* Ilustrasi Maskot (PNG Teroptimasi) */}
+        <div className="w-44 sm:w-52 shrink-0 aspect-square flex items-center justify-center">
+          <Image
+            src="/ilustrasi.png"
+            alt="Maskot Permifest x Deforkafest 2026"
+            width={240}
+            height={240}
+            className="w-full h-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)] pointer-events-none select-none"
+          />
         </div>
 
         {/* Teks & Tombol */}
@@ -48,7 +51,6 @@ export function CtaClosingSection() {
               href="/register"
               variant="brand"
               size="lg"
-              sfxText="GASSS!!"
             >
               Daftar sekarang
             </SakugaButton>

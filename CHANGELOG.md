@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Pembersihan dan optimasi performa skala penuh (zero-lag):
+  - Penghapusan `scroll-behavior: smooth` di tingkat root CSS dan eliminasi seluruh listener event scroll JS pada `Navbar` dan `StickyBottomBar` (digantikan CSS sticky native dan browser `IntersectionObserver` ringan) sehingga scrolling halaman terasa instan dan bebas stutter.
+  - Pelepasan dependensi modul Canvas 2D engine `sakuga-engine.ts` dari `<SakugaButton>` sehingga tombol bekerja 100% via CSS murni tanpa overhead komputasi canvas.
+  - Penggantian maskot SVG kompleks 320 baris di `CtaClosingSection` dengan `<Image src="/ilustrasi.png" ... />` teroptimasi Next.js WebP.
+  - Penyediaan aset vektor lokal lengkap di `public/brand/` (`nawasena.svg`, `deforkafest.svg`, `sponsor-dicoding.svg`, `sponsor-indosat.svg`) untuk mencegah request berulang 404 pada Next.js image proxy.
+  - Pembersihan total class animasi berulang (`animate-pulse` di countdown separator dan status footer, keyframes `.fl`, dan `pulse-dot`).
 - Integrasi ilustrasi resmi Permifest x Deforkafest 2026 (`/ilustrasi.png`) via `next/image` dengan kompresi WebP otomatis, eliminasi total CPU overhead, dan tampilan grafis berkualitas tinggi.
 - Optimasi ultra-ringan pada Hero Section (`HeroSection.tsx` & `SakugaHeroBackground.tsx`): penghapusan animasi CSS infinite loop repaint (`.fl` floating), pembersihan elemen background berat (repeating 48px grid, oversized transformed slash bars, dan multiple `animate-pulse`), serta penggantian indikator live menjadi badge status statis bersih.
 - Standardisasi tombol aksi ke format **Pop-Art Kinetik Berbasis CSS Murni** (`<SakugaButton>`) dengan border komik pekat, hover miring dinamis `rotate(-1.5deg) skewX(-2deg)`, solid manga shadow pop yang membal `hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]`, dan tactile press `active:scale-95` yang diproses 100% oleh GPU browser di level *Compositor Thread*.

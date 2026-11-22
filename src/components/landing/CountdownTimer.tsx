@@ -83,7 +83,7 @@ export const CountdownTimer = memo(function CountdownTimer({
             {/* Pemisah titik dua digital */}
             {i < 3 && (
               <div className="flex flex-col justify-center items-center pb-5 select-none" aria-hidden="true">
-                <span className="text-sm sm:text-base font-bold text-[#9B6BF2] animate-pulse">
+                <span className="text-sm sm:text-base font-bold text-[#9B6BF2]">
                   :
                 </span>
               </div>
