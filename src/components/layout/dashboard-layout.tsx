@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
-import { List, Sun, Moon, CaretRight, House, User } from '@phosphor-icons/react';
+import { List, Sun, Moon, CaretRight, House, User, SignOut } from '@phosphor-icons/react';
 import { useAppStore } from '@/lib/store';
 import { ROLE_LABELS } from '@/lib/constants';
 
@@ -55,7 +55,7 @@ export function DashboardLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const pathname = usePathname();
-  const { currentUser } = useAppStore();
+  const { currentUser, logout } = useAppStore();
 
   // Sinkronisasi tema dengan localStorage dan DOM class
   useEffect(() => {
@@ -219,15 +219,17 @@ export function DashboardLayout({
               <div className="w-8 h-8 rounded-full bg-primary/20 text-primary border border-primary/40 flex items-center justify-center font-bold text-xs shrink-0">
                 {currentUser.full_name?.charAt(0) || <User size={14} />}
               </div>
-              <div className="text-left hidden md:block">
-                <span className="text-xs font-bold text-foreground block leading-tight truncate max-w-[110px]">
-                  {currentUser.full_name}
-                </span>
-                <span className="text-[10px] font-bold text-primary block leading-tight">
-                  {ROLE_LABELS[currentUser.role]}
-                </span>
-              </div>
             </Link>
+
+            {/* Tombol Logout Cepat di Header */}
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="inline-flex items-center justify-center w-8 h-8 rounded-xl border border-border bg-muted/40 hover:bg-rose-500/15 hover:text-rose-400 text-muted-foreground transition-all text-xs font-semibold"
+              title="Keluar dari akun (Logout)"
+            >
+              <SignOut size={15} weight="bold" />
+            </button>
           </div>
         </header>
 

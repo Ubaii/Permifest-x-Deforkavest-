@@ -25,7 +25,7 @@ export function Navbar() {
     };
   }, [mobileOpen]);
 
-  const isLoggedIn = !!currentUser?.role;
+  const isLoggedIn = Boolean(currentUser && currentUser.email && currentUser.role);
 
   return (
     <>
@@ -83,7 +83,7 @@ export function Navbar() {
                   size="sm"
                   className="text-xs px-5"
                 >
-                  Daftar Sekarang
+                  Daftar
                 </SakugaButton>
               </>
             ) : (
@@ -92,9 +92,8 @@ export function Navbar() {
                 variant="brand"
                 size="sm"
                 className="text-xs px-5"
-                leftIcon={<UserCircle size={17} weight="bold" />}
               >
-                Ke Dashboard
+                Dashboard
               </SakugaButton>
             )}
           </div>
@@ -162,7 +161,7 @@ export function Navbar() {
                 className="w-full justify-center"
                 onClick={() => setMobileOpen(false)}
               >
-                Masuk ke Akun
+                Masuk
               </SakugaButton>
               <SakugaButton
                 href="/register"
@@ -171,7 +170,7 @@ export function Navbar() {
                 className="w-full justify-center"
                 onClick={() => setMobileOpen(false)}
               >
-                Daftar Sekarang
+                Daftar 
               </SakugaButton>
             </>
           ) : (
@@ -181,9 +180,8 @@ export function Navbar() {
               size="md"
               className="w-full justify-center"
               onClick={() => setMobileOpen(false)}
-              leftIcon={<UserCircle size={18} weight="bold" />}
             >
-              Buka Dashboard
+              Dashboard
             </SakugaButton>
           )}
         </div>

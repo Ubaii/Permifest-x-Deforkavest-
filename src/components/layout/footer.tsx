@@ -88,8 +88,7 @@ export function Footer() {
 
           {/* Kolom 3: Cabang Kompetisi */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs flex items-center gap-2">
-              <Sparkle size={14} weight="fill" className="text-[#FFE359]" />
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
               Cabang Lomba
             </h4>
             <ul className="space-y-2.5">
@@ -108,8 +107,7 @@ export function Footer() {
 
           {/* Kolom 4: Navigasi Cepat & Dokumen */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs flex items-center gap-2">
-              <FileText size={14} weight="fill" className="text-[#6CC4FF]" />
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
               Tautan &amp; Panduan
             </h4>
             <ul className="space-y-2.5">
@@ -128,8 +126,7 @@ export function Footer() {
 
           {/* Kolom 5: Sekretariat & Helpdesk */}
           <div>
-            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs flex items-center gap-2">
-              <MapPin size={14} weight="fill" className="text-[#D56BD9]" />
+            <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs">
               Narahubung &amp; Venue
             </h4>
             <div className="space-y-3 text-xs text-[#A99FD1] leading-relaxed">

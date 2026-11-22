@@ -281,11 +281,10 @@ export default function AdminMitraPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setCategoryFilter(tab.id as any)}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
-                  categoryFilter === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
-                }`}
+                className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${categoryFilter === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
+                  }`}
               >
                 {tab.label}
               </button>
@@ -297,7 +296,6 @@ export default function AdminMitraPage() {
             variant="primary"
             size="sm"
             onClick={openCreateDrawer}
-            className="flex items-center gap-1.5 shrink-0"
           >
             <Plus size={16} weight="bold" />
             Tambah Mitra Baru
@@ -321,11 +319,10 @@ export default function AdminMitraPage() {
             {filteredPartners.map((item) => (
               <Card
                 key={item.id}
-                className={`border transition-all hover:border-primary/50 ${
-                  item.is_active
-                    ? 'border-border bg-card'
-                    : 'border-border/40 bg-card/40 opacity-60'
-                }`}
+                className={`border transition-all hover:border-primary/50 ${item.is_active
+                  ? 'border-border bg-card'
+                  : 'border-border/40 bg-card/40 opacity-60'
+                  }`}
               >
                 <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
                   <div>
@@ -337,13 +334,11 @@ export default function AdminMitraPage() {
                       <button
                         type="button"
                         onClick={() => togglePartnerActive(item.id)}
-                        className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
-                          item.is_active
-                            ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                            : 'bg-zinc-700/20 text-zinc-400 hover:bg-zinc-700/30'
-                        }`}
+                        className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full transition-colors ${item.is_active
+                          ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                          : 'bg-zinc-700/20 text-zinc-400 hover:bg-zinc-700/30'
+                          }`}
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_active ? 'bg-emerald-400' : 'bg-zinc-400'}`} />
                         {item.is_active ? 'Aktif' : 'Nonaktif'}
                       </button>
                     </div>
@@ -416,8 +411,7 @@ export default function AdminMitraPage() {
                         onClick={() => openEditDrawer(item)}
                         className="text-xs h-7 px-2"
                       >
-                        <PencilSimple size={13} className="mr-1" />
-                        Edit
+                        <PencilSimple size={16} className="mr-1" />
                       </Button>
                       <Button
                         type="button"
@@ -426,8 +420,7 @@ export default function AdminMitraPage() {
                         onClick={() => setDeleteConfirmPartner(item)}
                         className="text-xs h-7 px-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
                       >
-                        <Trash size={13} className="mr-1" />
-                        Hapus
+                        <Trash size={16} className="mr-1" />
                       </Button>
                     </div>
                   </div>
@@ -514,11 +507,10 @@ export default function AdminMitraPage() {
                   <button
                     type="button"
                     onClick={() => setLogoInputMode('url')}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
-                      logoInputMode === 'url'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${logoInputMode === 'url'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                      }`}
                   >
                     <LinkSimple size={12} weight="bold" />
                     Input Link
@@ -526,11 +518,10 @@ export default function AdminMitraPage() {
                   <button
                     type="button"
                     onClick={() => setLogoInputMode('file')}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
-                      logoInputMode === 'file'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${logoInputMode === 'file'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                      }`}
                   >
                     <UploadSimple size={12} weight="bold" />
                     Upload File

@@ -114,6 +114,9 @@ interface AppContextType {
   deleteTimelineEvent: (id: string) => Promise<void>;
   syncTimelineFromCompetitions: () => Promise<{ addedCount: number }>;
 
+  // Actions - Autentikasi
+  logout: () => Promise<void>;
+
   // Actions - Mitra & Sponsor CRUD
   partners: Partner[];
   addPartner: (partner: Omit<Partner, 'id'>) => Promise<Partner>;
@@ -150,6 +153,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       email_verified: true,
     };
     setCurrentUser(userForRole);
+  };
+
+  // Logout menyeluruh: reset state client, panggil API logout server, dan redirect ke /login
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    } catch {
+      // Abaikan bila offline
+    }
+    setCurrentUser({
+      id: '',
+      email: '',
+      full_name: '',
+      role: '' as any,
+      email_verified: false,
+    });
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('permifest_user');
+      document.cookie = 'permifest_demo_role=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'permifest_demo_email=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      window.location.href = '/login';
+    }
   };
 
   const logAudit = (action: string, entity_type: string, entity_id: string, details: Record<string, unknown>) => {
@@ -792,6 +817,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatePartner,
       deletePartner,
       togglePartnerActive,
+      logout,
     }}>
       {children}
     </AppContext.Provider>

@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -10,7 +11,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { useAppStore } from '@/lib/store';
 import { loginAction } from '@/features/auth/actions';
-import { ArrowRight } from '@phosphor-icons/react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,31 +62,51 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0B0720] text-[#F5F2FF] relative overflow-hidden">
-      {/* ── Ambient Glow Atmosphere ── */}
+      {/* ── Ambient Radial Atmosphere (Ringan Tanpa Blur Berat) ── */}
       <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full pointer-events-none opacity-30"
         style={{
-          background: 'radial-gradient(circle, rgba(155, 107, 242, 0.22) 0%, rgba(213, 107, 217, 0.12) 50%, transparent 75%)',
-          filter: 'blur(90px)',
+          background: 'radial-gradient(circle, rgba(155, 107, 242, 0.4) 0%, rgba(213, 107, 217, 0.15) 50%, transparent 70%)',
         }}
       />
 
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center p-4 py-16 relative z-10">
+      <main className="flex-1 flex items-center justify-center p-4 py-12 relative z-10">
         <div className="w-full max-w-md">
           {/* Card Box Manga Pop Art */}
-          <div className="relative rounded-3xl bg-[#140D33] border-2 border-[#2E2266] p-7 sm:p-9 shadow-[0_16px_48px_rgba(0,0,0,0.6)]">
-            {/* Washi Tape Header */}
-            <div className="inline-block px-3.5 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#FFE359] shadow-sm mb-5 -rotate-2 select-none border border-black/20">
-              ★ Pintu Masuk Arena
+          <div className="relative rounded-3xl bg-[#140D33] border-2 border-[#2E2266] p-7 sm:p-9 shadow-[6px_6px_0px_#0B0720,8px_8px_0px_#9B6BF2]">
+            {/* Header dengan Maskot Kecil & Washi Tape */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="inline-block px-3 py-1 rounded-md text-xs font-black uppercase tracking-wider text-[#0B0720] bg-[#FFE359] shadow-sm -rotate-2 select-none border border-black/20">
+                Pintu Masuk Arena
+              </div>
+              <div className="w-12 h-12 relative">
+                <Image
+                  src="/ilustrasi.png"
+                  alt="Maskot Permifest"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-contain pointer-events-none select-none"
+                />
+              </div>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold font-[family-name:var(--font-bricolage)] text-[#F5F2FF] tracking-tight">
-              Masuk ke Akunmu
+              Masuk ke{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #9B6BF2 0%, #D56BD9 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Akunmu
+              </span>
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-[#A99FD1]">
-              Satu pintu masuk untuk seluruh rangkaian kompetisi Permifest x Deforkafest.
+            <p className="mt-1.5 text-xs sm:text-sm text-[#A99FD1]">
+              Satu akses terpadu untuk lomba, pengumpulan karya, dan verifikasi.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -119,7 +139,7 @@ export default function LoginPage() {
                 />
                 <div className="flex justify-end mt-1.5">
                   <Link href="/forgot-password" className="text-xs text-[#9B6BF2] hover:text-[#D56BD9] transition-colors">
-                    Lupa password?
+                    Lupa kata sandi?
                   </Link>
                 </div>
               </div>
@@ -130,8 +150,7 @@ export default function LoginPage() {
                   variant="brand"
                   size="lg"
                   isLoading={isLoading}
-                  className="w-full justify-center shadow-[0_4px_20px_rgba(155,107,242,0.4)]"
-                  rightIcon={<ArrowRight size={16} weight="bold" />}
+                  className="w-full justify-center"
                 >
                   Masuk Sekarang
                 </SakugaButton>
@@ -141,41 +160,38 @@ export default function LoginPage() {
               <div className="mt-6 p-3.5 rounded-2xl bg-[#0B0720] border border-[#2E2266] space-y-2">
                 <div className="flex items-center justify-between text-[11px] font-bold text-[#A99FD1] uppercase tracking-wider">
                   <span>Pilih Akun Demo Cepat</span>
-                  <span className="text-[#FFE359]">Klik untuk Isi Otomatis</span>
+                  <span className="text-[#FFE359]">Klik Otomatis</span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 pt-1">
                   <button
                     type="button"
                     onClick={() => fillQuickAccount('peserta@permifest.id', 'peserta')}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#6CC4FF] transition-all text-left"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#6CC4FF] transition-all text-left cursor-pointer"
                   >
-                    ⚡ Peserta
+                    Peserta Demo
                   </button>
                   <button
                     type="button"
                     onClick={() => fillQuickAccount('juri@permifest.id', 'juri')}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#FFE359] transition-all text-left"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#FFE359] transition-all text-left cursor-pointer"
                   >
-                    ⚖️ Juri
+                    Dewan Juri
                   </button>
                   <button
                     type="button"
                     onClick={() => fillQuickAccount('panitia@permifest.id', 'panitia')}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#C4F15A] transition-all text-left"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#C4F15A] transition-all text-left cursor-pointer"
                   >
-                    📋 Panitia
+                    Panitia Lomba
                   </button>
                   <button
                     type="button"
                     onClick={() => fillQuickAccount('admin@permifest.id', 'super_admin')}
-                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#D56BD9] transition-all text-left"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] text-[#F5F2FF] hover:text-[#D56BD9] transition-all text-left cursor-pointer"
                   >
-                    👑 Super Admin
+                    Super Admin
                   </button>
                 </div>
-                <p className="text-[10px] text-[#A99FD1]/70 text-center pt-1 font-mono">
-                  Password demo: <strong className="text-[#F5F2FF]">password123</strong>
-                </p>
               </div>
 
               <div className="text-center text-xs text-[#A99FD1] pt-3 border-t border-[#2E2266]/80">

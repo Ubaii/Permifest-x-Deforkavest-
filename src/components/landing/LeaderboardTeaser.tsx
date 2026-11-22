@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
-import { ArrowRight } from '@phosphor-icons/react';
 
 export function LeaderboardTeaser() {
   return (
@@ -108,9 +107,7 @@ export function LeaderboardTeaser() {
           href="/leaderboard"
           variant="secondary"
           size="sm"
-          sfxText="INTIP!!"
           className="shrink-0 border-[#2E2266]"
-          rightIcon={<ArrowRight size={15} weight="bold" />}
         >
           Lihat Simulasi Leaderboard
         </SakugaButton>

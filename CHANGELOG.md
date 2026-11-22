@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Relokasi `CountdownTimer` menjadi Banner Hitung Mundur Horisontal (`CountdownBanner`) yang ditempatkan secara strategis di antara `HeroSection` dan `PartnersSection` dengan digit waktu tabular kontras tinggi, aksen washi-tape emas-ungu, dan tombol call-to-action cepat.
+- Efek playful interaktif pada `HeroSection.tsx`: stiker pop-art manga kinetik bertema washi-tape (*"5 Cabang Lomba!"*, *"Total Hadiah Puluhan Juta!"*, dan *"Arena Kampus UST"*) dengan efek hover kinetik membal (`scale-110 rotate-x`) di sekitar ilustrasi maskot.
+- Panduan mekanisme pendaftaran komprehensif di `HowToRegisterSection.tsx`: 4 tahapan alur registrasi yang jelas, callout khusus mekanisme tim beregu & kode undangan (*team invite code*), daftar berkas wajib (KTM/Kartu Pelajar, pas foto, bukti bayar), dan tautan rulebook resmi.
+- Redesain halaman autentikasi (`/login` dan `/register`) menyesuaikan tema pop-art Landing Page: latar malam `#0B0720`, kartu pop `#140D33` dengan border komik `#2E2266` dan solid block shadow ganda `[6px_6px_0px_#0B0720,8px_8px_0px_#9B6BF2]`, washi-tape header, mini ilustrasi maskot resmi, dan tombol aksi `<SakugaButton>`.
+- Rute API Logout `/api/auth/logout` dan integrasi metode `logout()` pada client store (`src/lib/store.tsx`) untuk pembersihan menyeluruh cookie sesi, state pengguna, dan Supabase Auth session.
+
+### Changed
+- Minimalisir penggunaan ikon dekoratif berlebihan di seluruh Landing Page (`HeroSection`, `PartnersSection`, `LeaderboardTeaser`, `HowToRegisterSection`, `FaqSection`, `StickyBottomBar`, dan `footer`) guna meningkatkan keterbacaan, ruang bernapas (*breathing room*), dan kecepatan rendering.
+- Perbaikan alur logout pada Sidebar navigasi (`src/components/layout/sidebar.tsx`) dan penambahan tombol aksi cepat keluar di Header Dashboard (`src/components/layout/dashboard-layout.tsx`).
+- Penyempurnaan pemeriksaan status login di Navbar (`src/components/layout/navbar.tsx`): tombol Dashboard hanya muncul saat pengguna sudah login, dan tombol Masuk disembunyikan jika sesi aktif.
+
 - Integrasi resmi Web Component Sakuga Button (`<sakuga-button>`) dari `https://sakuga-vfx.vercel.app/button/button.js` di `public/button.js`, dimuat via `<script src="/button.js" defer></script>` di `src/app/layout.tsx` dengan deklarasi TypeScript `src/types/sakuga.d.ts` dan pemanggilan `el.done()` pada aksi sukses di `/dashboard/peserta/submission`.
 - Pembesaran proporsional ilustrasi resmi `public/ilustrasi.png` pada `HeroSection.tsx` (hingga 620px) dan `CtaClosingSection.tsx` (hingga 340px) dengan respons drop shadow seimbang.
 - Penyempurnaan logika autentikasi Navbar (`src/components/layout/navbar.tsx`): tombol Dashboard disembunyikan jika belum login, dan tombol Masuk disembunyikan jika sudah login (hanya tombol Ke Dashboard yang aktif).

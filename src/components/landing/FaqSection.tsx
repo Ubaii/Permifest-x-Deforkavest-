@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CaretDown, Question } from '@phosphor-icons/react';
+import { CaretDown } from '@phosphor-icons/react';
 
 interface FaqItem {
   id: string;
@@ -65,9 +65,8 @@ export function FaqSection({ id = 'faq' }: FaqSectionProps) {
       className="py-16 sm:py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative"
     >
       <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#2E2266]/70 border border-[#9B6BF2]/40 text-[#6CC4FF] mb-3">
-          <Question size={16} weight="bold" />
-          Pertanyaan Umum
+        <div className="inline-block px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#140D33] border border-[#524112] text-[#FFE359] mb-3">
+          Tanya Jawab &amp; Bantuan
         </div>
         <h2
           id="faq-heading"

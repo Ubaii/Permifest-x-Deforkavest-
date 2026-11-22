@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useAppStore } from '@/lib/store';
 import { Partner } from '@/lib/types';
-import { Handshake, ArrowSquareOut, EnvelopeSimple } from '@phosphor-icons/react';
 
 export function PartnersSection() {
   const { partners } = useAppStore();
@@ -36,8 +33,7 @@ export function PartnersSection() {
     >
       {/* ── Heading Terstruktur & Bersih (Antislop Design) ── */}
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#140D33] text-[#A99FD1] border border-[#2E2266] mb-3">
-          <Handshake size={15} weight="bold" className="text-[#6CC4FF]" />
+        <div className="inline-block px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#140D33] text-[#FFE359] border border-[#524112] mb-3">
           Penyelenggara &amp; Kolaborator
         </div>
         <h2
@@ -110,7 +106,7 @@ export function PartnersSection() {
 
                 {isClickable && (
                   <span className="mt-3 text-[10px] text-[#6CC4FF] font-semibold flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Kunjungi tautan <ArrowSquareOut size={12} weight="bold" />
+                    Kunjungi tautan &rarr;
                   </span>
                 )}
               </Wrapper>
@@ -169,9 +165,8 @@ export function PartnersSection() {
 
         <a
           href="mailto:partnership@permifest.id?subject=Kerjasama%20Sponsorship%20Permifest%20x%20Deforkafest%202026"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0720] bg-[#FFE359] hover:bg-[#ffd83d] transition-colors shrink-0 shadow-[2px_2px_0px_#0B0720]"
+          className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold text-[#0B0720] bg-[#FFE359] hover:bg-[#ffd83d] transition-colors shrink-0 shadow-[2px_2px_0px_#0B0720]"
         >
-          <EnvelopeSimple size={16} weight="bold" />
           Hubungi Divisi Partnership
         </a>
       </div>

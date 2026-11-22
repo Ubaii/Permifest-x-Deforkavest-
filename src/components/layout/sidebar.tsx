@@ -51,7 +51,7 @@ interface MenuGroup {
 
 export function Sidebar({ onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
-  const { currentUser, switchRole } = useAppStore();
+  const { currentUser, switchRole, logout } = useAppStore();
 
   const getMenuGroups = (): MenuGroup[] => {
     switch (currentUser.role) {
@@ -139,9 +139,6 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
       {/* Brand Header */}
       <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-lg bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40 flex items-center justify-center">
-            <ShieldCheck size={18} weight="bold" />
-          </div>
           <span className="font-bold text-xs tracking-tight font-[family-name:var(--font-bricolage)] text-[var(--foreground)]">
             Permifest x Deforkafest
           </span>
@@ -166,7 +163,6 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
               {currentUser.full_name}
             </div>
             <div className="text-[11px] text-[var(--primary)] font-mono flex items-center gap-1.5 mt-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>{ROLE_LABELS[currentUser.role]}</span>
             </div>
           </div>
@@ -189,11 +185,10 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
                   key={r}
                   type="button"
                   onClick={() => switchRole(r)}
-                  className={`text-[10px] py-1 px-2 rounded-md text-left transition-colors truncate min-h-[28px] ${
-                    currentUser.role === r
-                      ? 'bg-[var(--primary)] text-white font-bold'
-                      : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-                  }`}
+                  className={`text-[10px] py-1 px-2 rounded-md text-left transition-colors truncate min-h-[28px] ${currentUser.role === r
+                    ? 'bg-[var(--primary)] text-white font-bold'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
+                    }`}
                 >
                   {ROLE_LABELS[r]}
                 </button>
@@ -220,11 +215,10 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={onCloseMobile}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[38px] ${
-                    isActive
-                      ? 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30'
-                      : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-                  }`}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors min-h-[38px] ${isActive
+                    ? 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
+                    }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Icon
@@ -242,12 +236,17 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Footer Info */}
+      {/* Footer Info & Tombol Logout Nyata */}
       <div className="p-3 border-t border-[var(--border)] text-[11px] text-[var(--muted-foreground)] flex items-center justify-between">
-        <Link href="/" className="hover:text-[var(--foreground)] flex items-center gap-1.5 transition-colors">
+        <button
+          type="button"
+          onClick={() => logout()}
+          className="hover:text-rose-400 flex items-center gap-1.5 transition-colors cursor-pointer text-left"
+          title="Keluar dari akun Anda"
+        >
           <SignOut size={16} weight="bold" />
-          <span>Ke Beranda</span>
-        </Link>
+          <span>Keluar</span>
+        </button>
         <span className="font-mono text-[10px] text-[var(--muted-foreground)]/70">v2.0-MVP</span>
       </div>
     </aside>
