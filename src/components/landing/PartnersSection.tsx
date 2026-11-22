@@ -68,28 +68,16 @@ export function PartnersSection() {
               <Wrapper
                 key={org.id}
                 {...wrapperProps}
-                className="group relative flex flex-col items-center justify-center p-5 rounded-2xl border border-[#2E2266] bg-[#140D33] hover:border-[#9B6BF2] transition-colors text-center"
+                className="group relative flex flex-col items-center justify-between p-6 rounded-2xl border border-[#2E2266] bg-[#140D33]/90 hover:bg-[#140D33] hover:border-[#9B6BF2] transition-all text-center"
               >
-                {/* Badge Kategori */}
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#0B0720] text-[#A99FD1] border border-[#2E2266] mb-3">
-                  {org.category === 'kabinet'
-                    ? 'Kabinet Wilayah'
-                    : org.category === 'co_host'
-                    ? 'Event Partner'
-                    : 'Penyelenggara'}
-                </span>
-
-                {/* Logo Box */}
+                {/* Logo Box: Bersih tanpa badge tumpuk */}
                 <div className="w-full h-16 flex items-center justify-center px-2 py-1">
-                  {org.logo_url.endsWith('.svg') || org.logo_url.startsWith('/') ? (
-                    <Image
+                  {org.logo_url ? (
+                    <img
                       src={org.logo_url}
                       alt={org.name}
-                      width={160}
-                      height={48}
-                      className="max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                      className="max-h-12 max-w-[160px] object-contain transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
-                        // Fallback teks jika logo belum diupload
                         (e.target as HTMLElement).style.display = 'none';
                       }}
                     />
@@ -100,18 +88,28 @@ export function PartnersSection() {
                   )}
                 </div>
 
-                <span className="mt-3 text-xs font-bold text-[#F5F2FF] group-hover:text-[#6CC4FF] transition-colors line-clamp-1">
-                  {org.name}
-                </span>
+                <div className="mt-3 w-full">
+                  <span className="text-xs font-bold text-[#F5F2FF] group-hover:text-[#6CC4FF] transition-colors line-clamp-1 block">
+                    {org.name}
+                  </span>
 
-                {org.description && (
-                  <p className="mt-1 text-[11px] text-[#A99FD1] line-clamp-2 leading-tight">
-                    {org.description}
-                  </p>
-                )}
+                  {org.description ? (
+                    <p className="mt-1 text-[11px] text-[#A99FD1] line-clamp-2 leading-relaxed">
+                      {org.description}
+                    </p>
+                  ) : (
+                    <span className="mt-1 text-[10px] text-[#A99FD1]/70 block">
+                      {org.category === 'kabinet'
+                        ? 'Kabinet Wilayah'
+                        : org.category === 'co_host'
+                        ? 'Event Co-Host'
+                        : 'Penyelenggara'}
+                    </span>
+                  )}
+                </div>
 
                 {isClickable && (
-                  <span className="mt-2 text-[10px] text-[#6CC4FF] font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="mt-3 text-[10px] text-[#6CC4FF] font-semibold flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     Kunjungi tautan <ArrowSquareOut size={12} weight="bold" />
                   </span>
                 )}
@@ -135,21 +133,23 @@ export function PartnersSection() {
                 href={sp.website_url || '#'}
                 target={sp.website_url ? '_blank' : undefined}
                 rel="noopener noreferrer"
-                className="group p-4 px-6 rounded-xl border border-[#2E2266] bg-[#0E0826] hover:bg-[#140D33] hover:border-[#FFE359] transition-all flex flex-col items-center justify-center min-w-[140px]"
+                className="group p-4 px-5 rounded-2xl border border-[#2E2266] bg-[#140D33]/70 hover:bg-[#140D33] hover:border-[#FFE359] transition-all flex flex-col items-center justify-center min-w-[140px] text-center"
               >
-                {sp.tier && (
-                  <span className="text-[9px] font-black uppercase tracking-wider text-[#FFE359] mb-1.5">
-                    {sp.tier} Partner
-                  </span>
+                {sp.logo_url && (
+                  <div className="h-10 w-full flex items-center justify-center mb-2">
+                    <img
+                      src={sp.logo_url}
+                      alt={sp.name}
+                      className="max-h-8 max-w-[120px] object-contain opacity-85 group-hover:opacity-100 transition-opacity"
+                    />
+                  </div>
                 )}
-                <span className="text-sm font-bold text-[#F5F2FF] group-hover:text-white transition-colors">
+                <span className="text-xs font-bold text-[#F5F2FF] group-hover:text-white transition-colors">
                   {sp.name}
                 </span>
-                {sp.description && (
-                  <span className="text-[10px] text-[#A99FD1] mt-0.5">
-                    {sp.description}
-                  </span>
-                )}
+                <span className="text-[10px] text-[#A99FD1] mt-0.5 capitalize">
+                  {sp.tier ? `${sp.tier} Partner` : 'Mitra'}
+                </span>
               </a>
             ))}
           </div>

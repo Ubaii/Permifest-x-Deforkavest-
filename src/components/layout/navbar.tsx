@@ -64,28 +64,39 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop CTA dengan Sakuga Button Anime */}
+          {/* Desktop Auth Actions: Sembunyikan Dashboard jika belum login, Sembunyikan Masuk jika sudah login */}
           <div className="hidden md:flex items-center gap-3">
-            <SakugaButton
-              href="/login"
-              variant="secondary"
-              size="sm"
-              sfxText="MASUK!!"
-              className="text-xs px-4"
-            >
-              Masuk
-            </SakugaButton>
+            {!isLoggedIn ? (
+              <>
+                <SakugaButton
+                  href="/login"
+                  variant="secondary"
+                  size="sm"
+                  className="text-xs px-4"
+                >
+                  Masuk
+                </SakugaButton>
 
-            <SakugaButton
-              href={isLoggedIn ? '/dashboard' : '/register'}
-              variant="brand"
-              size="sm"
-              sfxText="GASSS!!"
-              className="text-xs px-5"
-              leftIcon={isLoggedIn ? <UserCircle size={16} weight="bold" /> : undefined}
-            >
-              {isLoggedIn ? 'Dashboard' : 'Daftar Sekarang'}
-            </SakugaButton>
+                <SakugaButton
+                  href="/register"
+                  variant="brand"
+                  size="sm"
+                  className="text-xs px-5"
+                >
+                  Daftar Sekarang
+                </SakugaButton>
+              </>
+            ) : (
+              <SakugaButton
+                href="/dashboard"
+                variant="brand"
+                size="sm"
+                className="text-xs px-5"
+                leftIcon={<UserCircle size={17} weight="bold" />}
+              >
+                Ke Dashboard
+              </SakugaButton>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -142,26 +153,39 @@ export function Navbar() {
         </nav>
 
         <div className="pt-3 border-t border-[#2E2266] space-y-3">
-          <SakugaButton
-            href="/login"
-            variant="secondary"
-            size="md"
-            sfxText="MASUK!!"
-            className="w-full justify-center"
-            onClick={() => setMobileOpen(false)}
-          >
-            Masuk ke Akun
-          </SakugaButton>
-          <SakugaButton
-            href={isLoggedIn ? '/dashboard' : '/register'}
-            variant="brand"
-            size="md"
-            sfxText="GASSS!!"
-            className="w-full justify-center"
-            onClick={() => setMobileOpen(false)}
-          >
-            {isLoggedIn ? 'Buka Dashboard' : 'Daftar Sekarang'}
-          </SakugaButton>
+          {!isLoggedIn ? (
+            <>
+              <SakugaButton
+                href="/login"
+                variant="secondary"
+                size="md"
+                className="w-full justify-center"
+                onClick={() => setMobileOpen(false)}
+              >
+                Masuk ke Akun
+              </SakugaButton>
+              <SakugaButton
+                href="/register"
+                variant="brand"
+                size="md"
+                className="w-full justify-center"
+                onClick={() => setMobileOpen(false)}
+              >
+                Daftar Sekarang
+              </SakugaButton>
+            </>
+          ) : (
+            <SakugaButton
+              href="/dashboard"
+              variant="brand"
+              size="md"
+              className="w-full justify-center"
+              onClick={() => setMobileOpen(false)}
+              leftIcon={<UserCircle size={18} weight="bold" />}
+            >
+              Buka Dashboard
+            </SakugaButton>
+          )}
         </div>
       </div>
     </>

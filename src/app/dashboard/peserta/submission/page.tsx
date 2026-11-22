@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +42,7 @@ export default function PesertaSubmissionPage() {
   const [submitting, setSubmitting] = useState(false);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
+  const submitBtnRef = useRef<HTMLElement | null>(null);
 
   const selectedReg = registrations.find((r) => r.id === activeRegId);
   const isFigmaRequired = selectedReg?.competition?.submission_config.allowedTypes.includes('figma_url');
@@ -108,9 +109,14 @@ export default function PesertaSubmissionPage() {
         notes: notes,
       });
 
-      setModalOpen(false);
-      setSelectedFile(null);
-      setSuccessBanner('Karya Anda berhasil dikumpulkan dan tersimpan aman! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
+      // Panggil .done() pada Web Component Sakuga Button saat aksi berhasil
+      submitBtnRef.current?.done?.();
+
+      setTimeout(() => {
+        setModalOpen(false);
+        setSelectedFile(null);
+        setSuccessBanner('Karya Anda berhasil dikumpulkan dan tersimpan aman! Anda dapat memperbarui berkas sebelum batas waktu berakhir.');
+      }, 700);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal mengirimkan karya';
       setModalError(message);
@@ -343,22 +349,21 @@ export default function PesertaSubmissionPage() {
           </Alert>
 
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border)]">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
+            <sakuga-button
+              variant="secondary"
               onClick={() => setModalOpen(false)}
             >
               Batal
-            </Button>
-            <SakugaButton
+            </sakuga-button>
+            <sakuga-button
+              ref={(node: HTMLElement | null) => {
+                submitBtnRef.current = node;
+              }}
               type="submit"
-              variant="brand"
-              size="sm"
-              isLoading={submitting}
+              disabled={submitting}
             >
-              Kirim Karya
-            </SakugaButton>
+              {submitting ? 'Mengirim...' : 'Kirim Karya'}
+            </sakuga-button>
           </div>
         </form>
       </Modal>

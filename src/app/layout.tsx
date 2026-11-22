@@ -36,6 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="id"
       className={`dark ${bricolage.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <script src="/button.js" defer></script>
+      </head>
       <body className="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen">
         <a href="#main-content" className="skip-link">
           Lewati ke konten utama

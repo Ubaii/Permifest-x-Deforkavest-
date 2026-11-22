@@ -13,14 +13,14 @@ export function CtaClosingSection() {
       <div
         className="rounded-3xl border border-[#2E2266] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 text-left bg-gradient-to-br from-[#241a57] to-[#33113a]"
       >
-        {/* Ilustrasi Maskot (PNG Teroptimasi) */}
-        <div className="w-44 sm:w-52 shrink-0 aspect-square flex items-center justify-center">
+        {/* Ilustrasi Maskot (Diperbesar & Lebih Proporsional) */}
+        <div className="w-56 sm:w-72 lg:w-84 shrink-0 flex items-center justify-center">
           <Image
             src="/ilustrasi.png"
             alt="Maskot Permifest x Deforkafest 2026"
-            width={240}
-            height={240}
-            className="w-full h-auto object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)] pointer-events-none select-none"
+            width={380}
+            height={380}
+            className="w-full h-auto max-h-[320px] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.5)] pointer-events-none select-none transition-transform duration-300 hover:scale-105"
           />
         </div>
 

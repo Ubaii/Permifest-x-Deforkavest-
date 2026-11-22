@@ -80,16 +80,6 @@ export function HeroSection() {
               </SakugaButton>
             </div>
 
-            {/* Badges Info Ringkas */}
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
-              <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-bold bg-[#2a2108] text-[#E6C978] border border-[#524112]/50">
-                Batas Daftar: {registrationDateLabel}
-              </span>
-              <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-bold bg-[#082436] text-[#6CC4FF] border border-[#144766]/50">
-                Biaya: Mulai Rp 35.000
-              </span>
-            </div>
-
             {/* Countdown Box Mandiri (Terisolasi dari re-render HeroSection) */}
             {nextDeadline && (
               <CountdownTimer
@@ -99,25 +89,25 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* ── Kolom Kanan: Ilustrasi Maskot Resmi (PNG Teroptimasi & Ringan GPU) ── */}
-          <div className="flex-1 w-full max-w-[480px] flex justify-center items-center relative group">
-            {/* Anime Aura Glow di belakang maskot (soft radial statis) */}
+          {/* ── Kolom Kanan: Ilustrasi Maskot Resmi (Diperbesar & Lebih Proporsional) ── */}
+          <div className="flex-1 w-full max-w-[560px] lg:max-w-[620px] flex justify-center items-center relative group">
+            {/* Anime Aura Glow di belakang maskot */}
             <div
-              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none opacity-50"
+              className="absolute w-[440px] h-[440px] rounded-full pointer-events-none opacity-45"
               style={{
-                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.35) 0%, rgba(213, 107, 217, 0.15) 50%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.4) 0%, rgba(213, 107, 217, 0.18) 50%, transparent 70%)',
               }}
             />
 
-            {/* Container Ilustrasi: Statis & Ringan tanpa loop animation */}
+            {/* Container Ilustrasi: Tampilan Megah & Proporsional */}
             <div className="w-full relative z-10 flex justify-center items-center transition-transform duration-300 ease-out group-hover:scale-[1.02]">
               <Image
                 src="/ilustrasi.png"
                 alt="Ilustrasi Resmi Permifest x Deforkafest 2026"
-                width={520}
-                height={520}
+                width={640}
+                height={640}
                 priority
-                className="w-full h-auto max-h-[460px] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.45)] select-none pointer-events-none"
+                className="w-full h-auto max-h-[540px] lg:max-h-[580px] object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.55)] select-none pointer-events-none"
               />
             </div>
           </div>

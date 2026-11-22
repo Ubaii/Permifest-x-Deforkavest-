@@ -1,17 +1,13 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/modal';
 import {
   Drawer,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
   DrawerContent,
   DrawerFooter,
 } from '@/components/ui/drawer';
@@ -25,10 +21,10 @@ import {
   Plus,
   PencilSimple,
   Trash,
-  CheckCircle,
-  XCircle,
   ArrowSquareOut,
-  Sparkle,
+  UploadSimple,
+  LinkSimple,
+  Image as ImageIcon,
 } from '@phosphor-icons/react';
 
 interface PartnerFormData {
@@ -53,6 +49,14 @@ const defaultFormData: PartnerFormData = {
   is_active: true,
 };
 
+const CATEGORY_LABELS: Record<PartnerCategory, string> = {
+  organizer: 'Penyelenggara Utama',
+  kabinet: 'Kabinet Wilayah',
+  co_host: 'Co-Host Deforka',
+  sponsor: 'Sponsor Komersial',
+  media_partner: 'Media Partner',
+};
+
 export default function AdminMitraPage() {
   const { partners, addPartner, updatePartner, deletePartner, togglePartnerActive } = useAppStore();
 
@@ -60,10 +64,12 @@ export default function AdminMitraPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingPartnerId, setEditingPartnerId] = useState<string | null>(null);
   const [formData, setFormData] = useState<PartnerFormData>(defaultFormData);
+  const [logoInputMode, setLogoInputMode] = useState<'url' | 'file'>('url');
   const [deleteConfirmPartner, setDeleteConfirmPartner] = useState<Partner | null>(null);
   const [alertSuccess, setAlertSuccess] = useState<string | null>(null);
   const [drawerError, setDrawerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Filter daftar mitra
   const filteredPartners = useMemo(() => {
@@ -82,7 +88,7 @@ export default function AdminMitraPage() {
       organizers: partners.filter(
         (p) => p.category === 'organizer' || p.category === 'kabinet' || p.category === 'co_host'
       ).length,
-      sponsors: partners.filter((p) => p.category === 'sponsor').length,
+      sponsors: partners.filter((p) => p.category === 'sponsor' || p.category === 'media_partner').length,
     };
   }, [partners]);
 
@@ -92,6 +98,7 @@ export default function AdminMitraPage() {
       ...defaultFormData,
       order_index: partners.length + 1,
     });
+    setLogoInputMode('url');
     setDrawerError(null);
     setDrawerOpen(true);
   };
@@ -108,8 +115,38 @@ export default function AdminMitraPage() {
       order_index: partner.order_index,
       is_active: partner.is_active,
     });
+    setLogoInputMode(partner.logo_url.startsWith('data:') ? 'file' : 'url');
     setDrawerError(null);
     setDrawerOpen(true);
+  };
+
+  // Handler Upload File Gambar Logo
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setDrawerError('Harap unggah berkas gambar (PNG, SVG, JPG, atau WebP).');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setDrawerError('Ukuran berkas logo maksimal 2 MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setFormData((prev) => ({ ...prev, logo_url: result }));
+        setDrawerError(null);
+      }
+    };
+    reader.onerror = () => {
+      setDrawerError('Gagal membaca berkas gambar.');
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,7 +159,7 @@ export default function AdminMitraPage() {
         throw new Error('Nama mitra / instansi wajib diisi.');
       }
       if (!formData.logo_url.trim()) {
-        throw new Error('URL / Path logo mitra wajib diisi.');
+        throw new Error('Logo mitra wajib diisi (berupa URL atau unggahan file).');
       }
 
       if (editingPartnerId) {
@@ -219,7 +256,7 @@ export default function AdminMitraPage() {
           <Card className="bg-card border-border">
             <CardContent className="p-4">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-                Sponsor Komersial
+                Sponsor &amp; Media
               </span>
               <span className="text-2xl font-black text-amber-400 font-[family-name:var(--font-jetbrains)] mt-1 block">
                 {stats.sponsors}
@@ -236,7 +273,7 @@ export default function AdminMitraPage() {
               { id: 'all', label: 'Semua' },
               { id: 'organizer', label: 'Penyelenggara' },
               { id: 'kabinet', label: 'Kabinet Permi' },
-              { id: 'co_host', label: 'Co-Host / Deforka' },
+              { id: 'co_host', label: 'Co-Host' },
               { id: 'sponsor', label: 'Sponsor' },
               { id: 'media_partner', label: 'Media Partner' },
             ].map((tab) => (
@@ -267,7 +304,7 @@ export default function AdminMitraPage() {
           </Button>
         </div>
 
-        {/* ── Tabel / Grid Mitra ── */}
+        {/* ── Grid Mitra Bersih & Bernapas (Anti-Clutter) ── */}
         {filteredPartners.length === 0 ? (
           <EmptyState
             icon={<Handshake className="w-8 h-8 text-primary" weight="duotone" />}
@@ -280,63 +317,45 @@ export default function AdminMitraPage() {
             }
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredPartners.map((item) => (
               <Card
                 key={item.id}
-                className={`border transition-all ${
+                className={`border transition-all hover:border-primary/50 ${
                   item.is_active
                     ? 'border-border bg-card'
-                    : 'border-border/50 bg-card/40 opacity-70'
+                    : 'border-border/40 bg-card/40 opacity-60'
                 }`}
               >
                 <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
                   <div>
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <Badge
-                        variant={
-                          item.category === 'kabinet'
-                            ? 'warning'
-                            : item.category === 'sponsor'
-                            ? 'success'
-                            : 'info'
-                        }
+                    {/* Header: Status Indikator Halus & Order Index */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-3 pb-2 border-b border-border/50">
+                      <span className="font-semibold text-[11px] text-muted-foreground tracking-wide">
+                        {CATEGORY_LABELS[item.category] || 'Mitra'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => togglePartnerActive(item.id)}
+                        className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
+                          item.is_active
+                            ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                            : 'bg-zinc-700/20 text-zinc-400 hover:bg-zinc-700/30'
+                        }`}
                       >
-                        {item.category === 'kabinet'
-                          ? 'Kabinet Nawasena'
-                          : item.category === 'sponsor'
-                          ? `Sponsor · ${item.tier || 'Partner'}`
-                          : item.category === 'co_host'
-                          ? 'Deforkafest Co-Host'
-                          : 'Penyelenggara Utama'}
-                      </Badge>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => togglePartnerActive(item.id)}
-                          title={item.is_active ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan'}
-                          className={`text-xs px-2 py-0.5 rounded font-bold transition-colors ${
-                            item.is_active
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                              : 'bg-zinc-700/40 text-zinc-400 border border-zinc-600/40'
-                          }`}
-                        >
-                          {item.is_active ? 'Aktif' : 'Nonaktif'}
-                        </button>
-                      </div>
+                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_active ? 'bg-emerald-400' : 'bg-zinc-400'}`} />
+                        {item.is_active ? 'Aktif' : 'Nonaktif'}
+                      </button>
                     </div>
 
-                    {/* Logo & Info */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-14 h-14 rounded-xl bg-background border border-border flex items-center justify-center p-2 shrink-0 overflow-hidden">
-                        {item.logo_url.endsWith('.svg') || item.logo_url.startsWith('/') ? (
-                          <Image
+                    {/* Logo & Info Utama: Tampilan Rapi */}
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-16 h-14 rounded-xl bg-background border border-border flex items-center justify-center p-2 shrink-0 overflow-hidden shadow-sm">
+                        {item.logo_url.startsWith('data:') || item.logo_url.startsWith('http') || item.logo_url.startsWith('/') ? (
+                          <img
                             src={item.logo_url}
                             alt={item.name}
-                            width={56}
-                            height={56}
-                            className="max-h-10 w-auto object-contain"
+                            className="max-h-10 max-w-full object-contain"
                             onError={(e) => {
                               (e.target as HTMLElement).style.display = 'none';
                             }}
@@ -348,23 +367,19 @@ export default function AdminMitraPage() {
                         )}
                       </div>
 
-                      <div className="overflow-hidden">
+                      <div className="min-w-0 flex-1">
                         <h4 className="font-extrabold text-sm text-foreground truncate">
                           {item.name}
                         </h4>
-                        <span className="text-xs text-muted-foreground block truncate">
-                          Urutan Tampil: #{item.order_index}
-                        </span>
-                        {item.website_url && (
-                          <a
-                            href={item.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[11px] text-primary hover:underline inline-flex items-center gap-1 mt-0.5 truncate"
-                          >
-                            Tautan web <ArrowSquareOut size={12} weight="bold" />
-                          </a>
-                        )}
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                          <span>Urutan #{item.order_index}</span>
+                          {item.tier && (
+                            <>
+                              <span>·</span>
+                              <span className="capitalize text-primary font-medium">{item.tier}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -375,28 +390,46 @@ export default function AdminMitraPage() {
                     )}
                   </div>
 
-                  {/* Actions Footer */}
-                  <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDrawer(item)}
-                      className="text-xs h-8 px-2.5"
-                    >
-                      <PencilSimple size={14} className="mr-1" />
-                      Edit
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeleteConfirmPartner(item)}
-                      className="text-xs h-8 px-2.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
-                    >
-                      <Trash size={14} className="mr-1" />
-                      Hapus
-                    </Button>
+                  {/* Actions Bar Bersih */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border/60">
+                    <div>
+                      {item.website_url ? (
+                        <a
+                          href={item.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1 transition-colors"
+                        >
+                          <ArrowSquareOut size={13} weight="bold" />
+                          <span>Website</span>
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground/60 italic">Tanpa tautan</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEditDrawer(item)}
+                        className="text-xs h-7 px-2"
+                      >
+                        <PencilSimple size={13} className="mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeleteConfirmPartner(item)}
+                        className="text-xs h-7 px-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                      >
+                        <Trash size={13} className="mr-1" />
+                        Hapus
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -405,12 +438,12 @@ export default function AdminMitraPage() {
         )}
       </div>
 
-      {/* ── Form Drawer (Tambah & Edit) ── */}
+      {/* ── Drawer Form Tambah / Edit Mitra ── */}
       <Drawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title={editingPartnerId ? 'Ubah Informasi Mitra' : 'Tambah Mitra / Sponsor Baru'}
-        description="Masukkan identitas instansi, kategori entitas (Penyelenggara, Kabinet Nawasena, Deforkafest, IMPSI, atau Sponsor), dan link logo."
+        description="Kelola profil instansi mitra, kategori, serta tautan atau upload file logo resmi."
       >
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-between">
           <DrawerContent className="space-y-4">
@@ -469,17 +502,105 @@ export default function AdminMitraPage() {
               </div>
             </div>
 
+            {/* ── Input Logo: Pilihan Link URL atau Upload File Langsung ── */}
+            <div className="p-3.5 rounded-2xl bg-background border border-border space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-foreground">
+                  Logo Instansi / Brand <span className="text-rose-400">*</span>
+                </label>
+
+                {/* Tab Pemilih Mode: Link atau Upload */}
+                <div className="flex items-center gap-1 p-0.5 rounded-lg bg-card border border-border text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setLogoInputMode('url')}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
+                      logoInputMode === 'url'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <LinkSimple size={12} weight="bold" />
+                    Input Link
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLogoInputMode('file')}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
+                      logoInputMode === 'file'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <UploadSimple size={12} weight="bold" />
+                    Upload File
+                  </button>
+                </div>
+              </div>
+
+              {logoInputMode === 'url' ? (
+                <div>
+                  <Input
+                    type="text"
+                    required={!formData.logo_url}
+                    value={formData.logo_url.startsWith('data:') ? '' : formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    placeholder="/brand/nawasena.svg atau URL HTTPS gambar"
+                  />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Gunakan file path lokal seperti <code className="text-primary font-mono">/brand/nawasena.svg</code> atau tautan online langsung.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,.svg,.png,.jpg,.jpeg,.webp"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="partner_logo_file_input"
+                  />
+                  <label
+                    htmlFor="partner_logo_file_input"
+                    className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-border hover:border-primary rounded-xl cursor-pointer bg-card/50 hover:bg-card transition-colors text-center"
+                  >
+                    <UploadSimple size={24} className="text-primary mb-1" />
+                    <span className="text-xs font-bold text-foreground">
+                      Pilih berkas logo dari perangkat
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      Format SVG, PNG, JPG, WebP (maks. 2 MB)
+                    </span>
+                  </label>
+                </div>
+              )}
+
+              {/* Preview Logo yang Terpasang */}
+              {formData.logo_url && (
+                <div className="flex items-center gap-3 pt-1">
+                  <span className="text-[11px] text-muted-foreground">Preview:</span>
+                  <div className="h-10 w-24 rounded-lg bg-card border border-border p-1.5 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={formData.logo_url}
+                      alt="Preview logo"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-foreground mb-1.5">
-                  URL / Path Logo <span className="text-rose-400">*</span>
+                  Tautan Website / Medsos
                 </label>
                 <Input
-                  type="text"
-                  required
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                  placeholder="/brand/nawasena.svg atau URL gambar"
+                  type="url"
+                  value={formData.website_url}
+                  onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                  placeholder="https://instagram.com/permikomnas.diy"
                 />
               </div>
 
@@ -498,25 +619,13 @@ export default function AdminMitraPage() {
 
             <div>
               <label className="block text-xs font-bold text-foreground mb-1.5">
-                Tautan Website Resmi / Instagram
-              </label>
-              <Input
-                type="url"
-                value={formData.website_url}
-                onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                placeholder="https://instagram.com/permikomnas.diy"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
                 Deskripsi Singkat Entitas
               </label>
               <textarea
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Jelaskan peran instansi atau bentuk dukungan kerjasama..."
+                placeholder="Jelaskan peran instansi atau bentuk kerjasama..."
                 className="w-full bg-card border border-border rounded-xl p-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
@@ -560,11 +669,10 @@ export default function AdminMitraPage() {
       <ConfirmDialog
         isOpen={!!deleteConfirmPartner}
         onClose={() => setDeleteConfirmPartner(null)}
-        title="Hapus Data Mitra / Sponsor?"
-        description={`Apakah Anda yakin ingin menghapus "${deleteConfirmPartner?.name}" dari daftar mitra resmi? Data yang dihapus tidak akan ditampilkan lagi di beranda.`}
-        confirmText="Ya, Hapus Mitra"
-        variant="destructive"
         onConfirm={handleDelete}
+        title="Hapus Data Mitra"
+        description={`Apakah kamu yakin ingin menghapus data mitra "${deleteConfirmPartner?.name}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText="Hapus Mitra"
       />
     </DashboardLayout>
   );

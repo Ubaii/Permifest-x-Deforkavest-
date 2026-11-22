@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi resmi Web Component Sakuga Button (`<sakuga-button>`) dari `https://sakuga-vfx.vercel.app/button/button.js` di `public/button.js`, dimuat via `<script src="/button.js" defer></script>` di `src/app/layout.tsx` dengan deklarasi TypeScript `src/types/sakuga.d.ts` dan pemanggilan `el.done()` pada aksi sukses di `/dashboard/peserta/submission`.
+- Pembesaran proporsional ilustrasi resmi `public/ilustrasi.png` pada `HeroSection.tsx` (hingga 620px) dan `CtaClosingSection.tsx` (hingga 340px) dengan respons drop shadow seimbang.
+- Penyempurnaan logika autentikasi Navbar (`src/components/layout/navbar.tsx`): tombol Dashboard disembunyikan jika belum login, dan tombol Masuk disembunyikan jika sudah login (hanya tombol Ke Dashboard yang aktif).
+- Fleksibilitas input logo pada CRUD Mitra & Sponsor (`/dashboard/admin/mitra`): mendukung input tautan/link URL atau upload berkas file gambar langsung (PNG, SVG, JPG, WebP) dengan preview instan.
+- Pembersihan dan perapian (*decluttering*) UI kartu mitra & sponsor di halaman admin panel dan landing page: penghapusan badge kategori yang menumpuk di atas logo demi tampilan yang bersih, lega, bernapas (*breathing room*), dan profesional.
 - Pembersihan dan optimasi performa skala penuh (zero-lag):
   - Penghapusan `scroll-behavior: smooth` di tingkat root CSS dan eliminasi seluruh listener event scroll JS pada `Navbar` dan `StickyBottomBar` (digantikan CSS sticky native dan browser `IntersectionObserver` ringan) sehingga scrolling halaman terasa instan dan bebas stutter.
   - Pelepasan dependensi modul Canvas 2D engine `sakuga-engine.ts` dari `<SakugaButton>` sehingga tombol bekerja 100% via CSS murni tanpa overhead komputasi canvas.
