@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { SakugaHeroBackground } from './SakugaHeroBackground';
 import { CountdownTimer } from './CountdownTimer';
@@ -9,7 +10,6 @@ import {
   getNearestRegistrationClose,
   getNextDeadline,
 } from '@/lib/landing-data';
-import { MascotIllustration } from './MascotIllustration';
 
 export function HeroSection() {
   const nextDeadline = getNextDeadline();
@@ -29,15 +29,12 @@ export function HeroSection() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
           {/* ── Kolom Kiri: Teks & Aksi ── */}
           <div className="flex-1 max-w-2xl text-left">
-            {/* Live Indicator Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#140D33]/90 text-[#F5F2FF] border border-[#2E2266] shadow-sm mb-5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4F15A] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C4F15A]" />
-              </span>
+            {/* Badge Status Resmi */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#140D33] text-[#F5F2FF] border border-[#2E2266] mb-5">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#C4F15A]" />
               <span className="tracking-wide">Pendaftaran Gelombang 1 Dibuka</span>
-              <span className="text-[#A99FD1]/50">|</span>
-              <span className="text-[#C4F15A]">Yogyakarta</span>
+              <span className="text-[#A99FD1]/40">·</span>
+              <span className="text-[#C4F15A] font-bold">Yogyakarta</span>
             </div>
 
             <h1
@@ -103,21 +100,26 @@ export function HeroSection() {
             )}
           </div>
 
-          {/* ── Kolom Kanan: Maskot Ilustrasi Kupu-kupu (Ringan, Halus & Berjalan di GPU) ── */}
+          {/* ── Kolom Kanan: Ilustrasi Maskot Resmi (PNG Teroptimasi & Ringan GPU) ── */}
           <div className="flex-1 w-full max-w-[480px] flex justify-center items-center relative group">
-            {/* Anime Aura Glow di belakang maskot (soft radial tanpa blur berat) */}
+            {/* Anime Aura Glow di belakang maskot (soft radial statis) */}
             <div
-              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none opacity-60 group-hover:opacity-85 transition-opacity duration-500"
+              className="absolute w-[360px] h-[360px] rounded-full pointer-events-none opacity-50"
               style={{
-                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.45) 0%, rgba(213, 107, 217, 0.2) 45%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(155, 107, 242, 0.35) 0%, rgba(213, 107, 217, 0.15) 50%, transparent 70%)',
               }}
             />
 
-            {/* Container Maskot dengan CSS Floating Animation (.fl) & respons Hover GPU */}
-            <div
-              className="w-full aspect-[520/480] relative z-10 fl group-hover:scale-105 group-hover:-rotate-1 transition-transform duration-300 ease-out will-change-transform"
-            >
-              <MascotIllustration className="w-full h-full" variant="hero" />
+            {/* Container Ilustrasi: Statis & Ringan tanpa loop animation */}
+            <div className="w-full relative z-10 flex justify-center items-center transition-transform duration-300 ease-out group-hover:scale-[1.02]">
+              <Image
+                src="/ilustrasi.png"
+                alt="Ilustrasi Resmi Permifest x Deforkafest 2026"
+                width={520}
+                height={520}
+                priority
+                className="w-full h-auto max-h-[460px] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.45)] select-none pointer-events-none"
+              />
             </div>
           </div>
         </div>

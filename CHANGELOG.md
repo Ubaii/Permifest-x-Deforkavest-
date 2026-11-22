@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi ilustrasi resmi Permifest x Deforkafest 2026 (`/ilustrasi.png`) via `next/image` dengan kompresi WebP otomatis, eliminasi total CPU overhead, dan tampilan grafis berkualitas tinggi.
+- Optimasi ultra-ringan pada Hero Section (`HeroSection.tsx` & `SakugaHeroBackground.tsx`): penghapusan animasi CSS infinite loop repaint (`.fl` floating), pembersihan elemen background berat (repeating 48px grid, oversized transformed slash bars, dan multiple `animate-pulse`), serta penggantian indikator live menjadi badge status statis bersih.
 - Standardisasi tombol aksi ke format **Pop-Art Kinetik Berbasis CSS Murni** (`<SakugaButton>`) dengan border komik pekat, hover miring dinamis `rotate(-1.5deg) skewX(-2deg)`, solid manga shadow pop yang membal `hover:shadow-[7px_7px_0px_#0B0720,10px_10px_0px_#FFE359]`, dan tactile press `active:scale-95` yang diproses 100% oleh GPU browser di level *Compositor Thread*.
 - Pencopotan total script `public/button.js` dan Web Component `<sakuga-button>` untuk mengeliminasi looping `requestAnimationFrame` abadi, forced synchronous layout thrashing (`getBoundingClientRect`), serta canvas fullscreen 100vw x 100vh yang sebelumnya membebani CPU/GPU pengguna.
 - Pembersihan dan optimasi penuh performa rendering: beban CPU saat halaman diam turun drastis ke ~0% dengan respons interaksi instan tanpa jeda.
