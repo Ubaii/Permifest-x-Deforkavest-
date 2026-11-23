@@ -19,6 +19,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 - Penetapan atribut `select-none` pada berbagai elemen teks dekoratif (badge washi-tape, digit hitung mundur, brand title, header kalender, nomor langkah, dan tag kategori) untuk kenyamanan dan kesan interaksi solid layaknya aplikasi profesional.
 
 ### Changed
+- Penyelarasan antarmuka manajemen Guidebook (`/dashboard/admin/guidebook`) dan modal pembaca PDF (`PdfViewerModal`) dengan standar desain panel admin Permifest:
+  - Dukungan penuh untuk mode terang (**light mode**) dan mode gelap (**dark mode**) dengan mengganti hardcoded dark palette menjadi semantic tokens Tailwind CSS (`bg-card`, `bg-background`, `border-border`, `text-foreground`, `text-muted-foreground`, dll.).
+  - Penggantian bayangan ganda kartun dengan standar kartu dashboard (`shadow-sm`, border rapi).
+  - Penyesuaian form input, dropdown, area upload drag-and-drop, tab kategori, serta badge cabang lomba agar memiliki kontras tinggi dan keterbacaan yang sempurna baik di tema terang maupun tema gelap.
 - Penyeragaman warna seluruh ikon pada section Narahubung & Venue serta media sosial di Footer (`footer.tsx`) menjadi warna aksen brand ungu `#9B6BF2` dalam container rounded yang rapi dan konsisten.
 
 - Relokasi `CountdownTimer` menjadi Banner Hitung Mundur Horisontal (`CountdownBanner`) yang ditempatkan secara strategis di antara `HeroSection` dan `PartnersSection` dengan digit waktu tabular kontras tinggi, aksen washi-tape emas-ungu, dan tombol call-to-action cepat.

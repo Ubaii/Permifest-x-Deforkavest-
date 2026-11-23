@@ -58,13 +58,47 @@ const defaultFormData: GuidebookFormData = {
 };
 
 const CATEGORY_MAP: Record<GuidebookCategory, { label: string; badgeBg: string; textColor: string }> = {
-  general: { label: 'Panduan Umum', badgeBg: 'bg-[#9B6BF2]/20 border-[#9B6BF2]/40', textColor: 'text-[#9B6BF2]' },
-  esai: { label: 'Esai Cyber Security', badgeBg: 'bg-[#FFE359]/20 border-[#FFE359]/40', textColor: 'text-[#FFE359]' },
-  uiux: { label: 'UI/UX Design', badgeBg: 'bg-[#F0A6F2]/20 border-[#F0A6F2]/40', textColor: 'text-[#F0A6F2]' },
-  it_system_arch: { label: 'IT System Architecture', badgeBg: 'bg-[#6CC4FF]/20 border-[#6CC4FF]/40', textColor: 'text-[#6CC4FF]' },
-  pes: { label: 'PES 2026 e-Football', badgeBg: 'bg-[#C4F15A]/20 border-[#C4F15A]/40', textColor: 'text-[#C4F15A]' },
-  ml: { label: 'Mobile Legends: Bang Bang', badgeBg: 'bg-[#FF9B70]/20 border-[#FF9B70]/40', textColor: 'text-[#FF9B70]' },
+  general: {
+    label: 'Panduan Umum',
+    badgeBg: 'bg-primary/10 border-primary/25',
+    textColor: 'text-primary',
+  },
+  esai: {
+    label: 'Esai Cyber Security',
+    badgeBg: 'bg-amber-500/10 border-amber-500/25',
+    textColor: 'text-amber-700 dark:text-amber-400',
+  },
+  uiux: {
+    label: 'UI/UX Design',
+    badgeBg: 'bg-fuchsia-500/10 border-fuchsia-500/25',
+    textColor: 'text-fuchsia-700 dark:text-fuchsia-400',
+  },
+  it_system_arch: {
+    label: 'IT System Architecture',
+    badgeBg: 'bg-sky-500/10 border-sky-500/25',
+    textColor: 'text-sky-700 dark:text-sky-400',
+  },
+  pes: {
+    label: 'PES 2026 e-Football',
+    badgeBg: 'bg-emerald-500/10 border-emerald-500/25',
+    textColor: 'text-emerald-700 dark:text-emerald-400',
+  },
+  ml: {
+    label: 'Mobile Legends: Bang Bang',
+    badgeBg: 'bg-orange-500/10 border-orange-500/25',
+    textColor: 'text-orange-700 dark:text-orange-400',
+  },
 };
+
+const CATEGORY_FILTER_TABS: { id: 'all' | GuidebookCategory; label: string }[] = [
+  { id: 'all', label: 'Semua' },
+  { id: 'general', label: 'Panduan Umum' },
+  { id: 'esai', label: 'Esai Cyber Security' },
+  { id: 'uiux', label: 'UI/UX' },
+  { id: 'it_system_arch', label: 'ITSA' },
+  { id: 'pes', label: 'PES 2026' },
+  { id: 'ml', label: 'MLBB' },
+];
 
 export default function AdminGuidebookPage() {
   const store = useAppStore();
@@ -247,14 +281,14 @@ export default function AdminGuidebookPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-[#9B6BF2]/20 border border-[#9B6BF2]/40 text-[#9B6BF2]">
+              <span className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
                 <BookOpen size={22} weight="duotone" />
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-bricolage)] text-[var(--foreground)] tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-bricolage)] text-foreground tracking-tight">
                 Manajemen Buku Panduan (Guidebook)
               </h1>
             </div>
-            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Kelola dokumen PDF panduan teknis umum dan rulebook per cabang lomba untuk dibaca online atau diunduh peserta.
             </p>
           </div>
@@ -263,7 +297,6 @@ export default function AdminGuidebookPage() {
             variant="primary"
             onClick={openCreateDrawer}
             leftIcon={<Plus size={18} weight="bold" />}
-            className="shadow-[3px_3px_0px_#0B0720]"
           >
             Unggah / Tambah Guidebook
           </Button>
@@ -271,8 +304,8 @@ export default function AdminGuidebookPage() {
 
         {/* ── Feedback Alert ── */}
         {alertSuccess && (
-          <Alert variant="default" className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300">
-            <CheckCircle size={18} className="text-emerald-400" />
+          <Alert variant="default" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300">
+            <CheckCircle size={18} className="text-emerald-600 dark:text-emerald-400" />
             <AlertTitle>Operasi Berhasil</AlertTitle>
             <AlertDescription>{alertSuccess}</AlertDescription>
           </Alert>
@@ -280,65 +313,65 @@ export default function AdminGuidebookPage() {
 
         {/* ── Statistik Ringkas ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-[var(--border)] bg-[var(--card)]">
+          <Card className="border-border bg-card">
             <CardContent className="p-4 sm:p-5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Total Guidebook
                 </p>
-                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-[var(--foreground)] mt-1">
+                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-foreground mt-1">
                   {stats.total}
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-[#9B6BF2]/10 border border-[#9B6BF2]/30 flex items-center justify-center text-[#9B6BF2]">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <FilePdf size={22} weight="duotone" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-[var(--border)] bg-[var(--card)]">
+          <Card className="border-border bg-card">
             <CardContent className="p-4 sm:p-5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Diterbitkan (Aktif)
                 </p>
-                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-[#C4F15A] mt-1">
+                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-emerald-600 dark:text-emerald-400 mt-1">
                   {stats.published}
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-[#C4F15A]/10 border border-[#C4F15A]/30 flex items-center justify-center text-[#C4F15A]">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                 <Check size={22} weight="bold" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-[var(--border)] bg-[var(--card)]">
+          <Card className="border-border bg-card">
             <CardContent className="p-4 sm:p-5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Draft / Diarsipkan
                 </p>
-                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-[#FFE359] mt-1">
+                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-amber-600 dark:text-amber-400 mt-1">
                   {stats.draft}
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-[#FFE359]/10 border border-[#FFE359]/30 flex items-center justify-center text-[#FFE359]">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
                 <WarningCircle size={22} weight="duotone" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-[var(--border)] bg-[var(--card)]">
+          <Card className="border-border bg-card">
             <CardContent className="p-4 sm:p-5 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Cakupan Kategori
                 </p>
-                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-[#6CC4FF] mt-1">
+                <p className="text-2xl font-black font-[family-name:var(--font-jetbrains)] text-sky-600 dark:text-sky-400 mt-1">
                   {stats.categoriesCount} / 6
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-[#6CC4FF]/10 border border-[#6CC4FF]/30 flex items-center justify-center text-[#6CC4FF]">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
                 <BookOpen size={22} weight="duotone" />
               </div>
             </CardContent>
@@ -346,97 +379,40 @@ export default function AdminGuidebookPage() {
         </div>
 
         {/* ── Search & Filter Tabs ── */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[var(--card)] p-3 rounded-2xl border border-[var(--border)]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card p-3 rounded-2xl border border-border">
           {/* Tab Filter Kategori */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('all')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'all'
-                  ? 'bg-[#9B6BF2] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              Semua ({guidebooks.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('general')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'general'
-                  ? 'bg-[#9B6BF2] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              Panduan Umum
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('esai')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'esai'
-                  ? 'bg-[#FFE359] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              Esai Cyber Security
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('uiux')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'uiux'
-                  ? 'bg-[#F0A6F2] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              UI/UX
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('it_system_arch')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'it_system_arch'
-                  ? 'bg-[#6CC4FF] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              ITSA
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('pes')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'pes'
-                  ? 'bg-[#C4F15A] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              PES 2026
-            </button>
-            <button
-              type="button"
-              onClick={() => setCategoryFilter('ml')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] ${
-                categoryFilter === 'ml'
-                  ? 'bg-[#FF9B70] text-[#0B0720] shadow-sm'
-                  : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]'
-              }`}
-            >
-              MLBB
-            </button>
+            {CATEGORY_FILTER_TABS.map((tab) => {
+              const count = tab.id === 'all'
+                ? guidebooks.length
+                : guidebooks.filter((g) => g.category === tab.id).length;
+              const isActive = categoryFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setCategoryFilter(tab.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] cursor-pointer ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {tab.label} {tab.id === 'all' ? `(${count})` : count > 0 ? `(${count})` : ''}
+                </button>
+              );
+            })}
           </div>
 
           {/* Search box */}
           <div className="relative w-full sm:w-64">
-            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Cari judul atau versi..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] focus:outline-none focus:border-[#9B6BF2]"
+              className="w-full pl-9 pr-3 py-1.5 rounded-xl text-xs bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
@@ -459,10 +435,10 @@ export default function AdminGuidebookPage() {
               return (
                 <div
                   key={item.id}
-                  className={`rounded-2xl border-2 p-5 bg-[var(--card)] transition-all flex flex-col justify-between ${
+                  className={`rounded-2xl border p-5 bg-card transition-all flex flex-col justify-between ${
                     item.is_published
-                      ? 'border-[var(--border)] hover:border-[#9B6BF2]/60 hover:shadow-[4px_4px_0px_#0B0720]'
-                      : 'border-[var(--border)]/50 opacity-75 bg-[var(--card)]/60'
+                      ? 'border-border hover:border-primary/50 shadow-sm hover:shadow'
+                      : 'border-border/60 bg-muted/20 opacity-80'
                   }`}
                 >
                   <div>
@@ -474,7 +450,7 @@ export default function AdminGuidebookPage() {
                         >
                           {meta.label}
                         </span>
-                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#FFE359] text-[#0B0720] shadow-sm -rotate-1 select-none">
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase tracking-wider bg-muted text-foreground border border-border select-none">
                           {item.version}
                         </span>
                       </div>
@@ -485,33 +461,33 @@ export default function AdminGuidebookPage() {
                         onClick={() => toggleGuidebookPublished(item.id, !item.is_published)}
                         className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
                           item.is_published
-                            ? 'bg-[#C4F15A]/15 text-[#C4F15A] border-[#C4F15A]/30 hover:bg-[#C4F15A]/25'
-                            : 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30 hover:bg-zinc-500/25'
+                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20'
+                            : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
                         }`}
                         title="Klik untuk mengubah status publikasi"
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_published ? 'bg-[#C4F15A]' : 'bg-zinc-400'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_published ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
                         <span>{item.is_published ? 'Diterbitkan' : 'Draft / Arsip'}</span>
                       </button>
                     </div>
 
-                    <h3 className="font-[family-name:var(--font-bricolage)] font-extrabold text-base sm:text-lg text-[var(--foreground)] leading-snug">
+                    <h3 className="font-[family-name:var(--font-bricolage)] font-bold text-base sm:text-lg text-foreground leading-snug">
                       {item.title}
                     </h3>
 
-                    <p className="text-xs text-[var(--muted-foreground)] leading-relaxed mt-2 line-clamp-2">
+                    <p className="text-xs text-muted-foreground leading-relaxed mt-2 line-clamp-2">
                       {item.description}
                     </p>
 
                     {item.release_notes && (
-                      <div className="mt-3 p-2.5 rounded-xl bg-[var(--background)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)] leading-relaxed">
-                        <span className="font-bold text-[#FFE359]">Catatan Rilis:</span> {item.release_notes}
+                      <div className="mt-3 p-2.5 rounded-xl bg-muted/40 border border-border text-[11px] text-muted-foreground leading-relaxed">
+                        <span className="font-bold text-foreground">Catatan Rilis:</span> {item.release_notes}
                       </div>
                     )}
                   </div>
 
                   {/* Footer Baris Bawah: Metadata & Actions */}
-                  <div className="mt-5 pt-3.5 border-t border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[var(--muted-foreground)]">
+                  <div className="mt-5 pt-3.5 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2 font-mono text-[11px]">
                       <span>{formatFileSize(item.file_size_bytes)}</span>
                       <span>·</span>
@@ -525,7 +501,7 @@ export default function AdminGuidebookPage() {
                       <button
                         type="button"
                         onClick={() => setPreviewGuidebook(item)}
-                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-[#6CC4FF] bg-[#082436] border border-[#144766] hover:border-[#6CC4FF] transition-all flex items-center gap-1.5 min-h-[36px] cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all flex items-center gap-1.5 min-h-[36px] cursor-pointer"
                         title="Baca Online di Viewer"
                       >
                         <Eye size={15} weight="bold" />
@@ -536,7 +512,7 @@ export default function AdminGuidebookPage() {
                       <a
                         href={item.file_url}
                         download={item.file_name}
-                        className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] border border-[var(--border)] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
                         title="Unduh Berkas PDF"
                       >
                         <DownloadSimple size={16} weight="bold" />
@@ -546,7 +522,7 @@ export default function AdminGuidebookPage() {
                       <button
                         type="button"
                         onClick={() => openEditDrawer(item)}
-                        className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[#FFE359] hover:bg-[#2a2108] border border-[var(--border)] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
                         title="Edit Metadata & File"
                       >
                         <PencilSimple size={16} weight="bold" />
@@ -556,7 +532,7 @@ export default function AdminGuidebookPage() {
                       <button
                         type="button"
                         onClick={() => setDeleteConfirmTarget(item)}
-                        className="p-2 rounded-xl text-[var(--muted-foreground)] hover:text-[#ff6b76] hover:bg-[#ff6b76]/10 border border-[var(--border)] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
+                        className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 hover:border-destructive/30 border border-border transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
                         title="Hapus Guidebook"
                       >
                         <Trash size={16} weight="bold" />
@@ -586,194 +562,211 @@ export default function AdminGuidebookPage() {
                 </Alert>
               )}
 
-                {/* Judul Guidebook */}
+              {/* Judul Guidebook */}
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1.5">
+                  Judul Dokumen Guidebook <span className="text-destructive">*</span>
+                </label>
                 <Input
-                  label="Judul Dokumen Guidebook *"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="misal: Buku Panduan Teknis Umum Permifest x Deforkafest 2026"
-                  className="bg-[#0B0720] border-[#2E2266]"
                 />
+              </div>
 
-                {/* Baris 2: Kategori & Versi */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#A99FD1] uppercase tracking-wider mb-1.5">
-                      Kategori / Cabang Lomba *
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value as GuidebookCategory })}
-                      className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0720] border border-[#2E2266] text-[#F5F2FF] focus:outline-none focus:border-[#9B6BF2]"
-                    >
-                      <option value="general">Panduan Umum Perlombaan</option>
-                      <option value="esai">Esai Ilmiah: Cyber Security</option>
-                      <option value="uiux">UI/UX Design Competition</option>
-                      <option value="it_system_arch">IT System Architecture</option>
-                      <option value="pes">PES 2026 e-Football</option>
-                      <option value="ml">Mobile Legends: Bang Bang</option>
-                    </select>
-                  </div>
+              {/* Baris 2: Kategori & Versi */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                    Kategori / Cabang Lomba <span className="text-destructive">*</span>
+                  </label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value as GuidebookCategory })}
+                    className="w-full px-3 py-2 rounded-xl text-xs bg-background border border-border text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="general">Panduan Umum Perlombaan</option>
+                    <option value="esai">Esai Ilmiah: Cyber Security</option>
+                    <option value="uiux">UI/UX Design Competition</option>
+                    <option value="it_system_arch">IT System Architecture</option>
+                    <option value="pes">PES 2026 e-Football</option>
+                    <option value="ml">Mobile Legends: Bang Bang</option>
+                  </select>
+                </div>
 
+                <div>
+                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                    Nomor Versi Dokumen <span className="text-destructive">*</span>
+                  </label>
                   <Input
-                    label="Nomor Versi Dokumen *"
                     required
                     value={formData.version}
                     onChange={(e) => setFormData({ ...formData, version: e.target.value })}
                     placeholder="misal: v2.1"
-                    className="bg-[#0B0720] border-[#2E2266]"
                   />
                 </div>
+              </div>
 
-                {/* Mode Input File: Upload vs URL */}
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-[#A99FD1] uppercase tracking-wider">
-                      Sumber Berkas PDF *
-                    </label>
-                    <div className="flex items-center gap-1 bg-[#0B0720] p-0.5 rounded-lg border border-[#2E2266]">
-                      <button
-                        type="button"
-                        onClick={() => setFileInputMode('upload')}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                          fileInputMode === 'upload'
-                            ? 'bg-[#9B6BF2] text-[#0B0720]'
-                            : 'text-[#A99FD1] hover:text-white'
-                        }`}
-                      >
-                        Unggah Berkas PDF
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setFileInputMode('link')}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                          fileInputMode === 'link'
-                            ? 'bg-[#9B6BF2] text-[#0B0720]'
-                            : 'text-[#A99FD1] hover:text-white'
-                        }`}
-                      >
-                        Tautan URL Dokumen
-                      </button>
-                    </div>
+              {/* Mode Input File: Upload vs URL */}
+              <div className="p-3.5 rounded-2xl bg-background border border-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-foreground">
+                    Sumber Berkas PDF <span className="text-destructive">*</span>
+                  </label>
+                  <div className="flex items-center gap-1 bg-card p-0.5 rounded-lg border border-border text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setFileInputMode('upload')}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
+                        fileInputMode === 'upload'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <UploadSimple size={12} weight="bold" />
+                      Unggah Berkas PDF
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFileInputMode('link')}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
+                        fileInputMode === 'link'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <LinkSimple size={12} weight="bold" />
+                      Tautan URL Dokumen
+                    </button>
                   </div>
+                </div>
 
-                  {fileInputMode === 'upload' ? (
-                    <div className="space-y-2">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="application/pdf,.pdf"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
-                      <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="p-5 border-2 border-dashed border-[#2E2266] hover:border-[#9B6BF2] rounded-2xl bg-[#0B0720] flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-[#9B6BF2]/10 border border-[#9B6BF2]/30 flex items-center justify-center text-[#9B6BF2] mb-2 group-hover:scale-105 transition-transform">
-                          <UploadSimple size={24} weight="bold" />
-                        </div>
-                        <p className="text-xs font-bold text-[#F5F2FF]">
-                          Pilih atau seret berkas PDF ke sini
-                        </p>
-                        <p className="text-[11px] text-[#A99FD1] mt-1">
-                          Format: .pdf (Maksimal 15 MB)
-                        </p>
+                {fileInputMode === 'upload' ? (
+                  <div className="space-y-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="application/pdf,.pdf"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="guidebook_pdf_file_input"
+                    />
+                    <label
+                      htmlFor="guidebook_pdf_file_input"
+                      className="p-5 border-2 border-dashed border-border hover:border-primary rounded-2xl bg-card/50 hover:bg-card flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-2 group-hover:scale-105 transition-transform">
+                        <UploadSimple size={24} weight="bold" />
                       </div>
+                      <p className="text-xs font-bold text-foreground">
+                        Pilih atau seret berkas PDF ke sini
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        Format: .pdf (Maksimal 15 MB)
+                      </p>
+                    </label>
 
-                      {formData.file_name && (
-                        <div className="p-3 rounded-xl bg-[#0B0720] border border-[#2E2266] flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2 truncate">
-                            <FilePdf size={18} className="text-[#FFE359] shrink-0" weight="fill" />
-                            <span className="truncate text-[#F5F2FF] font-mono">{formData.file_name}</span>
-                          </div>
-                          <span className="text-[#A99FD1] shrink-0 font-mono text-[11px]">
-                            {formatFileSize(formData.file_size_bytes)}
-                          </span>
+                    {formData.file_name && (
+                      <div className="p-3 rounded-xl bg-card border border-border flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2 truncate">
+                          <FilePdf size={18} className="text-primary shrink-0" weight="fill" />
+                          <span className="truncate text-foreground font-mono">{formData.file_name}</span>
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="space-y-1.5">
+                        <span className="text-muted-foreground shrink-0 font-mono text-[11px]">
+                          {formatFileSize(formData.file_size_bytes)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-xs font-medium text-foreground mb-1">
+                        Tautan URL Berkas PDF
+                      </label>
                       <Input
-                        label="Tautan URL Berkas PDF"
                         type="url"
                         value={formData.file_url}
                         onChange={(e) => setFormData({ ...formData, file_url: e.target.value })}
                         placeholder="https://example.com/guidebook.pdf atau /docs/guidebook.pdf"
-                        className="bg-[#0B0720] border-[#2E2266]"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-foreground mb-1">
+                        Nama File Saat Diunduh
+                      </label>
                       <Input
-                        label="Nama File Saat Diunduh"
                         type="text"
                         value={formData.file_name}
                         onChange={(e) => setFormData({ ...formData, file_name: e.target.value })}
                         placeholder="Guidebook_Permifest_2026.pdf"
-                        className="bg-[#0B0720] border-[#2E2266]"
                       />
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+              </div>
 
-                {/* Deskripsi */}
-                <div>
-                  <label className="block text-xs font-bold text-[#A99FD1] uppercase tracking-wider mb-1.5">
-                    Ringkasan Isi Panduan
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Ringkasan poin penting mengenai buku panduan ini..."
-                    className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0720] border border-[#2E2266] text-[#F5F2FF] focus:outline-none focus:border-[#9B6BF2]"
-                  />
-                </div>
+              {/* Deskripsi */}
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1.5">
+                  Ringkasan Isi Panduan
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Ringkasan poin penting mengenai buku panduan ini..."
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
 
-                {/* Catatan Rilis */}
+              {/* Catatan Rilis */}
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1.5">
+                  Catatan Rilis / Perubahan (Opsional)
+                </label>
                 <Input
-                  label="Catatan Rilis / Perubahan (Opsional)"
                   value={formData.release_notes}
                   onChange={(e) => setFormData({ ...formData, release_notes: e.target.value })}
                   placeholder="misal: Pembaruan rubrik penilaian babak final dan penegasan format sitasi"
-                  className="bg-[#0B0720] border-[#2E2266]"
                 />
+              </div>
 
-                {/* Status Publikasi */}
-                <div className="flex items-center gap-3 pt-2">
-                  <input
-                    type="checkbox"
-                    id="is_published"
-                    checked={formData.is_published}
-                    onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#9B6BF2] bg-[#0B0720] border-[#2E2266] focus:ring-[#9B6BF2]"
-                  />
-                  <label htmlFor="is_published" className="text-xs text-[#F5F2FF] select-none cursor-pointer">
-                    <strong>Terbitkan langsung ke publik</strong> (dapat dibaca & diunduh oleh peserta)
-                  </label>
-                </div>
-              </DrawerContent>
+              {/* Status Publikasi */}
+              <div className="flex items-center gap-3 pt-2">
+                <input
+                  type="checkbox"
+                  id="is_published"
+                  checked={formData.is_published}
+                  onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary bg-background border-border focus:ring-primary"
+                />
+                <label htmlFor="is_published" className="text-xs text-foreground select-none cursor-pointer">
+                  <strong>Terbitkan langsung ke publik</strong> (dapat dibaca & diunduh oleh peserta)
+                </label>
+              </div>
+            </DrawerContent>
 
-              {/* Footer Drawer */}
-              <DrawerFooter className="p-6 border-t border-[#2E2266] flex flex-row items-center justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDrawerOpen(false)}
-                  disabled={submitting}
-                >
-                  Batal
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={submitting}
-                  className="shadow-[3px_3px_0px_#0B0720]"
-                >
-                  {submitting ? 'Menyimpan...' : editingId ? 'Simpan Perubahan' : 'Tambahkan Guidebook'}
-                </Button>
-              </DrawerFooter>
-            </form>
+            {/* Footer Drawer */}
+            <DrawerFooter className="p-6 border-t border-border flex flex-row items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDrawerOpen(false)}
+                disabled={submitting}
+              >
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={submitting}
+              >
+                {submitting ? 'Menyimpan...' : editingId ? 'Simpan Perubahan' : 'Tambahkan Guidebook'}
+              </Button>
+            </DrawerFooter>
+          </form>
         </Drawer>
 
         {/* ── Modal Pratinjau PDF Online ── */}
