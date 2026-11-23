@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Fitur Buku Panduan Online (**Guidebook Online**) menyeluruh untuk Panitia, Peserta, dan Publik:
+  - Panel Admin & Panitia (`/dashboard/admin/guidebook`): antarmuka CRUD buku panduan teknis umum dan rulebook 5 cabang lomba (Esai Cyber Security, UI/UX, ITSA, PES 2026, MLBB) dengan dukungan upload berkas PDF langsung (drag-and-drop, validasi 15MB) atau tautan URL, status publikasi, dan catatan rilis revisi.
+  - Komponen Pembaca Dokumen Terpadu (`PdfViewerModal`): in-browser native frame PDF viewer responsif dengan kontrol fullscreen, buka di tab baru, unduh langsung, dan penanganan fallback perangkat seluler tanpa beban dependensi eksternal.
+  - Halaman Publik Buku Panduan (`/guidebook`): katalog terorganisir per cabang lomba dengan kartu interaktif pop-art, tombol "Baca Online" seketika, dan tombol "Unduh PDF".
+  - Integrasi terpadu di Landing Page (`CompetitionsSection`): tombol "Baca Rulebook PDF" langsung pada modal rincian tiap cabang lomba.
+  - Integrasi di Pusat Informasi (`/informasi`): kartu guidebook dinamis dengan akses cepat baca online dan tautan rulebook.
+  - Penambahan menu navigasi "Buku Panduan (Guidebook)" di Sidebar panel admin dan tautan navigasi di Navbar & Footer.
+
 - Background pop-art bertema Landing Page pada halaman autentikasi (`/login` dan `/register`): pola CSS grid diagonal ultra-ringan, ambient atmosphere glow ganda, dan manga pop stamps mengambang statis di luar form card pada layar desktop.
 - Pola grid diagonal halus murni CSS dan ambient gradient lembut di latar belakang Hero Section (`SakugaHeroBackground.tsx`) tanpa beban repaint GPU.
 - Pengembalian format badge hiasan ber-ikon pop-art (`GameController`, `Trophy`, `MapPin`) di sekitar ilustrasi maskot Hero Section (`HeroSection.tsx`) sesuai konsep visual sebelumnya.

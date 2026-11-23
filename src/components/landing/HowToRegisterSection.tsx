@@ -138,12 +138,18 @@ export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionPro
             </p>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#2E2266]/70">
+          <div className="mt-4 pt-3 border-t border-[#2E2266]/70 flex flex-wrap items-center justify-between gap-2">
             <a
               href="#lomba"
               className="text-xs font-bold text-[#FFE359] hover:underline inline-flex items-center gap-1"
             >
-              Lihat Rincian Syarat per Cabang Lomba &rarr;
+              Lihat Rincian Syarat Lomba &rarr;
+            </a>
+            <a
+              href="/guidebook"
+              className="text-xs font-bold text-[#6CC4FF] hover:underline inline-flex items-center gap-1"
+            >
+              Buka Buku Panduan (Guidebook) &rarr;
             </a>
           </div>
         </div>

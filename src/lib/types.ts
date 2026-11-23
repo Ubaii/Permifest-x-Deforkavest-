@@ -299,4 +299,23 @@ export interface Partner {
   is_active: boolean;
 }
 
+export type GuidebookCategory = 'general' | 'esai' | 'uiux' | 'it_system_arch' | 'pes' | 'ml';
+
+export interface Guidebook {
+  id: string;
+  title: string;
+  category: GuidebookCategory;
+  competition_id?: string;
+  file_url: string;
+  file_name: string;
+  file_size_bytes?: number;
+  version: string;
+  description: string;
+  release_notes?: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+
 

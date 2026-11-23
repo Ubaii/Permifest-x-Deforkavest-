@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useAppStore } from '@/lib/store';
+import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { 
   BookOpen, 
   Question as HelpCircle, 
@@ -13,11 +16,17 @@ import {
   Phone, 
   DownloadSimple as Download, 
   CaretDown as ChevronDown, 
-  CaretUp as ChevronUp, 
+  CaretUp as ChevronUp,
+  Eye,
+  ArrowRight,
 } from '@phosphor-icons/react';
 
 export default function InformasiPage() {
+  const { guidebooks } = useAppStore();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [readingGuidebook, setReadingGuidebook] = useState<any | null>(null);
+
+  const mainGuidebook = guidebooks.find((g) => g.category === 'general' && g.is_published) || guidebooks[0];
 
   const faqs = [
     {
@@ -59,26 +68,56 @@ export default function InformasiPage() {
       <section className="py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 space-y-8">
         
         {/* Guidebook Download Card */}
-        <Card className="border-cyan-500/30 glow-cyan">
-          <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3.5 rounded-xl bg-cyan-950 border border-cyan-500/40 text-cyan-400">
+        <Card className="border-[#2E2266] bg-[#140D33] shadow-[4px_4px_0px_#0B0720]">
+          <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3.5 rounded-2xl bg-[#9B6BF2]/20 border border-[#9B6BF2]/40 text-[#9B6BF2] shrink-0 mt-0.5">
                 <BookOpen className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Buku Panduan Teknis (Guidebook 2026)</h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Mencakup rubrik penilaian, format sitasi, aturan plagiarisme, dan regulasi pertandingan e-sport.
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#FFE359] text-[#0B0720]">
+                    {mainGuidebook?.version || 'v2.1'}
+                  </span>
+                  <span className="text-xs text-[#A99FD1]">Dokumen Resmi Terverifikasi</span>
+                </div>
+                <h3 className="text-lg font-bold text-white">
+                  {mainGuidebook?.title || 'Buku Panduan Teknis (Guidebook 2026)'}
+                </h3>
+                <p className="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
+                  {mainGuidebook?.description || 'Mencakup rubrik penilaian, format sitasi, aturan plagiarisme, dan regulasi pertandingan e-sport.'}
                 </p>
               </div>
             </div>
-            <a href="/docs/guidebook-permifest-2026.pdf" download="Guidebook_Permifest_Deforkafest_2026.pdf">
-              <Button variant="primary" leftIcon={<Download className="w-4 h-4" />}>
-                Unduh PDF (v2.1)
-              </Button>
-            </a>
+
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full md:w-auto shrink-0">
+              {mainGuidebook && (
+                <button
+                  type="button"
+                  onClick={() => setReadingGuidebook(mainGuidebook)}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-[#6CC4FF] bg-[#082436] border border-[#144766] hover:border-[#6CC4FF] flex items-center justify-center gap-2 min-h-[42px] cursor-pointer"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Baca Online</span>
+                </button>
+              )}
+              <Link
+                href="/guidebook"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-black text-[#0B0720] bg-gradient-to-r from-[#9B6BF2] via-[#D56BD9] to-[#FFE359] shadow-[2px_2px_0px_#0B0720] hover:brightness-110 flex items-center justify-center gap-2 min-h-[42px]"
+              >
+                <span>Semua Rulebook</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Modal PDF Viewer */}
+        <PdfViewerModal
+          guidebook={readingGuidebook}
+          isOpen={Boolean(readingGuidebook)}
+          onClose={() => setReadingGuidebook(null)}
+        />
 
         {/* FAQs */}
         <div>

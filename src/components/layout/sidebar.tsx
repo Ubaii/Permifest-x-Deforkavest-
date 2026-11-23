@@ -30,6 +30,7 @@ import {
   UserGear,
   Calendar,
   Handshake,
+  BookOpen,
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -112,6 +113,7 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
               { label: 'Timeline & Kalender', href: '/dashboard/admin/timeline', icon: Calendar },
               { label: 'Pengumuman Resmi', href: '/dashboard/admin/pengumuman', icon: Bell },
               { label: 'Mitra & Sponsor', href: '/dashboard/admin/mitra', icon: Handshake },
+              { label: 'Buku Panduan (Guidebook)', href: '/dashboard/admin/guidebook', icon: BookOpen },
             ],
           },
         ];

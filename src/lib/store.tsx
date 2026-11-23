@@ -17,6 +17,7 @@ import {
   ScoreChange,
   TimelineEvent,
   Partner,
+  Guidebook,
 } from './types';
 import { 
   MOCK_USERS, 
@@ -28,6 +29,7 @@ import {
   MOCK_MATCH_RESULTS,
   MOCK_RUBRIC_CRITERIA,
   MOCK_PARTNERS,
+  MOCK_GUIDEBOOKS,
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
 import { getTimelineEvents } from './landing-data';
@@ -123,6 +125,13 @@ interface AppContextType {
   updatePartner: (id: string, updates: Partial<Partner>) => Promise<void>;
   deletePartner: (id: string) => Promise<void>;
   togglePartnerActive: (id: string) => Promise<void>;
+
+  // Actions - Guidebook Online CRUD
+  guidebooks: Guidebook[];
+  addGuidebook: (data: Omit<Guidebook, 'id' | 'created_at' | 'updated_at'>) => Promise<Guidebook>;
+  updateGuidebook: (id: string, updates: Partial<Guidebook>) => Promise<void>;
+  deleteGuidebook: (id: string) => Promise<void>;
+  toggleGuidebookPublished: (id: string, is_published: boolean) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -142,6 +151,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>(() => getTimelineEvents());
   const [partners, setPartners] = useState<Partner[]>(MOCK_PARTNERS);
+  const [guidebooks, setGuidebooks] = useState<Guidebook[]>(MOCK_GUIDEBOOKS);
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
@@ -760,6 +770,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('TOGGLE_PARTNER_ACTIVE', 'partner', id, {});
   };
 
+  const addGuidebook = async (data: Omit<Guidebook, 'id' | 'created_at' | 'updated_at'>): Promise<Guidebook> => {
+    const newGuidebook: Guidebook = {
+      ...data,
+      id: `guidebook-${Date.now()}`,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setGuidebooks(prev => [newGuidebook, ...prev]);
+    logAudit('CREATE_GUIDEBOOK', 'guidebook', newGuidebook.id, { title: newGuidebook.title, category: newGuidebook.category });
+    return newGuidebook;
+  };
+
+  const updateGuidebook = async (id: string, updates: Partial<Guidebook>): Promise<void> => {
+    setGuidebooks(prev =>
+      prev.map(g => (g.id === id ? { ...g, ...updates, updated_at: new Date().toISOString() } : g))
+    );
+    logAudit('UPDATE_GUIDEBOOK', 'guidebook', id, updates);
+  };
+
+  const deleteGuidebook = async (id: string): Promise<void> => {
+    setGuidebooks(prev => prev.filter(g => g.id !== id));
+    logAudit('DELETE_GUIDEBOOK', 'guidebook', id, { id });
+  };
+
+  const toggleGuidebookPublished = async (id: string, is_published: boolean): Promise<void> => {
+    await updateGuidebook(id, { is_published });
+    logAudit('TOGGLE_GUIDEBOOK_PUBLISHED', 'guidebook', id, { is_published });
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -816,6 +855,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatePartner,
       deletePartner,
       togglePartnerActive,
+      guidebooks,
+      addGuidebook,
+      updateGuidebook,
+      deleteGuidebook,
+      toggleGuidebookPublished,
       logout,
     }}>
       {children}

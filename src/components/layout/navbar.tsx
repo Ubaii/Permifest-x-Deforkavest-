@@ -5,10 +5,11 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppStore } from '@/lib/store';
 import { SakugaButton } from '@/components/ui/sakuga-button';
-import { CalendarBlank, Gift, Question, Trophy } from '@phosphor-icons/react';
+import { CalendarBlank, Gift, Question, Trophy, BookOpen } from '@phosphor-icons/react';
 
 const NAV_LINKS = [
   { href: '/#lomba', section: 'lomba', label: 'Lomba', icon: Trophy },
+  { href: '/guidebook', section: 'guidebook', label: 'Guidebook', icon: BookOpen },
   { href: '/#jadwal', section: 'jadwal', label: 'Jadwal', icon: CalendarBlank },
   { href: '/#peringkat', section: 'peringkat', label: 'Hadiah & Benefit', icon: Gift },
   { href: '/#faq', section: 'faq', label: 'FAQ', icon: Question },
