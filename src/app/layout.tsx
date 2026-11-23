@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Bricolage_Grotesque, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/lib/store';
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`dark ${bricolage.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        <script src="/button.js" defer></script>
+        <Script src="/button.js" strategy="afterInteractive" />
       </head>
       <body className="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen">
         <a href="#main-content" className="skip-link">

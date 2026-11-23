@@ -7,13 +7,11 @@ import { Footer } from '@/components/layout/footer';
 import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { useAppStore } from '@/lib/store';
 import { Guidebook, GuidebookCategory } from '@/lib/types';
+import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
 import {
   BookOpen,
-  FilePdf,
   DownloadSimple,
   Eye,
-  CheckCircle,
-  ArrowRight,
   ShieldCheck,
 } from '@phosphor-icons/react';
 
@@ -27,14 +25,17 @@ const CATEGORY_MAP: Record<GuidebookCategory, { label: string; badgeBg: string; 
 };
 
 export default function PublicGuidebookPage() {
-  const { guidebooks } = useAppStore();
+  const store = useAppStore();
+  const rawGuidebooks = store?.guidebooks;
+  const guidebooksList = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
+
   const [activeCategory, setActiveCategory] = useState<'all' | GuidebookCategory>('all');
   const [readingGuidebook, setReadingGuidebook] = useState<Guidebook | null>(null);
 
   // Ambil hanya guidebook yang dipublikasikan
   const publishedGuidebooks = useMemo(() => {
-    return guidebooks.filter((g) => g.is_published);
-  }, [guidebooks]);
+    return (guidebooksList || []).filter((g) => g && g.is_published);
+  }, [guidebooksList]);
 
   // Filter berdasarkan kategori yang dipilih
   const displayGuidebooks = useMemo(() => {

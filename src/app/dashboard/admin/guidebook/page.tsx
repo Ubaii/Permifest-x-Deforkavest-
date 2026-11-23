@@ -16,6 +16,7 @@ import { EmptyState } from '@/components/dashboard/EmptyState';
 import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { useAppStore } from '@/lib/store';
 import { Guidebook, GuidebookCategory } from '@/lib/types';
+import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
 import {
   BookOpen,
   Plus,
@@ -66,7 +67,10 @@ const CATEGORY_MAP: Record<GuidebookCategory, { label: string; badgeBg: string; 
 };
 
 export default function AdminGuidebookPage() {
-  const { guidebooks, addGuidebook, updateGuidebook, deleteGuidebook, toggleGuidebookPublished } = useAppStore();
+  const store = useAppStore();
+  const rawGuidebooks = store?.guidebooks;
+  const guidebooks = Array.isArray(rawGuidebooks) ? rawGuidebooks : MOCK_GUIDEBOOKS;
+  const { addGuidebook, updateGuidebook, deleteGuidebook, toggleGuidebookPublished } = store;
 
   const [categoryFilter, setCategoryFilter] = useState<'all' | GuidebookCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');

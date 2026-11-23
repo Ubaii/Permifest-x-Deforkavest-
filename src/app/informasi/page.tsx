@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
+import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
 import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { 
   BookOpen, 
@@ -22,7 +23,9 @@ import {
 } from '@phosphor-icons/react';
 
 export default function InformasiPage() {
-  const { guidebooks } = useAppStore();
+  const store = useAppStore();
+  const rawGuidebooks = store?.guidebooks;
+  const guidebooks = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [readingGuidebook, setReadingGuidebook] = useState<any | null>(null);
 

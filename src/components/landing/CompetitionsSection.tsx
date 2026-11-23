@@ -6,6 +6,7 @@ import { SakugaButton } from '@/components/ui/sakuga-button';
 import { formatCurrency } from '@/lib/utils';
 import { Competition, Guidebook } from '@/lib/types';
 import { useAppStore } from '@/lib/store';
+import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
 import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { X, CheckCircle, BookOpen } from '@phosphor-icons/react';
 
@@ -112,7 +113,9 @@ export function CompetitionsSection({
   id = 'lomba',
   initialCompetitions,
 }: CompetitionsSectionProps) {
-  const { guidebooks } = useAppStore();
+  const store = useAppStore();
+  const rawGuidebooks = store?.guidebooks;
+  const guidebooks = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
   const [selectedComp, setSelectedComp] = useState<CompetitionDisplayItem | null>(null);
   const [readingGuidebook, setReadingGuidebook] = useState<Guidebook | null>(null);
 
