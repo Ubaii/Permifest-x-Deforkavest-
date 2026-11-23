@@ -17,6 +17,8 @@ import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateShort } from '@/lib/utils';
 import { Registration } from '@/lib/types';
 import { getFileDownloadUrl } from '@/lib/supabase/storage-client';
+import { isSupabaseLive } from '@/lib/repositories';
+import { verifyPaymentAction } from '@/features/registrations/actions';
 import {
   CreditCard,
   CheckCircle,
@@ -104,6 +106,12 @@ export default function AdminPembayaranPage() {
 
   const handleApproveConfirm = async () => {
     if (!approveConfirmReg) return;
+    if (isSupabaseLive() && approveConfirmReg.payment?.id) {
+      await verifyPaymentAction({
+        payment_id: approveConfirmReg.payment.id,
+        action: 'approve',
+      });
+    }
     await verifyPayment(approveConfirmReg.id, 'verified');
     setAlertSuccess(`Pembayaran ${approveConfirmReg.user?.full_name} berhasil disetujui! Status pendaftaran kini Terverifikasi.`);
     if (reviewDrawerReg?.id === approveConfirmReg.id) {
@@ -119,6 +127,16 @@ export default function AdminPembayaranPage() {
 
   const handleConfirmReject = async (reason: string) => {
     if (!activeRegId) return;
+    if (isSupabaseLive()) {
+      const reg = registrations.find((r) => r.id === activeRegId);
+      if (reg?.payment?.id) {
+        await verifyPaymentAction({
+          payment_id: reg.payment.id,
+          action: 'reject',
+          reject_reason: reason,
+        });
+      }
+    }
     await verifyPayment(activeRegId, 'rejected', reason);
     if (reviewDrawerReg?.id === activeRegId) {
       closeReviewDrawer();

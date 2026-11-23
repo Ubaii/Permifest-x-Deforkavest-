@@ -13,6 +13,8 @@ import { Modal } from '@/components/ui/modal';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency, formatDateWIB } from '@/lib/utils';
+import { isSupabaseLive } from '@/lib/repositories';
+import { registerCompetitionAction } from '@/features/registrations/actions';
 import { 
   ArrowLeft, 
   CheckCircle as CheckCircle2, 
@@ -62,6 +64,15 @@ function DetailKompetisiContent() {
     setSubmitting(true);
     setErrorMessage(null);
     try {
+      if (isSupabaseLive()) {
+        const res = await registerCompetitionAction({
+          competition_id: comp.id,
+          form_data: formData,
+        });
+        if (!res.success) {
+          throw new Error(res.error || 'Pendaftaran gagal');
+        }
+      }
       await registerCompetition(comp.id, formData);
       setSuccessMessage(true);
       setTimeout(() => {
