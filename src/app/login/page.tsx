@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -41,8 +40,13 @@ export default function LoginPage() {
 
       // Sinkronkan role store demo agar konsisten
       const detectedRole = result.data.role;
-      if (['peserta', 'juri', 'panitia', 'super_admin'].includes(detectedRole)) {
-        switchRole(detectedRole as any);
+      if (
+        detectedRole === 'peserta' ||
+        detectedRole === 'juri' ||
+        detectedRole === 'panitia' ||
+        detectedRole === 'super_admin'
+      ) {
+        switchRole(detectedRole);
       } else if (email.includes('juri')) {
         switchRole('juri');
       } else if (email.includes('panitia') || email.includes('admin')) {
@@ -93,22 +97,6 @@ export default function LoginPage() {
         }}
       />
 
-      {/* ── Background Layer 3: Manga Pop Stamps Luar Card (Kiri & Kanan Layar Desktop) ── */}
-      <div
-        aria-hidden="true"
-        className="hidden lg:flex flex-col items-start gap-1.5 absolute top-36 left-10 xl:left-24 z-0 -rotate-3 select-none opacity-75 pointer-events-none"
-      >
-        <div className="px-4 py-2 rounded-2xl bg-[#140D33]/90 border-2 border-[#2E2266] shadow-[4px_4px_0px_#0B0720]">
-          <span className="block text-[11px] font-black uppercase tracking-widest text-[#FFE359]">
-            GATEWAY 01
-          </span>
-          <span className="block text-[10px] text-[#A99FD1] font-semibold mt-0.5">
-            Portal Masuk Terpadu
-          </span>
-        </div>
-        <div className="w-12 h-1 bg-[#FFE359]/30 rounded-full ml-2" />
-      </div>
-
       <div
         aria-hidden="true"
         className="hidden lg:flex flex-col items-end gap-1.5 absolute bottom-28 right-10 xl:right-24 z-0 rotate-3 select-none opacity-75 pointer-events-none"
@@ -126,7 +114,7 @@ export default function LoginPage() {
 
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center p-4 py-12 relative z-10">
+      <main className="flex-1 flex items-center justify-center p-4 py-12 md:pt-28 relative z-10">
         <div className="w-full max-w-md">
           {/* Card Box Manga Pop Art */}
           <div className="relative rounded-3xl bg-[#140D33] border-2 border-[#2E2266] p-7 sm:p-9 shadow-[6px_6px_0px_#0B0720,8px_8px_0px_#9B6BF2]">

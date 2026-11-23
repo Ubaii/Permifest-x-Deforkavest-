@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, memo } from 'react';
 import Link from 'next/link';
+import { useAppStore } from '@/lib/store';
 
 interface TimeLeft {
   hari: number;
@@ -31,9 +32,22 @@ interface CountdownTimerProps {
 }
 
 export const CountdownTimer = memo(function CountdownTimer({
-  deadlineDate = '2026-12-11T23:59:59+07:00',
-  registrationDateLabel = '11 Desember 2026',
+  deadlineDate: propDeadline,
+  registrationDateLabel: propLabel,
 }: CountdownTimerProps) {
+  const { systemSettings } = useAppStore();
+  const deadlineDate = propDeadline || systemSettings?.registration_close_at || '2026-12-11T23:59:59+07:00';
+
+  const defaultLabel = (() => {
+    try {
+      const d = new Date(deadlineDate);
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch {
+      return '11 Desember 2026';
+    }
+  })();
+
+  const registrationDateLabel = propLabel || defaultLabel;
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
 
   useEffect(() => {

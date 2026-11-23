@@ -16,11 +16,7 @@ import {
   GameController as Gamepad2, 
   Trophy, 
   ArrowRight, 
-  Users, 
-  Calendar, 
-  ShieldCheck, 
   CheckCircle, 
-  Funnel as Filter 
 } from '@phosphor-icons/react';
 
 export default function KompetisiPage() {

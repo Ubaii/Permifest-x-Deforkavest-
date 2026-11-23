@@ -252,6 +252,11 @@ export interface SystemSettings {
   qris_image_url?: string;
   whatsapp_helpdesk: string;
   email_helpdesk: string;
+  instagram_permikomnas?: string;
+  instagram_impsi?: string;
+  venue_name?: string;
+  venue_address?: string;
+  registration_close_at?: string;
 }
 
 export interface ScoreChange {
@@ -298,5 +303,74 @@ export interface Partner {
   order_index: number;
   is_active: boolean;
 }
+
+export type GuidebookCategory = 'general' | 'esai' | 'uiux' | 'it_system_arch' | 'pes' | 'ml';
+
+export interface Guidebook {
+  id: string;
+  title: string;
+  category: GuidebookCategory;
+  competition_id?: string;
+  file_url: string;
+  file_name: string;
+  file_size_bytes?: number;
+  version: string;
+  description: string;
+  release_notes?: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================================
+// Event / Seminar & Webinar Agenda
+// ============================================================================
+
+export type EventType = 'seminar' | 'webinar' | 'workshop' | 'ceremony';
+export type EventFormat = 'online' | 'offline' | 'hybrid';
+
+export interface EventSpeaker {
+  name: string;
+  role_title: string;
+  organization: string;
+  avatar_url?: string;
+}
+
+export interface EventItem {
+  id: string;
+  title: string;
+  slug: string;
+  type: EventType;
+  format: EventFormat;
+  start_time: string; // ISO string
+  end_time?: string;
+  location_name: string;
+  location_url?: string;
+  description: string;
+  speakers: EventSpeaker[];
+  price: number; // 0 = Gratis
+  quota?: number;
+  registered_count: number;
+  registration_url?: string;
+  banner_url?: string;
+  is_published: boolean;
+  certificate_provided: boolean;
+  order_index: number;
+}
+
+// ============================================================================
+// Dynamic FAQs
+// ============================================================================
+
+export interface DynamicFaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: 'umum' | 'lomba' | 'pembayaran' | 'teknis' | 'pendaftaran';
+  order_index: number;
+  is_published: boolean;
+}
+
+
 
 

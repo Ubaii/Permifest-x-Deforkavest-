@@ -18,9 +18,6 @@ import {
   Plus,
   PencilSimple,
   Trash,
-  CheckCircle,
-  WarningCircle,
-  Stack,
 } from '@phosphor-icons/react';
 
 interface RubricFormData {
@@ -58,11 +55,16 @@ function RubricManagerContent() {
       : academicComps[0]?.id || ''
   );
 
+  const hasParamCompetition = Boolean(
+    compIdParam && academicComps.some((c) => c.id === compIdParam)
+  );
+
   useEffect(() => {
-    if (compIdParam && academicComps.some((c) => c.id === compIdParam)) {
-      setSelectedCompId(compIdParam);
+    if (compIdParam && hasParamCompetition) {
+      const frameId = window.requestAnimationFrame(() => setSelectedCompId(compIdParam));
+      return () => window.cancelAnimationFrame(frameId);
     }
-  }, [compIdParam, academicComps]);
+  }, [compIdParam, hasParamCompetition]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCritId, setEditingCritId] = useState<string | null>(null);

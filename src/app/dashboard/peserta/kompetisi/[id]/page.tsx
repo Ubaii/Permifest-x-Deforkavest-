@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,23 +10,20 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
-import { formatCurrency, formatDateWIB, formatDateShort } from '@/lib/utils';
+import { formatCurrency, formatDateShort } from '@/lib/utils';
 import {
   Trophy,
   ArrowLeft,
   Users,
   CreditCard,
   UploadSimple,
-  Clock,
   ArrowSquareOut,
   IdentificationCard,
   Copy,
-  CheckCircle,
 } from '@phosphor-icons/react';
 
-export default function PesertaKompetisiDetailPage() {
+function PesertaKompetisiDetailContent() {
   const params = useParams();
-  const router = useRouter();
   const regId = params?.id as string;
   const { registrations, currentUser } = useAppStore();
 
@@ -236,5 +233,13 @@ export default function PesertaKompetisiDetailPage() {
         </div>
       </div>
     </DashboardLayout>
+  );
+}
+
+export default function PesertaKompetisiDetailPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <PesertaKompetisiDetailContent />
+    </React.Suspense>
   );
 }

@@ -12,6 +12,8 @@ import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatCurrency } from '@/lib/utils';
 import { uploadFileDirectly } from '@/lib/supabase/storage-client';
+import { isSupabaseLive } from '@/lib/repositories';
+import { submitPaymentProofAction } from '@/features/registrations/actions';
 import {
   CreditCard,
   QrCode,
@@ -77,6 +79,16 @@ export default function PesertaPembayaranPage() {
 
       if (!uploadRes.success || !uploadRes.storagePath) {
         throw new Error(uploadRes.error || 'Gagal mengunggah berkas bukti transfer ke penyimpanan aman.');
+      }
+
+      if (isSupabaseLive()) {
+        const payRes = await submitPaymentProofAction({
+          registration_id: selectedRegId,
+          proof_path: uploadRes.storagePath,
+        });
+        if (!payRes.success) {
+          throw new Error(payRes.error || 'Gagal menyimpan status bukti pembayaran.');
+        }
       }
 
       const fileName = proofFileName || selectedFile.name;

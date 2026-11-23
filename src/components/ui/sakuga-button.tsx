@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-export interface SakugaButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface SakugaButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   /** Rute URL Next.js jika tombol bertindak sebagai link navigasi */
   href?: string;
   /** Varian visual tombol bergaya Sakuga Pop-Art */
@@ -18,6 +18,7 @@ export interface SakugaButtonProps extends React.ButtonHTMLAttributes<HTMLButton
   /** Ikon kiri atau kanan */
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
 }
 
 export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProps>(
@@ -38,6 +39,8 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
     },
     ref
   ) => {
+    void sfxText;
+
     // Styling Pop-Art CSS Murni: 100% diproses di GPU Compositor Thread (0% CPU, 60 FPS)
     const baseStyles = cn(
       'relative inline-flex items-center justify-center font-black select-none cursor-pointer',
@@ -120,7 +123,7 @@ export const SakugaButton = React.forwardRef<HTMLButtonElement, SakugaButtonProp
       return (
         <Link
           href={href}
-          onClick={onClick as any}
+          onClick={onClick}
           className={cn(baseStyles, variants[variant], sizes[size], className)}
           style={brandGradientStyle}
         >

@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { CaretUp, CaretDown, ArrowsDownUp, MagnifyingGlass, FileCsv } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { EmptyState } from '@/components/dashboard/EmptyState';
@@ -99,8 +98,8 @@ export function DataTable<T extends Record<string, unknown>>({
     const column = columns.find((c) => c.key === sortKey);
 
     return [...filteredData].sort((a, b) => {
-      let valA = column?.accessor ? column.accessor(a) : a[sortKey];
-      let valB = column?.accessor ? column.accessor(b) : b[sortKey];
+      const valA = column?.accessor ? column.accessor(a) : a[sortKey];
+      const valB = column?.accessor ? column.accessor(b) : b[sortKey];
 
       if (valA === valB) return 0;
       if (valA === null || valA === undefined) return 1;

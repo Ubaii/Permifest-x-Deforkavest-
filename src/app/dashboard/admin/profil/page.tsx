@@ -13,11 +13,9 @@ import { formatDateShort } from '@/lib/utils';
 import { 
   ShieldCheck, 
   Key, 
-  CheckCircle, 
   ClockCounterClockwise, 
   UserGear,
   Buildings,
-  Envelope,
   Phone
 } from '@phosphor-icons/react';
 

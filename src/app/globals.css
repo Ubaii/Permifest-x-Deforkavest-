@@ -116,6 +116,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-padding-top: 5.5rem;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display, var(--font-body, system-ui, sans-serif));
   letter-spacing: -0.02em;
@@ -241,6 +245,24 @@ button:disabled,
 /* Safe area untuk sticky bar */
 .safe-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 767px) {
+  body:has(.mobile-floating-nav) {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+
+  body:has(.mobile-sticky-cta) {
+    padding-bottom: calc(11rem + env(safe-area-inset-bottom));
+  }
+
+  .mobile-floating-nav {
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .mobile-sticky-cta {
+    bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
 }
 
 /* Tabular nums untuk angka/skor */

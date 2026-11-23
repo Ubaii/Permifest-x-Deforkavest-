@@ -9,26 +9,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/modal';
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { JudgeAssignment, Submission, RubricCriteria } from '@/lib/types';
+import { JudgeAssignment, Submission } from '@/lib/types';
 import {
-  FileText,
   UserPlus,
   Lock,
   LockOpen,
   X,
-  CheckCircle,
   ClipboardText,
   ShieldWarning,
   Sliders,
-  Sparkle,
-  User,
-  Buildings,
 } from '@phosphor-icons/react';
 
 function AdminPenilaianContent() {
@@ -68,7 +62,8 @@ function AdminPenilaianContent() {
     if (subIdParam) {
       const target = submissions.find((s) => s.id === subIdParam);
       if (target) {
-        setAssignDrawerSub(target);
+        const frameId = window.requestAnimationFrame(() => setAssignDrawerSub(target));
+        return () => window.cancelAnimationFrame(frameId);
       }
     }
   }, [subIdParam, submissions]);

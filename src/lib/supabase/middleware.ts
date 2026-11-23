@@ -25,7 +25,7 @@ export async function updateSession(request: NextRequest) {
       }
     );
     await supabase.auth.getUser();
-  } catch (err) {
+  } catch {
     // Graceful fallback
   }
 

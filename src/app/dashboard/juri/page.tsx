@@ -4,12 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useAppStore } from '@/lib/store';
-import { ClipboardText, CheckCircle, Clock, ArrowRight, Scales, Lock } from '@phosphor-icons/react';
+import { ClipboardText, CheckCircle, Clock, ArrowRight, Scales } from '@phosphor-icons/react';
 
 export default function JuriOverviewPage() {
   const { currentUser, judgeAssignments } = useAppStore();

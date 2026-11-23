@@ -22,7 +22,6 @@ import {
   Medal,
   Crown,
   Calendar,
-  Users,
 } from '@phosphor-icons/react';
 
 export default function AdminHasilPage() {

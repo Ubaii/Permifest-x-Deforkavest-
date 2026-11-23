@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
-import { Bell, Calendar, User, CaretDown as ChevronDown, CaretUp as ChevronUp, Megaphone } from '@phosphor-icons/react';
+import { Calendar, User, CaretDown as ChevronDown, CaretUp as ChevronUp, Megaphone } from '@phosphor-icons/react';
 
 export default function PengumumanPage() {
   const { announcements } = useAppStore();

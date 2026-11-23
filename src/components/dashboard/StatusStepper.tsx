@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Check, Circle, Hourglass, Warning } from '@phosphor-icons/react';
+import { Check, Hourglass, Warning } from '@phosphor-icons/react';
 
 export type StepState = 'completed' | 'current' | 'pending' | 'rejected';
 

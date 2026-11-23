@@ -1,58 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
-
-interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-const FAQ_ITEMS: FaqItem[] = [
-  {
-    id: 'faq-1',
-    question: 'Boleh daftar sendiri atau harus tim?',
-    answer: 'Tergantung cabangnya. Cabang Esai Ilmiah dapat diikuti individu atau tim (maksimal 3 orang), UI/UX & IT Architecture tim 2-3 orang, sedangkan PES bertanding individu (1 vs 1) dan Mobile Legends bertim 5 pemain inti + 1 cadangan.',
-  },
-  {
-    id: 'faq-2',
-    question: 'Bayarnya gimana?',
-    answer: 'Pembayaran dilakukan praktis menggunakan QRIS Nasional resmi panitia. Setelah mendaftarkan tim, kamu cukup mengunggah bukti transfer digital di dashboard, dan tim verifikasi panitia akan mengonfirmasi status pembayaranmu.',
-  },
-  {
-    id: 'faq-3',
-    question: 'Berkas apa saja yang disiapkan?',
-    answer: 'Secara umum: Kartu Tanda Mahasiswa (KTM) aktif atau surat keterangan aktif kuliah, pas foto formal, dan bukti pembayaran pendaftaran. Rincian berkas proposal/karya muncul saat kamu memilih cabang lomba di dashboard.',
-  },
-  {
-    id: 'faq-4',
-    question: 'Apakah mahasiswa dari luar D.I. Yogyakarta boleh mendaftar?',
-    answer: 'Sangat boleh! Seluruh cabang kompetisi terbuka untuk seluruh mahasiswa aktif jenjang D3/D4/S1 dari perguruan tinggi negeri maupun swasta di seluruh wilayah Indonesia.',
-  },
-  {
-    id: 'faq-5',
-    question: 'Di mana babak final diselenggarakan?',
-    answer: 'Babak final dan penganugerahan juara akan diselenggarakan secara luring (offline) di kampus Universitas Sarjanawiyata Tamansiswa (UST) Yogyakarta, lengkap dengan sesi exhibition dan awarding ceremony.',
-  },
-  {
-    id: 'faq-6',
-    question: 'Bagaimana bila berkas karya saya salah unggah?',
-    answer: 'Selama periode pengumpulan karya sebelum batas waktu penutupan berakhir, kamu bebas memperbarui atau mengunggah ulang berkas revisi karya langsung dari menu Pengumpulan Karya di dashboard peserta.',
-  },
-  {
-    id: 'faq-7',
-    question: 'Apakah semua peserta akan mendapatkan sertifikat?',
-    answer: 'Ya! Seluruh peserta yang menyelesaikan berkas karya atau hadir bertanding pada turnamen akan mendapatkan e-sertifikat nasional berpredikat resmi dari Permikomnas dan UST Yogyakarta.',
-  },
-];
+import { useAppStore } from '@/lib/store';
+import { MOCK_FAQS } from '@/lib/mock-data';
 
 interface FaqSectionProps {
   id?: string;
 }
 
 export function FaqSection({ id = 'faq' }: FaqSectionProps) {
-  const [openId, setOpenId] = useState<string | null>('faq-1');
+  const store = useAppStore();
+  const rawFaqs = store?.faqs;
+  const faqs = Array.isArray(rawFaqs) && rawFaqs.length > 0 ? rawFaqs : MOCK_FAQS;
+
+  const publishedFaqs = useMemo(() => {
+    return faqs.filter((f) => f.is_published).sort((a, b) => a.order_index - b.order_index);
+  }, [faqs]);
+
+  const [openId, setOpenId] = useState<string | null>(publishedFaqs[0]?.id || 'faq-1');
 
   const toggle = (itemId: string) => {
     setOpenId((prev) => (prev === itemId ? null : itemId));
@@ -80,7 +46,7 @@ export function FaqSection({ id = 'faq' }: FaqSectionProps) {
       </div>
 
       <div className="space-y-3.5">
-        {FAQ_ITEMS.map((item, idx) => {
+        {publishedFaqs.map((item, idx) => {
           const isOpen = openId === item.id;
           return (
             <div

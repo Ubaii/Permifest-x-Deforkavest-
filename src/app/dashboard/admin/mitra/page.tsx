@@ -24,7 +24,6 @@ import {
   ArrowSquareOut,
   UploadSimple,
   LinkSimple,
-  Image as ImageIcon,
 } from '@phosphor-icons/react';
 
 interface PartnerFormData {
@@ -37,6 +36,15 @@ interface PartnerFormData {
   order_index: number;
   is_active: boolean;
 }
+
+const CATEGORY_FILTERS: { id: 'all' | PartnerCategory; label: string }[] = [
+  { id: 'all', label: 'Semua' },
+  { id: 'organizer', label: 'Penyelenggara' },
+  { id: 'kabinet', label: 'Kabinet Permi' },
+  { id: 'co_host', label: 'Co-Host' },
+  { id: 'sponsor', label: 'Sponsor' },
+  { id: 'media_partner', label: 'Media Partner' },
+];
 
 const defaultFormData: PartnerFormData = {
   name: '',
@@ -269,18 +277,11 @@ export default function AdminMitraPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Tab Filter */}
           <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-card border border-border text-xs">
-            {[
-              { id: 'all', label: 'Semua' },
-              { id: 'organizer', label: 'Penyelenggara' },
-              { id: 'kabinet', label: 'Kabinet Permi' },
-              { id: 'co_host', label: 'Co-Host' },
-              { id: 'sponsor', label: 'Sponsor' },
-              { id: 'media_partner', label: 'Media Partner' },
-            ].map((tab) => (
+            {CATEGORY_FILTERS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setCategoryFilter(tab.id as any)}
+                onClick={() => setCategoryFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${categoryFilter === tab.id
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
@@ -347,9 +348,13 @@ export default function AdminMitraPage() {
                     <div className="flex items-center gap-3.5">
                       <div className="w-16 h-14 rounded-xl bg-background border border-border flex items-center justify-center p-2 shrink-0 overflow-hidden shadow-sm">
                         {item.logo_url.startsWith('data:') || item.logo_url.startsWith('http') || item.logo_url.startsWith('/') ? (
-                          <img
+                          <Image
                             src={item.logo_url}
                             alt={item.name}
+                            width={64}
+                            height={56}
+                            unoptimized
+                            style={{ width: 'auto', height: 'auto' }}
                             className="max-h-10 max-w-full object-contain"
                             onError={(e) => {
                               (e.target as HTMLElement).style.display = 'none';
@@ -483,7 +488,18 @@ export default function AdminMitraPage() {
                 </label>
                 <select
                   value={formData.tier}
-                  onChange={(e) => setFormData({ ...formData, tier: e.target.value as any })}
+                  onChange={(e) => {
+                    const tier = e.target.value;
+                    if (
+                      tier === 'utama' ||
+                      tier === 'platinum' ||
+                      tier === 'gold' ||
+                      tier === 'silver' ||
+                      tier === 'partner'
+                    ) {
+                      setFormData({ ...formData, tier });
+                    }
+                  }}
                   className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="utama">Utama / Penyelenggara</option>
@@ -572,9 +588,13 @@ export default function AdminMitraPage() {
                 <div className="flex items-center gap-3 pt-1">
                   <span className="text-[11px] text-muted-foreground">Preview:</span>
                   <div className="h-10 w-24 rounded-lg bg-card border border-border p-1.5 flex items-center justify-center overflow-hidden">
-                    <img
+                    <Image
                       src={formData.logo_url}
                       alt="Preview logo"
+                      width={96}
+                      height={40}
+                      unoptimized
+                      style={{ width: 'auto', height: 'auto' }}
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>

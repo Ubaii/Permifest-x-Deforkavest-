@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { formatCurrency } from '@/lib/utils';
-import { Competition } from '@/lib/types';
-import { X, CheckCircle } from '@phosphor-icons/react';
+import { Competition, Guidebook } from '@/lib/types';
+import { useAppStore } from '@/lib/store';
+import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
+import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
+import { X, CheckCircle, BookOpen } from '@phosphor-icons/react';
 
 interface CompetitionDisplayItem {
   id: string;
@@ -109,7 +112,27 @@ export function CompetitionsSection({
   id = 'lomba',
   initialCompetitions,
 }: CompetitionsSectionProps) {
+  const store = useAppStore();
+  const rawGuidebooks = store?.guidebooks;
+  const guidebooks = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
   const [selectedComp, setSelectedComp] = useState<CompetitionDisplayItem | null>(null);
+  const [readingGuidebook, setReadingGuidebook] = useState<Guidebook | null>(null);
+
+  // Ambil rulebook spesifik untuk cabang yang sedang dibuka di modal
+  const currentBranchGuidebook = React.useMemo(() => {
+    if (!selectedComp) return null;
+    return (
+      guidebooks.find(
+        (g) =>
+          g.is_published &&
+          (g.category === selectedComp.slug ||
+            g.competition_id === selectedComp.id ||
+            g.title.toLowerCase().includes(selectedComp.name.toLowerCase()))
+      ) ||
+      guidebooks.find((g) => g.category === 'general' && g.is_published) ||
+      guidebooks[0]
+    );
+  }, [selectedComp, guidebooks]);
 
   // Petakan data dari Backend/Database Supabase bila tersedia
   const displayItems: CompetitionDisplayItem[] = React.useMemo(() => {
@@ -306,26 +329,49 @@ export function CompetitionsSection({
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-[#2E2266] flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedComp(null)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px] cursor-pointer"
-              >
-                Tutup
-              </button>
-              <SakugaButton
-                href="/register"
-                variant="brand"
-                size="md"
-                sfxText="DAFTAR!!"
-              >
-                Daftar Cabang Ini
-              </SakugaButton>
+            <div className="mt-8 pt-4 border-t border-[#2E2266] flex flex-wrap items-center justify-between gap-3">
+              {currentBranchGuidebook ? (
+                <button
+                  type="button"
+                  onClick={() => setReadingGuidebook(currentBranchGuidebook)}
+                  className="px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#6CC4FF] bg-[#082436] border border-[#144766] hover:border-[#6CC4FF] hover:bg-[#0c334d] transition-all flex items-center gap-2 min-h-[44px] cursor-pointer"
+                  title="Baca Rulebook & Panduan Teknis Cabang Ini"
+                >
+                  <BookOpen size={16} weight="bold" />
+                  <span>Baca Rulebook PDF ({currentBranchGuidebook.version})</span>
+                </button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedComp(null)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#1d1347] min-h-[44px] cursor-pointer"
+                >
+                  Tutup
+                </button>
+                <SakugaButton
+                  href="/register"
+                  variant="brand"
+                  size="md"
+                  sfxText="DAFTAR!!"
+                >
+                  Daftar Cabang Ini
+                </SakugaButton>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Modal PDF Viewer Online */}
+      <PdfViewerModal
+        guidebook={readingGuidebook}
+        isOpen={Boolean(readingGuidebook)}
+        onClose={() => setReadingGuidebook(null)}
+      />
     </section>
   );
 }

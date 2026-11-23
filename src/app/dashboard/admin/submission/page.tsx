@@ -3,13 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/modal';
 import { Drawer, DrawerHeader, DrawerTitle, DrawerDescription, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { EmptyState } from '@/components/dashboard/EmptyState';
 import { DataTable, Column } from '@/components/dashboard/DataTable';
 import { useAppStore } from '@/lib/store';
 import { formatDateShort } from '@/lib/utils';
@@ -27,7 +25,6 @@ import {
   Copy,
   Clock,
   User,
-  CaretRight,
 } from '@phosphor-icons/react';
 
 export default function AdminSubmissionPage() {

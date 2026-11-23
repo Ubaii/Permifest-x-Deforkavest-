@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,6 @@ import { formatDateShort } from '@/lib/utils';
 import {
   WarningOctagon,
   ShieldWarning,
-  Lock,
   ArrowRight,
   ClockCounterClockwise,
 } from '@phosphor-icons/react';

@@ -24,8 +24,8 @@ import {
 let mockCompetitions: Competition[] = [...INITIAL_COMPETITIONS];
 let mockRegistrations: Registration[] = [...MOCK_REGISTRATIONS];
 let mockSubmissions: Submission[] = [...MOCK_SUBMISSIONS];
-let mockAssignments: JudgeAssignment[] = [...MOCK_JUDGE_ASSIGNMENTS];
-let mockUsers: User[] = [...MOCK_USERS];
+const mockAssignments: JudgeAssignment[] = [...MOCK_JUDGE_ASSIGNMENTS];
+const mockUsers: User[] = [...MOCK_USERS];
 
 export class MockCompetitionRepository implements ICompetitionRepository {
   async getAll(): Promise<Competition[]> {

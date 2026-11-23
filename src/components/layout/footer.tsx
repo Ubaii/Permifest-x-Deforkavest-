@@ -2,26 +2,18 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useAppStore } from '@/lib/store';
 import {
   InstagramLogo,
   WhatsappLogo,
   MapPin,
   EnvelopeSimple,
-  ShieldCheck,
-  FileText,
-  Sparkle,
 } from '@phosphor-icons/react';
 
-const LOMBA_LINKS = [
-  { href: '/#lomba', label: 'Esai Ilmiah & Cyber Security' },
-  { href: '/#lomba', label: 'UI/UX Design Competition' },
-  { href: '/#lomba', label: 'IT System Architecture' },
-  { href: '/#lomba', label: 'PES 2026 e-Football' },
-  { href: '/#lomba', label: 'Mobile Legends: Bang Bang' },
-];
-
 const FAST_LINKS = [
-  { href: '/#jadwal', label: 'Kalender & Jadwal Lomba' },
+  { href: '/guidebook', label: 'Buku Panduan & Rulebook' },
+  { href: '/#jadwal', label: 'Kalender & Alur Lomba' },
+  { href: '/#agenda', label: 'Seminar & Workshop' },
   { href: '/#daftar', label: 'Alur & Panduan Pendaftaran' },
   { href: '/#faq', label: 'Pertanyaan Umum (FAQ)' },
   { href: '/login', label: 'Portal Masuk Peserta' },
@@ -29,11 +21,18 @@ const FAST_LINKS = [
 ];
 
 export function Footer() {
+  const { systemSettings, competitions } = useAppStore();
+
+  const waRaw = (systemSettings?.whatsapp_helpdesk || '0812-3456-7890').replace(/[^0-9]/g, '');
+  const waUrl = waRaw.startsWith('0') ? `https://wa.me/62${waRaw.slice(1)}` : `https://wa.me/${waRaw}`;
+  const emailHelpdesk = systemSettings?.email_helpdesk || 'helpdesk@permifest.id';
+  const venueAddress = systemSettings?.venue_address || 'Kampus Pusat UST Yogyakarta, Jl. Batikan, Tahunan, Umbulharjo, Kota Yogyakarta 55167';
+
   return (
     <footer className="relative border-t border-[#2E2266] bg-[#080517] text-[#A99FD1] text-sm overflow-hidden">
       {/* Subtle Glow Backdrop */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#9B6BF2]/5 to-transparent pointer-events-none"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-gradient-to-b from-[#9B6BF2]/10 to-transparent pointer-events-none"
         aria-hidden="true"
       />
 
@@ -46,9 +45,6 @@ export function Footer() {
                 <span className="font-[family-name:var(--font-bricolage)] font-extrabold text-xl text-[#F5F2FF] tracking-tight block">
                   Permifest <span className="text-[#D56BD9]">x</span> Deforkafest
                 </span>
-                {/* <span className="text-[11px] font-semibold tracking-wider uppercase text-[#6CC4FF]">
-                  National Tech &amp; E-Sport Arena 2026
-                </span> */}
               </div>
             </div>
 
@@ -61,7 +57,7 @@ export function Footer() {
             {/* Social badges */}
             <div className="pt-2 flex flex-wrap gap-2.5">
               <a
-                href="https://instagram.com/permikomnas.diy"
+                href={systemSettings?.instagram_permikomnas || 'https://instagram.com/permikomnas.diy'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] hover:bg-[#1E134D] transition-all min-h-[36px]"
@@ -70,7 +66,7 @@ export function Footer() {
                 @permikomnas.diy
               </a>
               <a
-                href="https://instagram.com/impsi_ust"
+                href={systemSettings?.instagram_impsi || 'https://instagram.com/impsi_ust'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#140D33] border border-[#2E2266] hover:border-[#9B6BF2] hover:bg-[#1E134D] transition-all min-h-[36px]"
@@ -81,19 +77,19 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Kolom 3: Cabang Kompetisi */}
+          {/* Kolom 3: Cabang Kompetisi Dinamis */}
           <div>
             <h4 className="font-bold text-[#F5F2FF] mb-4 uppercase tracking-wider text-xs select-none">
-              Cabang Lomba
+              Cabang Lomba ({competitions.length})
             </h4>
             <ul className="space-y-2.5">
-              {LOMBA_LINKS.map((link) => (
-                <li key={link.label}>
+              {competitions.map((comp) => (
+                <li key={comp.id}>
                   <Link
-                    href={link.href}
+                    href={`/kompetisi/${comp.slug}`}
                     className="text-xs sm:text-sm text-[#A99FD1] hover:text-[#F5F2FF] hover:underline underline-offset-4 transition-colors"
                   >
-                    {link.label}
+                    {comp.name}
                   </Link>
                 </li>
               ))}
@@ -130,7 +126,7 @@ export function Footer() {
                   <MapPin size={14} weight="bold" className="text-[#9B6BF2]" />
                 </div>
                 <span>
-                  Kampus Pusat UST Yogyakarta, Jl. Batikan, Tahunan, Umbulharjo, Kota Yogyakarta, D.I. Yogyakarta 55167
+                  {venueAddress}
                 </span>
               </div>
               <div className="flex items-center gap-2.5">
@@ -138,19 +134,21 @@ export function Footer() {
                   <WhatsappLogo size={14} weight="bold" className="text-[#9B6BF2]" />
                 </div>
                 <a
-                  href="https://wa.me/6281234567890"
+                  href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
                 >
-                  Helpdesk WA: +62 812-3456-7890
+                  Helpdesk WA: {systemSettings?.whatsapp_helpdesk || '+62 812-3456-7890'}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-lg bg-[#9B6BF2]/10 border border-[#9B6BF2]/25 flex items-center justify-center shrink-0 select-none">
                   <EnvelopeSimple size={14} weight="bold" className="text-[#9B6BF2]" />
                 </div>
-                <span>halo@permifest.id</span>
+                <a href={`mailto:${emailHelpdesk}`} className="hover:text-white transition-colors">
+                  {emailHelpdesk}
+                </a>
               </div>
             </div>
 
@@ -160,18 +158,22 @@ export function Footer() {
                 href="/register"
                 className="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-black text-[#0B0720] bg-gradient-to-r from-[#9B6BF2] via-[#D56BD9] to-[#FFE359] shadow-[3px_3px_0px_#0B0720] hover:brightness-110 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
               >
-                Daftar Kompetisi Sekarang
+                Daftar Akun Peserta Sekarang
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar / Copyright */}
-        <div className="mt-12 pt-6 border-t border-[#2E2266] flex flex-col sm:flex-row items-center justify-end gap-4 text-xs text-[#8A7FB8]">
-
-          <p className="text-center sm:text-right select-none">
-            &copy; 2026 <strong>Permifest x Deforkafest</strong>. Seluruh hak cipta dilindungi undang-undang.
-          </p>
+        <div className="mt-12 pt-6 border-t border-[#2E2266]/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs select-none">
+          <p>© 2026 Permifest x Deforkafest. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/guidebook" className="hover:text-white transition-colors">
+              Rulebook Resmi
+            </Link>
+            <Link href="/informasi" className="hover:text-white transition-colors">
+              Pusat Informasi
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -36,23 +36,29 @@ export async function getCurrentUser(): Promise<AuthSessionUser | null> {
     // Abaikan jika Supabase cloud belum siap/koneksi terputus
   }
 
-  // Fallback ke sesi demo role cookie (untuk akun seeder / evaluasi)
+  // Fallback ke sesi demo role cookie (hanya di development atau jika demo accounts diizinkan)
   try {
-    const cookieStore = await cookies();
-    const demoRoleCookie = cookieStore.get('permifest_demo_role')?.value as AppRole | undefined;
-    const demoEmailCookie = cookieStore.get('permifest_demo_email')?.value || `${demoRoleCookie || 'peserta'}@permifest.id`;
+    const isDemoAllowed =
+      process.env.NODE_ENV !== 'production' ||
+      process.env.NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS === 'true';
 
-    if (demoRoleCookie && ['peserta', 'juri', 'panitia', 'super_admin'].includes(demoRoleCookie)) {
-      return {
-        id: `demo-${demoRoleCookie}-id`,
-        email: demoEmailCookie,
-        full_name: demoRoleCookie === 'super_admin' ? 'Super Admin Permifest' : demoRoleCookie.toUpperCase(),
-        role: demoRoleCookie,
-        institution: 'Universitas Sarjanawiyata Tamansiswa',
-        phone: '08123456789',
-        avatar_url: '',
-        is_verified: true,
-      };
+    if (isDemoAllowed) {
+      const cookieStore = await cookies();
+      const demoRoleCookie = cookieStore.get('permifest_demo_role')?.value as AppRole | undefined;
+      const demoEmailCookie = cookieStore.get('permifest_demo_email')?.value || `${demoRoleCookie || 'peserta'}@permifest.id`;
+
+      if (demoRoleCookie && ['peserta', 'juri', 'panitia', 'super_admin'].includes(demoRoleCookie)) {
+        return {
+          id: `demo-${demoRoleCookie}-id`,
+          email: demoEmailCookie,
+          full_name: demoRoleCookie === 'super_admin' ? 'Super Admin Permifest' : demoRoleCookie.toUpperCase(),
+          role: demoRoleCookie,
+          institution: 'Universitas Sarjanawiyata Tamansiswa',
+          phone: '08123456789',
+          avatar_url: '',
+          is_verified: true,
+        };
+      }
     }
   } catch {
     // Abaikan

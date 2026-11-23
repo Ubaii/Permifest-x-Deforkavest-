@@ -7,9 +7,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ### Added
 - Paket dokumentasi agentic: `AGENTS.md`, `docs/ARCHITECTURE.md`, `SITEMAP_RBAC.md`, `SCHEMA.md`, `SECURITY.md`, `DESIGN_SYSTEM.md`, `UI_KIT.md`, `TESTING.md`, `TASKS.md`, `DECISIONS.md`.
 - UI Kit visual (publik, peserta, panel admin/juri).
+- Tombol tampil/sembunyikan pada field kata sandi.
+- Navbar responsif dengan pill transparan dan tautan horizontal bergaya desktop di dock mobile yang mengambang saat scroll.
+- Jarak kosong di antara navbar dan hero dirapatkan.
 
 ### Changed
 - Keputusan desain: panel admin dan juri mendukung terang/gelap; publik dan peserta dark only (ADR-009).
+- Banner pendaftaran mobile kini berada di bawah layer navbar dan memakai permukaan kartu bertoken.
 
 ### Security
 - Daftar temuan audit awal dicatat di `DECISIONS.md` B.2 (RBAC server/RLS, role-switcher, upload, 2FA).

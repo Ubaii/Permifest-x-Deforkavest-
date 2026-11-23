@@ -9,8 +9,8 @@ export function StickyBottomBar() {
   useEffect(() => {
     const heroEl = document.getElementById('beranda');
     if (!heroEl) {
-      setVisible(true);
-      return;
+      const frameId = window.requestAnimationFrame(() => setVisible(true));
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     const observer = new IntersectionObserver(
@@ -30,12 +30,12 @@ export function StickyBottomBar() {
   return (
     <aside
       aria-label="Aksi Cepat Pendaftaran"
-      className="fixed bottom-0 inset-x-0 z-40 md:hidden p-3 bg-[#140D33] border-t border-[#2E2266] shadow-2xl safe-bottom transition-all duration-200"
+      className="mobile-sticky-cta fixed inset-x-3 z-30 md:hidden max-w-md mx-auto p-3 bg-card border border-border rounded-2xl shadow-md safe-bottom transition-all duration-200"
     >
       <div className="flex items-center justify-between gap-3 max-w-md mx-auto select-none">
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#C4F15A]" />
+            <span aria-hidden="true" className="w-2 h-2 rounded-full bg-support-lime" />
             <span className="text-xs font-bold text-foreground leading-tight">
               Pendaftaran Dibuka
             </span>
@@ -49,7 +49,7 @@ export function StickyBottomBar() {
           href="/register"
           variant="brand"
           size="sm"
-          className="px-4 py-2 text-xs"
+          className="min-h-11 shrink-0 px-4 py-2 text-xs"
         >
           Daftar Sekarang
         </SakugaButton>

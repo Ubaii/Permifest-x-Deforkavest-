@@ -5,12 +5,60 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi Kalender Acara & Ekspor Mandiri (`src/lib/calendar.ts`):
+  - Generator URL Google Calendar otomatis dan file iCalendar (`.ics`) standar RFC 5545 yang kompatibel langsung dengan Google Calendar, Apple Calendar (iPhone/Mac), dan Microsoft Outlook.
+  - Penyatuan agenda seminar, webinar teknologi, workshop, dan malam penganugerahan ke dalam kalender publik `TimelineSection.tsx` (grid Desember 2026 dan mode daftar terpadu) lengkap dengan tombol ekspor kalender dan filter kategori (*Semua Acara*, *Tahapan Lomba*, *Seminar & Workshop*).
+  - Tombol simpan ke Google Calendar dan unduh file `.ics` pada kartu agenda dan pop-up modal detail di `EventsSection.tsx`.
+- Optimasi SEO & Metadata Social Share:
+  - Konfigurasi `robots.ts` dengan izin crawling rute publik dan pembatasan area dashboard/api privat.
+  - Pembangkitan `sitemap.ts` otomatis untuk seluruh rute publik dan halaman cabang kompetisi (`/kompetisi/[slug]`).
+  - Metadata OpenGraph dan Twitter Card lengkap di `src/app/layout.tsx` dengan banner resmi, deskripsi multibahasa, dan tags pengindeksan Googlebot.
+- Halaman Fallback Interaktif (Pop-Art Style):
+  - Halaman kustom 404 `src/app/not-found.tsx` dengan nuansa pop-art, pesan informatif, dan tombol navigasi kembali ke beranda atau cabang lomba.
+  - Komponen Error Boundary `src/app/error.tsx` untuk penanganan error runtime yang anggun dan opsi muat ulang otomatis.
+- Modul Agenda Event & Seminar Nasional (`/dashboard/admin/events` & Landing Page):
+  - CRUD Agenda Seminar, Webinar Teknologi, Workshop, dan Malam Penganugerahan (Awarding Night) di panel admin dengan dukungan Light/Dark mode, manajemen pembicara dinamis, jadwal, kuota, format daring/luring/hybrid, dan tautan pendaftaran.
+  - Section publik `EventsSection` di Landing Page (`src/components/landing/EventsSection.tsx`) dengan kartu pop-art, avatar narasumber, status kuota, dan modal detail interaktif.
+  - Tautan navigasi "Agenda Seminar" pada Navbar atas dan menu "Agenda & Seminar" pada sidebar panel admin.
+- Pohon Alur Perlombaan yang Dapat Diedit (*Editable Competition Workflow Tree*):
+  - Halaman manajemen alur lomba dinamis di panel admin (`/dashboard/admin/alur`) untuk mengatur tahapan alur (registrasi, kurasi, pengumpulan, penjurian, TM, final, awarding), mengubah urutan, menetapkan status (*upcoming, active, completed*), serta menyaring alur per cabang lomba.
+  - Mode tampilan "Pohon Alur (Workflow Tree)" interaktif pada `TimelineSection.tsx` di Landing Page publik, lengkap dengan garis alur vertikal, penanda milestone kunci, dan petunjuk aksi bagi peserta.
+  - Navigasi "Alur Lomba (Workflow)" di grup Penilaian & Lomba pada Sidebar admin.
+
+### Changed
+- Pembersihan data hardcoded secara menyeluruh di seluruh permukaan UI (Landing Page & Dashboard Panel):
+  - Footer (`footer.tsx`): Narahubung WhatsApp, email panitia, akun Instagram Permikomnas & IMPSI, alamat resmi kampus UST, dan daftar link lomba kini membaca secara dinamis dari `systemSettings` dan `competitions`.
+  - Hitung Mundur (`CountdownTimer.tsx`): Target waktu dan label tanggal deadline kini otomatis terhitung dari konfigurasi `systemSettings.registration_close_at`.
+  - Hero Section (`HeroSection.tsx`): Jumlah cabang lomba dan status pendaftaran terbuka membaca dinamis dari state store.
+  - Panduan Pendaftaran (`HowToRegisterSection.tsx`): Jumlah pilihan cabang lomba terhubung secara dinamis.
+  - Tanya Jawab (`FaqSection.tsx` & `src/app/informasi/page.tsx`): Pertanyaan dan jawaban FAQ serta kontak sekretariat membaca langsung dari state `faqs` dan `systemSettings` terpusat.
+
+### Fixed
+- Audit pra-deployment:
+  - Perbaikan 2 error ESLint dan 4 warning: penggantian `any` type pada `src/app/informasi/page.tsx`, perbaikan cascading `setState` dalam effect `src/components/guidebook/PdfViewerModal.tsx` dengan pembungkusan `useCallback`, pembersihan dependensi dan variabel tidak terpakai di `src/components/landing/CompetitionsSection.tsx`, dan penambahan metadata berkas di `src/app/guidebook/page.tsx`.
+  - Pengamanan mutlak akun demo dan injeksi cookie demo (`src/features/auth/actions.ts`, `src/proxy.ts`, `src/lib/auth/session.ts`) agar tidak dapat disalahgunakan di lingkungan produksi (hanya aktif di development atau saat flag `NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS=true` sengaja disetel).
+  - Pembuatan template variabel lingkungan publik dan server `.env.example`.
+  - Verifikasi kebersihan kode: 0 `console.log`, 0 hardcoded secrets, lolos 100% `npm run lint`, `npm run typecheck`, dan `npm run build` (47/47 rute sukses).
+
+### Added
+- Fitur Buku Panduan Online (**Guidebook Online**) menyeluruh untuk Panitia, Peserta, dan Publik:
+  - Panel Admin & Panitia (`/dashboard/admin/guidebook`): antarmuka CRUD buku panduan teknis umum dan rulebook 5 cabang lomba (Esai Cyber Security, UI/UX, ITSA, PES 2026, MLBB) dengan dukungan upload berkas PDF langsung (drag-and-drop, validasi 15MB) atau tautan URL, status publikasi, dan catatan rilis revisi.
+  - Komponen Pembaca Dokumen Terpadu (`PdfViewerModal`): in-browser native frame PDF viewer responsif dengan kontrol fullscreen, buka di tab baru, unduh langsung, dan penanganan fallback perangkat seluler tanpa beban dependensi eksternal.
+  - Halaman Publik Buku Panduan (`/guidebook`): katalog terorganisir per cabang lomba dengan kartu interaktif pop-art, tombol "Baca Online" seketika, dan tombol "Unduh PDF".
+  - Integrasi terpadu di Landing Page (`CompetitionsSection`): tombol "Baca Rulebook PDF" langsung pada modal rincian tiap cabang lomba.
+  - Integrasi di Pusat Informasi (`/informasi`): kartu guidebook dinamis dengan akses cepat baca online dan tautan rulebook.
+  - Penambahan menu navigasi "Buku Panduan (Guidebook)" di Sidebar panel admin dan tautan navigasi di Navbar & Footer.
+
 - Background pop-art bertema Landing Page pada halaman autentikasi (`/login` dan `/register`): pola CSS grid diagonal ultra-ringan, ambient atmosphere glow ganda, dan manga pop stamps mengambang statis di luar form card pada layar desktop.
 - Pola grid diagonal halus murni CSS dan ambient gradient lembut di latar belakang Hero Section (`SakugaHeroBackground.tsx`) tanpa beban repaint GPU.
 - Pengembalian format badge hiasan ber-ikon pop-art (`GameController`, `Trophy`, `MapPin`) di sekitar ilustrasi maskot Hero Section (`HeroSection.tsx`) sesuai konsep visual sebelumnya.
 - Penetapan atribut `select-none` pada berbagai elemen teks dekoratif (badge washi-tape, digit hitung mundur, brand title, header kalender, nomor langkah, dan tag kategori) untuk kenyamanan dan kesan interaksi solid layaknya aplikasi profesional.
 
 ### Changed
+- Penyelarasan antarmuka manajemen Guidebook (`/dashboard/admin/guidebook`) dan modal pembaca PDF (`PdfViewerModal`) dengan standar desain panel admin Permifest:
+  - Dukungan penuh untuk mode terang (**light mode**) dan mode gelap (**dark mode**) dengan mengganti hardcoded dark palette menjadi semantic tokens Tailwind CSS (`bg-card`, `bg-background`, `border-border`, `text-foreground`, `text-muted-foreground`, dll.).
+  - Penggantian bayangan ganda kartun dengan standar kartu dashboard (`shadow-sm`, border rapi).
+  - Penyesuaian form input, dropdown, area upload drag-and-drop, tab kategori, serta badge cabang lomba agar memiliki kontras tinggi dan keterbacaan yang sempurna baik di tema terang maupun tema gelap.
 - Penyeragaman warna seluruh ikon pada section Narahubung & Venue serta media sosial di Footer (`footer.tsx`) menjadi warna aksen brand ungu `#9B6BF2` dalam container rounded yang rapi dan konsisten.
 
 - Relokasi `CountdownTimer` menjadi Banner Hitung Mundur Horisontal (`CountdownBanner`) yang ditempatkan secara strategis di antara `HeroSection` dan `PartnersSection` dengan digit waktu tabular kontras tinggi, aksen washi-tape emas-ungu, dan tombol call-to-action cepat.

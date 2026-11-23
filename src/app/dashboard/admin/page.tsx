@@ -15,13 +15,11 @@ import {
   UploadSimple,
   SquaresFour,
   Warning,
-  TrendUp,
   ClockCounterClockwise,
   ChartBar,
   ChartLineUp,
   CheckCircle,
   Coins,
-  ArrowSquareOut,
 } from '@phosphor-icons/react';
 
 export default function AdminOverviewPage() {
