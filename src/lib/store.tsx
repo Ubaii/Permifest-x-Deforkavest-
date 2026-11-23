@@ -19,7 +19,6 @@ import {
   Partner,
   Guidebook,
   EventItem,
-  WorkflowNode,
   DynamicFaqItem,
 } from './types';
 import { 
@@ -34,7 +33,6 @@ import {
   MOCK_PARTNERS,
   MOCK_GUIDEBOOKS,
   MOCK_EVENTS,
-  MOCK_WORKFLOW_NODES,
   MOCK_FAQS,
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
@@ -151,14 +149,6 @@ interface AppContextType {
   deleteEvent: (id: string) => Promise<void>;
   toggleEventPublished: (id: string, is_published: boolean) => Promise<void>;
 
-  // Actions - Workflow Tree (Pohon Alur Lomba) CRUD
-  workflowNodes: WorkflowNode[];
-  addWorkflowNode: (data: Omit<WorkflowNode, 'id'>) => Promise<WorkflowNode>;
-  updateWorkflowNode: (id: string, updates: Partial<WorkflowNode>) => Promise<void>;
-  deleteWorkflowNode: (id: string) => Promise<void>;
-  updateWorkflowNodeStatus: (id: string, status: WorkflowNode['status']) => Promise<void>;
-  reorderWorkflowNodes: (nodes: WorkflowNode[]) => Promise<void>;
-
   // Actions - Dynamic FAQs
   faqs: DynamicFaqItem[];
   addFaq: (data: Omit<DynamicFaqItem, 'id'>) => Promise<DynamicFaqItem>;
@@ -185,7 +175,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [partners, setPartners] = useState<Partner[]>(MOCK_PARTNERS);
   const [guidebooks, setGuidebooks] = useState<Guidebook[]>(MOCK_GUIDEBOOKS);
   const [events, setEvents] = useState<EventItem[]>(MOCK_EVENTS);
-  const [workflowNodes, setWorkflowNodes] = useState<WorkflowNode[]>(MOCK_WORKFLOW_NODES);
   const [faqs, setFaqs] = useState<DynamicFaqItem[]>(MOCK_FAQS);
 
   // Switch role easily for demo & testing
@@ -861,37 +850,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('TOGGLE_EVENT_PUBLISHED', 'event', id, { is_published });
   };
 
-  // ── Workflow Nodes (Alur Lomba) CRUD ──
-  const addWorkflowNode = async (data: Omit<WorkflowNode, 'id'>): Promise<WorkflowNode> => {
-    const newNode: WorkflowNode = {
-      ...data,
-      id: `node-${Date.now()}`,
-    };
-    setWorkflowNodes(prev => [...prev, newNode]);
-    logAudit('CREATE_WORKFLOW_NODE', 'workflow_node', newNode.id, { title: newNode.title });
-    return newNode;
-  };
-
-  const updateWorkflowNode = async (id: string, updates: Partial<WorkflowNode>): Promise<void> => {
-    setWorkflowNodes(prev => prev.map(n => (n.id === id ? { ...n, ...updates } : n)));
-    logAudit('UPDATE_WORKFLOW_NODE', 'workflow_node', id, updates);
-  };
-
-  const deleteWorkflowNode = async (id: string): Promise<void> => {
-    setWorkflowNodes(prev => prev.filter(n => n.id !== id));
-    logAudit('DELETE_WORKFLOW_NODE', 'workflow_node', id, { id });
-  };
-
-  const updateWorkflowNodeStatus = async (id: string, status: WorkflowNode['status']): Promise<void> => {
-    await updateWorkflowNode(id, { status });
-    logAudit('UPDATE_WORKFLOW_NODE_STATUS', 'workflow_node', id, { status });
-  };
-
-  const reorderWorkflowNodes = async (nodes: WorkflowNode[]): Promise<void> => {
-    setWorkflowNodes(nodes);
-    logAudit('REORDER_WORKFLOW_NODES', 'workflow_node', 'bulk', { count: nodes.length });
-  };
-
   // ── Dynamic FAQs CRUD ──
   const addFaq = async (data: Omit<DynamicFaqItem, 'id'>): Promise<DynamicFaqItem> => {
     const newFaq: DynamicFaqItem = {
@@ -979,12 +937,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateEvent,
       deleteEvent,
       toggleEventPublished,
-      workflowNodes,
-      addWorkflowNode,
-      updateWorkflowNode,
-      deleteWorkflowNode,
-      updateWorkflowNodeStatus,
-      reorderWorkflowNodes,
       faqs,
       addFaq,
       updateFaq,

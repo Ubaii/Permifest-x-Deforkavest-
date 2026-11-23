@@ -359,38 +359,6 @@ export interface EventItem {
 }
 
 // ============================================================================
-// Interactive Competition Workflow Tree (Pohon Alur Perlombaan)
-// ============================================================================
-
-export type WorkflowNodeStatus = 'upcoming' | 'active' | 'completed' | 'blocked';
-export type WorkflowNodeType =
-  | 'registration'
-  | 'submission'
-  | 'screening'
-  | 'judging'
-  | 'announcement'
-  | 'tm'
-  | 'final'
-  | 'ceremony';
-
-export interface WorkflowNode {
-  id: string;
-  competition_id?: string; // null/undefined = Alur Umum / Global
-  competition_name?: string;
-  title: string;
-  type: WorkflowNodeType;
-  order_index: number;
-  parent_id?: string | null;
-  start_date: string;
-  end_date?: string;
-  status: WorkflowNodeStatus;
-  location: string;
-  instructions: string;
-  is_milestone: boolean;
-  requires_action: boolean;
-}
-
-// ============================================================================
 // Dynamic FAQs
 // ============================================================================
 

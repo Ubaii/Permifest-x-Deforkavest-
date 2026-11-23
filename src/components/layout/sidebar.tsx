@@ -32,7 +32,6 @@ import {
   Handshake,
   BookOpen,
   CalendarStar,
-  GitFork,
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -107,7 +106,6 @@ export function Sidebar({ onCloseMobile }: SidebarProps) {
               { label: 'Submission Karya', href: '/dashboard/admin/submission', icon: FileText },
               { label: 'Penilaian & Juri', href: '/dashboard/admin/penilaian', icon: CheckCircle },
               { label: 'Hasil E-Sport', href: '/dashboard/admin/hasil', icon: GameController },
-              { label: 'Alur Lomba (Workflow)', href: '/dashboard/admin/alur', icon: GitFork },
             ],
           },
           {

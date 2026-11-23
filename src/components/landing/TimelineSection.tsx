@@ -8,11 +8,6 @@ import {
   Trophy,
   X,
   ArrowSquareOut,
-  GitFork,
-  Check,
-  Flag,
-  UploadSimple,
-  MapPin,
 } from '@phosphor-icons/react';
 import { useAppStore } from '@/lib/store';
 import { TimelineEvent, TimelineEventType } from '@/lib/types';
@@ -47,9 +42,8 @@ interface TimelineSectionProps {
 }
 
 export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
-  const { timelineEvents, workflowNodes, competitions } = useAppStore();
-  const [viewMode, setViewMode] = useState<'calendar' | 'list' | 'tree'>('calendar');
-  const [selectedTreeComp, setSelectedTreeComp] = useState<string>('all');
+  const { timelineEvents } = useAppStore();
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
   const [selectedAgenda, setSelectedAgenda] = useState<AgendaItem | null>(null);
 
   // Ubah timelineEvents dari store ke AgendaItem
@@ -170,17 +164,6 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
             <ListBullets size={16} weight="bold" />
             <span>Daftar ({agendaList.length})</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('tree')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors min-h-[44px] cursor-pointer ${viewMode === 'tree'
-                ? 'bg-[#7c4ddb] text-[#F5F2FF] shadow-sm'
-                : 'text-[#A99FD1] hover:text-[#F5F2FF]'
-              }`}
-          >
-            <GitFork size={16} weight="bold" />
-            <span>Pohon Alur (Tree)</span>
-          </button>
         </div>
       </div>
 
@@ -266,7 +249,7 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
             })}
           </div>
         </div>
-      ) : viewMode === 'list' ? (
+      ) : (
         /* List Mode */
         <div className="space-y-3.5">
           {agendaList.map((ag) => (
@@ -306,162 +289,6 @@ export function TimelineSection({ id = 'jadwal' }: TimelineSectionProps) {
               </div>
             </div>
           ))}
-        </div>
-      ) : (
-        /* ── Tree View: Pohon Alur Perlombaan Interaktif ── */
-        <div className="space-y-6">
-          {/* Filter Cabang Lomba untuk Tree */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <button
-              type="button"
-              onClick={() => setSelectedTreeComp('all')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] border cursor-pointer ${
-                selectedTreeComp === 'all'
-                  ? 'bg-[#9B6BF2] text-[#0B0720] border-[#9B6BF2] shadow-[2px_2px_0px_#0B0720]'
-                  : 'bg-[#140D33] text-[#A99FD1] border-[#2E2266] hover:text-[#F5F2FF]'
-              }`}
-            >
-              Semua Tahapan ({workflowNodes.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedTreeComp('global')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] border cursor-pointer ${
-                selectedTreeComp === 'global'
-                  ? 'bg-[#9B6BF2] text-[#0B0720] border-[#9B6BF2] shadow-[2px_2px_0px_#0B0720]'
-                  : 'bg-[#140D33] text-[#A99FD1] border-[#2E2266] hover:text-[#F5F2FF]'
-              }`}
-            >
-              Alur Umum ({workflowNodes.filter((n) => !n.competition_id).length})
-            </button>
-            {competitions.map((c) => {
-              const count = workflowNodes.filter((n) => n.competition_id === c.id).length;
-              const isActive = selectedTreeComp === c.id;
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setSelectedTreeComp(c.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] border cursor-pointer ${
-                    isActive
-                      ? 'bg-[#9B6BF2] text-[#0B0720] border-[#9B6BF2] shadow-[2px_2px_0px_#0B0720]'
-                      : 'bg-[#140D33] text-[#A99FD1] border-[#2E2266] hover:text-[#F5F2FF]'
-                  }`}
-                >
-                  {c.name} {count > 0 ? `(${count})` : ''}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Node Flowcards Container */}
-          <div className="relative pl-6 sm:pl-8 space-y-6 before:absolute before:left-3 sm:before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-[#2E2266]">
-            {workflowNodes
-              .filter((n) => {
-                if (selectedTreeComp === 'all') return true;
-                if (selectedTreeComp === 'global') return !n.competition_id;
-                return n.competition_id === selectedTreeComp;
-              })
-              .sort((a, b) => a.order_index - b.order_index)
-              .map((node) => {
-                const isCompleted = node.status === 'completed';
-                const isActive = node.status === 'active';
-
-                return (
-                  <div key={node.id} className="relative group">
-                    {/* Node Bullet On Left Line */}
-                    <div
-                      className={`absolute -left-6 sm:-left-8 top-5 w-6 h-6 rounded-full border-2 border-[#140D33] flex items-center justify-center z-10 transition-transform group-hover:scale-110 ${
-                        isCompleted
-                          ? 'bg-[#C4F15A] text-[#0B0720]'
-                          : isActive
-                          ? 'bg-[#9B6BF2] text-[#0B0720] shadow-[0_0_12px_rgba(155,107,242,0.8)]'
-                          : 'bg-[#0B0720] border-[#2E2266] text-[#A99FD1]'
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <Check size={12} weight="bold" />
-                      ) : (
-                        <span className="text-[10px] font-bold font-mono">{node.order_index}</span>
-                      )}
-                    </div>
-
-                    {/* Node Card */}
-                    <div
-                      className={`rounded-2xl border-2 p-5 bg-[#140D33] transition-all ${
-                        isActive
-                          ? 'border-[#9B6BF2] shadow-[4px_4px_0px_#0B0720,0_0_20px_rgba(155,107,242,0.15)] ring-1 ring-[#9B6BF2]/40'
-                          : isCompleted
-                          ? 'border-[#C4F15A]/40 bg-[#140D33]'
-                          : 'border-[#2E2266] bg-[#140D33]/70 opacity-90'
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                        <div>
-                          {/* Badges */}
-                          <div className="flex items-center gap-2 flex-wrap mb-2">
-                            <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                                isCompleted
-                                  ? 'bg-[#C4F15A]/15 text-[#C4F15A] border-[#C4F15A]/30'
-                                  : isActive
-                                  ? 'bg-[#9B6BF2]/20 text-[#D56BD9] border-[#9B6BF2]/40'
-                                  : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                              }`}
-                            >
-                              <span
-                                className={`w-1.5 h-1.5 rounded-full ${
-                                  isCompleted ? 'bg-[#C4F15A]' : isActive ? 'bg-[#D56BD9] animate-pulse' : 'bg-zinc-500'
-                                }`}
-                              />
-                              <span>{isCompleted ? 'Selesai' : isActive ? 'Sedang Berjalan' : 'Mendatang'}</span>
-                            </span>
-
-                            {node.is_milestone && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#FFE359]/15 text-[#FFE359] border border-[#FFE359]/30">
-                                <Flag size={11} weight="fill" />
-                                <span>Milestone Kunci</span>
-                              </span>
-                            )}
-
-                            {node.requires_action && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#6CC4FF]/15 text-[#6CC4FF] border border-[#6CC4FF]/30">
-                                <UploadSimple size={11} weight="bold" />
-                                <span>Aksi Peserta Diperlukan</span>
-                              </span>
-                            )}
-                          </div>
-
-                          <h3 className="font-[family-name:var(--font-bricolage)] font-bold text-base sm:text-lg text-[#F5F2FF] leading-snug">
-                            {node.title}
-                          </h3>
-
-                          {node.instructions && (
-                            <p className="text-xs text-[#A99FD1] leading-relaxed mt-2 max-w-2xl">
-                              {node.instructions}
-                            </p>
-                          )}
-
-                          {/* Metadata */}
-                          <div className="mt-3 flex items-center gap-4 flex-wrap text-xs text-[#A99FD1]">
-                            <div className="flex items-center gap-1.5">
-                              <CalendarIcon size={14} className="text-[#9B6BF2]" weight="bold" />
-                              <span className="font-mono text-[11px] text-[#F5F2FF]">
-                                {node.start_date} {node.end_date && node.end_date !== node.start_date ? `s/d ${node.end_date}` : ''}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <MapPin size={14} className="text-[#C4F15A]" weight="bold" />
-                              <span>{node.location}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
         </div>
       )}
 
