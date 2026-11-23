@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { formatCurrency } from '@/lib/utils';
 import { Competition, Guidebook } from '@/lib/types';

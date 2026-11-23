@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Guidebook } from '@/lib/types';
 import {
   X,
@@ -22,26 +22,28 @@ export function PdfViewerModal({ guidebook, isOpen, onClose }: PdfViewerModalPro
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setIsFullscreen(false);
+    setLoadError(false);
+    onClose();
+  }, [onClose]);
+
   // Tangani tombol ESC untuk menutup modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose();
+        handleClose();
       }
     };
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-      setIsFullscreen(false);
-      setLoadError(false);
     }
     return () => {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   if (!isOpen || !guidebook) return null;
 
@@ -61,7 +63,7 @@ export function PdfViewerModal({ guidebook, isOpen, onClose }: PdfViewerModalPro
       aria-modal="true"
       aria-labelledby="pdf-viewer-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -145,7 +147,7 @@ export function PdfViewerModal({ guidebook, isOpen, onClose }: PdfViewerModalPro
             {/* Tutup Modal */}
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center cursor-pointer ml-1"
               aria-label="Tutup jendela pembaca"
             >

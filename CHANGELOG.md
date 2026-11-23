@@ -4,6 +4,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 
 ## [Unreleased]
 
+### Fixed
+- Audit pra-deployment:
+  - Perbaikan 2 error ESLint dan 4 warning: penggantian `any` type pada `src/app/informasi/page.tsx`, perbaikan cascading `setState` dalam effect `src/components/guidebook/PdfViewerModal.tsx` dengan pembungkusan `useCallback`, pembersihan dependensi dan variabel tidak terpakai di `src/components/landing/CompetitionsSection.tsx`, dan penambahan metadata berkas di `src/app/guidebook/page.tsx`.
+  - Pengamanan mutlak akun demo dan injeksi cookie demo (`src/features/auth/actions.ts`, `src/proxy.ts`, `src/lib/auth/session.ts`) agar tidak dapat disalahgunakan di lingkungan produksi (hanya aktif di development atau saat flag `NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS=true` sengaja disetel).
+  - Pembuatan template variabel lingkungan publik dan server `.env.example`.
+  - Verifikasi kebersihan kode: 0 `console.log`, 0 hardcoded secrets, lolos 100% `npm run lint`, `npm run typecheck`, dan `npm run build` (47/47 rute sukses).
+
 ### Added
 - Fitur Buku Panduan Online (**Guidebook Online**) menyeluruh untuk Panitia, Peserta, dan Publik:
   - Panel Admin & Panitia (`/dashboard/admin/guidebook`): antarmuka CRUD buku panduan teknis umum dan rulebook 5 cabang lomba (Esai Cyber Security, UI/UX, ITSA, PES 2026, MLBB) dengan dukungan upload berkas PDF langsung (drag-and-drop, validasi 15MB) atau tautan URL, status publikasi, dan catatan rilis revisi.

@@ -224,6 +224,10 @@ export default function PublicGuidebookPage() {
 
                 {/* Bottom Bar: Action Buttons & File Meta */}
                 <div className="mt-6 pt-4 border-t border-[#2E2266] flex flex-col gap-3">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-[#A99FD1]">
+                    <span>{formatFileSize(item.file_size_bytes)}</span>
+                    <span className="truncate max-w-[160px]" title={item.file_name}>{item.file_name}</span>
+                  </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     {/* Tombol Baca Online */}

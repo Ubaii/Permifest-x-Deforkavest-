@@ -6,8 +6,8 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
+import { Guidebook } from '@/lib/types';
 import { MOCK_GUIDEBOOKS } from '@/lib/mock-data';
 import { PdfViewerModal } from '@/components/guidebook/PdfViewerModal';
 import { 
@@ -15,7 +15,6 @@ import {
   Question as HelpCircle, 
   EnvelopeSimple as Mail, 
   Phone, 
-  DownloadSimple as Download, 
   CaretDown as ChevronDown, 
   CaretUp as ChevronUp,
   Eye,
@@ -27,7 +26,7 @@ export default function InformasiPage() {
   const rawGuidebooks = store?.guidebooks;
   const guidebooks = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [readingGuidebook, setReadingGuidebook] = useState<any | null>(null);
+  const [readingGuidebook, setReadingGuidebook] = useState<Guidebook | null>(null);
 
   const mainGuidebook = guidebooks.find((g) => g.category === 'general' && g.is_published) || guidebooks[0];
 

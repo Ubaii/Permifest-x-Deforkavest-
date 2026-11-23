@@ -38,7 +38,12 @@ export async function proxy(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const demoRole = request.cookies.get('permifest_demo_role')?.value;
+    const isDemoAllowed =
+      process.env.NODE_ENV !== 'production' ||
+      process.env.NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS === 'true';
+
+    const rawDemoRole = request.cookies.get('permifest_demo_role')?.value;
+    const demoRole = isDemoAllowed ? rawDemoRole : undefined;
     const isAuthenticated = Boolean(user || (demoRole && ['peserta', 'juri', 'panitia', 'super_admin'].includes(demoRole)));
 
     // 1. Redirect kasar jika pengguna belum login namun mengakses area dashboard

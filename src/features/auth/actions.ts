@@ -99,9 +99,13 @@ export async function loginAction(
       // Abaikan bila Supabase offline
     }
 
-    // 2. Fallback cerdas untuk Seeder Akun Demo
+    // 2. Fallback cerdas untuk Seeder Akun Demo (HANYA AKTIF di development atau bila flag eksplisit diaktifkan)
+    const isDemoAllowed =
+      process.env.NODE_ENV !== 'production' ||
+      process.env.NEXT_PUBLIC_ENABLE_DEMO_ACCOUNTS === 'true';
+
     const normalizedEmail = email.toLowerCase().trim();
-    const demoMatch = demoAccounts[normalizedEmail];
+    const demoMatch = isDemoAllowed ? demoAccounts[normalizedEmail] : undefined;
 
     if (demoMatch && (password === 'password123' || password === 'demo123')) {
       cookieStore.set('permifest_demo_role', demoMatch.role, {

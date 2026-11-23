@@ -466,7 +466,6 @@ export default function AdminGuidebookPage() {
                         }`}
                         title="Klik untuk mengubah status publikasi"
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${item.is_published ? 'bg-emerald-500' : 'bg-muted-foreground'}`} />
                         <span>{item.is_published ? 'Diterbitkan' : 'Draft / Arsip'}</span>
                       </button>
                     </div>
