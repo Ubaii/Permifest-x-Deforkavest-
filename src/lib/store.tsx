@@ -18,6 +18,9 @@ import {
   TimelineEvent,
   Partner,
   Guidebook,
+  EventItem,
+  WorkflowNode,
+  DynamicFaqItem,
 } from './types';
 import { 
   MOCK_USERS, 
@@ -30,6 +33,9 @@ import {
   MOCK_RUBRIC_CRITERIA,
   MOCK_PARTNERS,
   MOCK_GUIDEBOOKS,
+  MOCK_EVENTS,
+  MOCK_WORKFLOW_NODES,
+  MOCK_FAQS,
 } from './mock-data';
 import { INITIAL_COMPETITIONS } from './constants';
 import { getTimelineEvents } from './landing-data';
@@ -45,6 +51,11 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   qris_image_url: '',
   whatsapp_helpdesk: '0812-3456-7890',
   email_helpdesk: 'helpdesk@permifest.id',
+  instagram_permikomnas: 'https://instagram.com/permikomnas.diy',
+  instagram_impsi: 'https://instagram.com/impsi_ust',
+  venue_name: 'Universitas Sarjanawiyata Tamansiswa (UST)',
+  venue_address: 'Jl. Batikan, Tahunan, Kec. Umbulharjo, Kota Yogyakarta, Daerah Istimewa Yogyakarta 55167',
+  registration_close_at: '2026-12-11T23:59:59+07:00',
 };
 
 interface AppContextType {
@@ -132,6 +143,27 @@ interface AppContextType {
   updateGuidebook: (id: string, updates: Partial<Guidebook>) => Promise<void>;
   deleteGuidebook: (id: string) => Promise<void>;
   toggleGuidebookPublished: (id: string, is_published: boolean) => Promise<void>;
+
+  // Actions - Agenda & Event (Seminar, Webinar, Workshop) CRUD
+  events: EventItem[];
+  addEvent: (data: Omit<EventItem, 'id' | 'registered_count'>) => Promise<EventItem>;
+  updateEvent: (id: string, updates: Partial<EventItem>) => Promise<void>;
+  deleteEvent: (id: string) => Promise<void>;
+  toggleEventPublished: (id: string, is_published: boolean) => Promise<void>;
+
+  // Actions - Workflow Tree (Pohon Alur Lomba) CRUD
+  workflowNodes: WorkflowNode[];
+  addWorkflowNode: (data: Omit<WorkflowNode, 'id'>) => Promise<WorkflowNode>;
+  updateWorkflowNode: (id: string, updates: Partial<WorkflowNode>) => Promise<void>;
+  deleteWorkflowNode: (id: string) => Promise<void>;
+  updateWorkflowNodeStatus: (id: string, status: WorkflowNode['status']) => Promise<void>;
+  reorderWorkflowNodes: (nodes: WorkflowNode[]) => Promise<void>;
+
+  // Actions - Dynamic FAQs
+  faqs: DynamicFaqItem[];
+  addFaq: (data: Omit<DynamicFaqItem, 'id'>) => Promise<DynamicFaqItem>;
+  updateFaq: (id: string, updates: Partial<DynamicFaqItem>) => Promise<void>;
+  deleteFaq: (id: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -152,6 +184,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>(() => getTimelineEvents());
   const [partners, setPartners] = useState<Partner[]>(MOCK_PARTNERS);
   const [guidebooks, setGuidebooks] = useState<Guidebook[]>(MOCK_GUIDEBOOKS);
+  const [events, setEvents] = useState<EventItem[]>(MOCK_EVENTS);
+  const [workflowNodes, setWorkflowNodes] = useState<WorkflowNode[]>(MOCK_WORKFLOW_NODES);
+  const [faqs, setFaqs] = useState<DynamicFaqItem[]>(MOCK_FAQS);
 
   // Switch role easily for demo & testing
   const switchRole = (role: UserRole) => {
@@ -799,6 +834,85 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     logAudit('TOGGLE_GUIDEBOOK_PUBLISHED', 'guidebook', id, { is_published });
   };
 
+  // ── Events / Agenda CRUD ──
+  const addEvent = async (data: Omit<EventItem, 'id' | 'registered_count'>): Promise<EventItem> => {
+    const newEvent: EventItem = {
+      ...data,
+      id: `event-${Date.now()}`,
+      registered_count: 0,
+    };
+    setEvents(prev => [...prev, newEvent]);
+    logAudit('CREATE_EVENT', 'event', newEvent.id, { title: newEvent.title, type: newEvent.type });
+    return newEvent;
+  };
+
+  const updateEvent = async (id: string, updates: Partial<EventItem>): Promise<void> => {
+    setEvents(prev => prev.map(ev => (ev.id === id ? { ...ev, ...updates } : ev)));
+    logAudit('UPDATE_EVENT', 'event', id, updates);
+  };
+
+  const deleteEvent = async (id: string): Promise<void> => {
+    setEvents(prev => prev.filter(ev => ev.id !== id));
+    logAudit('DELETE_EVENT', 'event', id, { id });
+  };
+
+  const toggleEventPublished = async (id: string, is_published: boolean): Promise<void> => {
+    await updateEvent(id, { is_published });
+    logAudit('TOGGLE_EVENT_PUBLISHED', 'event', id, { is_published });
+  };
+
+  // ── Workflow Nodes (Alur Lomba) CRUD ──
+  const addWorkflowNode = async (data: Omit<WorkflowNode, 'id'>): Promise<WorkflowNode> => {
+    const newNode: WorkflowNode = {
+      ...data,
+      id: `node-${Date.now()}`,
+    };
+    setWorkflowNodes(prev => [...prev, newNode]);
+    logAudit('CREATE_WORKFLOW_NODE', 'workflow_node', newNode.id, { title: newNode.title });
+    return newNode;
+  };
+
+  const updateWorkflowNode = async (id: string, updates: Partial<WorkflowNode>): Promise<void> => {
+    setWorkflowNodes(prev => prev.map(n => (n.id === id ? { ...n, ...updates } : n)));
+    logAudit('UPDATE_WORKFLOW_NODE', 'workflow_node', id, updates);
+  };
+
+  const deleteWorkflowNode = async (id: string): Promise<void> => {
+    setWorkflowNodes(prev => prev.filter(n => n.id !== id));
+    logAudit('DELETE_WORKFLOW_NODE', 'workflow_node', id, { id });
+  };
+
+  const updateWorkflowNodeStatus = async (id: string, status: WorkflowNode['status']): Promise<void> => {
+    await updateWorkflowNode(id, { status });
+    logAudit('UPDATE_WORKFLOW_NODE_STATUS', 'workflow_node', id, { status });
+  };
+
+  const reorderWorkflowNodes = async (nodes: WorkflowNode[]): Promise<void> => {
+    setWorkflowNodes(nodes);
+    logAudit('REORDER_WORKFLOW_NODES', 'workflow_node', 'bulk', { count: nodes.length });
+  };
+
+  // ── Dynamic FAQs CRUD ──
+  const addFaq = async (data: Omit<DynamicFaqItem, 'id'>): Promise<DynamicFaqItem> => {
+    const newFaq: DynamicFaqItem = {
+      ...data,
+      id: `faq-${Date.now()}`,
+    };
+    setFaqs(prev => [...prev, newFaq]);
+    logAudit('CREATE_FAQ', 'faq', newFaq.id, { question: newFaq.question });
+    return newFaq;
+  };
+
+  const updateFaq = async (id: string, updates: Partial<DynamicFaqItem>): Promise<void> => {
+    setFaqs(prev => prev.map(f => (f.id === id ? { ...f, ...updates } : f)));
+    logAudit('UPDATE_FAQ', 'faq', id, updates);
+  };
+
+  const deleteFaq = async (id: string): Promise<void> => {
+    setFaqs(prev => prev.filter(f => f.id !== id));
+    logAudit('DELETE_FAQ', 'faq', id, { id });
+  };
+
   return (
     <AppContext.Provider value={{
       currentUser,
@@ -860,6 +974,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateGuidebook,
       deleteGuidebook,
       toggleGuidebookPublished,
+      events,
+      addEvent,
+      updateEvent,
+      deleteEvent,
+      toggleEventPublished,
+      workflowNodes,
+      addWorkflowNode,
+      updateWorkflowNode,
+      deleteWorkflowNode,
+      updateWorkflowNodeStatus,
+      reorderWorkflowNodes,
+      faqs,
+      addFaq,
+      updateFaq,
+      deleteFaq,
       logout,
     }}>
       {children}

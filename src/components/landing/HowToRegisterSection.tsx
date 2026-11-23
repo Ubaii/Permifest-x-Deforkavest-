@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
+import { useAppStore } from '@/lib/store';
 
 interface StepItem {
   num: string;
@@ -10,38 +11,40 @@ interface StepItem {
   highlight: string;
 }
 
-const STEPS: StepItem[] = [
-  {
-    num: '01',
-    title: 'Buat Akun Peserta',
-    desc: 'Daftarkan dirimu dengan email aktif dan data perguruan tinggi. Prosesnya cepat dan akun langsung siap digunakan.',
-    highlight: 'Gratis & Langsung Aktif',
-  },
-  {
-    num: '02',
-    title: 'Pilih Cabang Lomba',
-    desc: 'Pilih cabang akademik (Esai, UI/UX, IT Architecture) atau turnamen e-sport (PES 2026, Mobile Legends).',
-    highlight: '5 Pilihan Cabang',
-  },
-  {
-    num: '03',
-    title: 'Isi Tim & Berkas Syarat',
-    desc: 'Untuk lomba beregu, ketua tim akan mendapatkan Kode Undangan Tim untuk dibagikan ke anggota. Unggah KTM aktif.',
-    highlight: 'Sistem Kode Undangan',
-  },
-  {
-    num: '04',
-    title: 'Pembayaran QRIS & Verifikasi',
-    desc: 'Selesaikan biaya pendaftaran via QRIS resmi panitia. Unggah bukti transfer di dashboard, verifikasi maks 1x24 jam.',
-    highlight: 'QRIS Satu Pintu',
-  },
-];
-
 interface HowToRegisterSectionProps {
   id?: string;
 }
 
 export function HowToRegisterSection({ id = 'panduan' }: HowToRegisterSectionProps) {
+  const { competitions } = useAppStore();
+  const totalCompetitions = competitions.length || 5;
+
+  const STEPS: StepItem[] = [
+    {
+      num: '01',
+      title: 'Buat Akun Peserta',
+      desc: 'Daftarkan dirimu dengan email aktif dan data perguruan tinggi. Prosesnya cepat dan akun langsung siap digunakan.',
+      highlight: 'Gratis & Langsung Aktif',
+    },
+    {
+      num: '02',
+      title: 'Pilih Cabang Lomba',
+      desc: 'Pilih cabang akademik (Esai, UI/UX, IT Architecture) atau turnamen e-sport (PES 2026, Mobile Legends).',
+      highlight: `${totalCompetitions} Pilihan Cabang`,
+    },
+    {
+      num: '03',
+      title: 'Isi Tim & Berkas Syarat',
+      desc: 'Untuk lomba beregu, ketua tim akan mendapatkan Kode Undangan Tim untuk dibagikan ke anggota. Unggah KTM aktif.',
+      highlight: 'Sistem Kode Undangan',
+    },
+    {
+      num: '04',
+      title: 'Pembayaran QRIS & Verifikasi',
+      desc: 'Selesaikan biaya pendaftaran via QRIS resmi panitia. Unggah bukti transfer di dashboard, verifikasi maks 1x24 jam.',
+      highlight: 'QRIS Satu Pintu',
+    },
+  ];
   return (
     <section
       id={id}

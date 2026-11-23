@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -25,33 +25,33 @@ export default function InformasiPage() {
   const store = useAppStore();
   const rawGuidebooks = store?.guidebooks;
   const guidebooks = Array.isArray(rawGuidebooks) && rawGuidebooks.length > 0 ? rawGuidebooks : MOCK_GUIDEBOOKS;
+  const storeFaqs = store?.faqs;
+  const systemSettings = store?.systemSettings;
+
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [readingGuidebook, setReadingGuidebook] = useState<Guidebook | null>(null);
 
   const mainGuidebook = guidebooks.find((g) => g.category === 'general' && g.is_published) || guidebooks[0];
 
-  const faqs = [
-    {
-      q: 'Apakah satu peserta boleh mendaftar lebih dari satu cabang lomba?',
-      a: 'Berdasarkan PRD dan konfigurasi platform saat ini, satu akun diperbolehkan mendaftar lebih dari satu lomba selama jadwal tahapan pertandingan/deadline karya tidak bentrok.'
-    },
-    {
-      q: 'Bagaimana metode pembayaran biaya pendaftaran?',
-      a: 'Pembayaran dilakukan via scan QRIS atau transfer bank resmi panitia. Peserta wajib mengunggah foto/screenshot bukti transfer di dashboard pendaftaran untuk diverifikasi panitia dalam waktu maksimal 24 jam.'
-    },
-    {
-      q: 'Apakah karya yang sudah diunggah bisa diperbaiki/diupload ulang?',
-      a: 'Bisa! Peserta dapat memperbarui berkas unggahan karya (atau tautan Figma) kapan saja sebelum batas waktu deadline ditutup. Sistem secara otomatis mencatat riwayat versi dan hanya mengajukan versi terakhir ke dewan juri.'
-    },
-    {
-      q: 'Bagaimana mekanisme pertandingan untuk PES dan Mobile Legends?',
-      a: 'Untuk lomba non-akademik (e-sport), pertandingan dilaksanakan secara daring/luring sesuai panduan technical meeting. Platform ini digunakan untuk pendaftaran, konfirmasi peserta, serta pembaruan hasil akhir dan leaderboard.'
-    },
-    {
-      q: 'Kapan pengumuman pemenang resmi dipublikasikan?',
-      a: 'Pengumuman pemenang akan dirilis serentak di halaman Leaderboard dan Papan Pengumuman website setelah proses penguncian nilai oleh panitia selesai.'
+  const faqs = useMemo(() => {
+    if (Array.isArray(storeFaqs) && storeFaqs.length > 0) {
+      return storeFaqs.map((f) => ({ q: f.question, a: f.answer }));
     }
-  ];
+    return [
+      {
+        q: 'Apakah satu peserta boleh mendaftar lebih dari satu cabang lomba?',
+        a: 'Berdasarkan PRD dan konfigurasi platform saat ini, satu akun diperbolehkan mendaftar lebih dari satu lomba selama jadwal tahapan pertandingan/deadline karya tidak bentrok.',
+      },
+      {
+        q: 'Bagaimana metode pembayaran biaya pendaftaran?',
+        a: 'Pembayaran dilakukan via scan QRIS atau transfer bank resmi panitia. Peserta wajib mengunggah foto/screenshot bukti transfer di dashboard pendaftaran untuk diverifikasi panitia dalam waktu maksimal 24 jam.',
+      },
+      {
+        q: 'Apakah karya yang sudah diunggah bisa diperbaiki/diupload ulang?',
+        a: 'Bisa! Peserta dapat memperbarui berkas unggahan karya (atau tautan Figma) kapan saja sebelum batas waktu deadline ditutup. Sistem secara otomatis mencatat riwayat versi dan hanya mengajukan versi terakhir ke dewan juri.',
+      },
+    ];
+  }, [storeFaqs]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#090d16]">
@@ -167,11 +167,11 @@ export default function InformasiPage() {
                 <div className="text-sm font-semibold text-slate-200">Sekretariat Panitia Akademik</div>
                 <div className="text-xs text-slate-400 flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>WhatsApp: +62 812-3456-7890</span>
+                  <span>WhatsApp: {systemSettings?.whatsapp_helpdesk || '+62 812-3456-7890'}</span>
                 </div>
                 <div className="text-xs text-slate-400 flex items-center gap-2">
                   <Mail className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Email: akademik@permifest.id</span>
+                  <span>Email: {systemSettings?.email_helpdesk || 'akademik@permifest.id'}</span>
                 </div>
               </CardContent>
             </Card>
@@ -182,11 +182,11 @@ export default function InformasiPage() {
                 <div className="text-sm font-semibold text-slate-200">Divisi Kompetisi Digital Gaming</div>
                 <div className="text-xs text-slate-400 flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-amber-400" />
-                  <span>WhatsApp: +62 877-8899-0011</span>
+                  <span>WhatsApp: {systemSettings?.whatsapp_helpdesk || '+62 877-8899-0011'}</span>
                 </div>
                 <div className="text-xs text-slate-400 flex items-center gap-2">
                   <Mail className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Email: esport@permifest.id</span>
+                  <span>Email: {systemSettings?.email_helpdesk || 'esport@permifest.id'}</span>
                 </div>
               </CardContent>
             </Card>

@@ -285,7 +285,7 @@ export default function AdminGuidebookPage() {
                 <BookOpen size={22} weight="duotone" />
               </span>
               <h1 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-bricolage)] text-foreground tracking-tight">
-                Manajemen Buku Panduan (Guidebook)
+                Manajemen Guidebook
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">
@@ -298,7 +298,7 @@ export default function AdminGuidebookPage() {
             onClick={openCreateDrawer}
             leftIcon={<Plus size={18} weight="bold" />}
           >
-            Unggah / Tambah Guidebook
+            Unggah Guidebook
           </Button>
         </div>
 
@@ -392,11 +392,10 @@ export default function AdminGuidebookPage() {
                   key={tab.id}
                   type="button"
                   onClick={() => setCategoryFilter(tab.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] cursor-pointer ${
-                    isActive
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 min-h-[36px] cursor-pointer ${isActive
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
+                    }`}
                 >
                   {tab.label} {tab.id === 'all' ? `(${count})` : count > 0 ? `(${count})` : ''}
                 </button>
@@ -435,11 +434,10 @@ export default function AdminGuidebookPage() {
               return (
                 <div
                   key={item.id}
-                  className={`rounded-2xl border p-5 bg-card transition-all flex flex-col justify-between ${
-                    item.is_published
+                  className={`rounded-2xl border p-5 bg-card transition-all flex flex-col justify-between ${item.is_published
                       ? 'border-border hover:border-primary/50 shadow-sm hover:shadow'
                       : 'border-border/60 bg-muted/20 opacity-80'
-                  }`}
+                    }`}
                 >
                   <div>
                     {/* Header baris atas */}
@@ -459,11 +457,10 @@ export default function AdminGuidebookPage() {
                       <button
                         type="button"
                         onClick={() => toggleGuidebookPublished(item.id, !item.is_published)}
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
-                          item.is_published
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${item.is_published
                             ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20'
                             : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
-                        }`}
+                          }`}
                         title="Klik untuk mengubah status publikasi"
                       >
                         <span>{item.is_published ? 'Diterbitkan' : 'Draft / Arsip'}</span>
@@ -548,7 +545,7 @@ export default function AdminGuidebookPage() {
         <Drawer
           isOpen={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          title={editingId ? 'Edit Buku Panduan' : 'Unggah / Tambah Buku Panduan'}
+          title={editingId ? 'Edit Buku Panduan' : 'Unggah Guidebook'}
           description="Pastikan berkas PDF memiliki teks yang jelas dan rubrik penilaian mutakhir."
           size="lg"
         >
@@ -617,11 +614,10 @@ export default function AdminGuidebookPage() {
                     <button
                       type="button"
                       onClick={() => setFileInputMode('upload')}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
-                        fileInputMode === 'upload'
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${fileInputMode === 'upload'
                           ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                        }`}
                     >
                       <UploadSimple size={12} weight="bold" />
                       Unggah Berkas PDF
@@ -629,11 +625,10 @@ export default function AdminGuidebookPage() {
                     <button
                       type="button"
                       onClick={() => setFileInputMode('link')}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${
-                        fileInputMode === 'link'
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded font-semibold transition-colors ${fileInputMode === 'link'
                           ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                        }`}
                     >
                       <LinkSimple size={12} weight="bold" />
                       Tautan URL Dokumen

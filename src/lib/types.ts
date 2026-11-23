@@ -252,6 +252,11 @@ export interface SystemSettings {
   qris_image_url?: string;
   whatsapp_helpdesk: string;
   email_helpdesk: string;
+  instagram_permikomnas?: string;
+  instagram_impsi?: string;
+  venue_name?: string;
+  venue_address?: string;
+  registration_close_at?: string;
 }
 
 export interface ScoreChange {
@@ -316,6 +321,88 @@ export interface Guidebook {
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================================
+// Event / Seminar & Webinar Agenda
+// ============================================================================
+
+export type EventType = 'seminar' | 'webinar' | 'workshop' | 'ceremony';
+export type EventFormat = 'online' | 'offline' | 'hybrid';
+
+export interface EventSpeaker {
+  name: string;
+  role_title: string;
+  organization: string;
+  avatar_url?: string;
+}
+
+export interface EventItem {
+  id: string;
+  title: string;
+  slug: string;
+  type: EventType;
+  format: EventFormat;
+  start_time: string; // ISO string
+  end_time?: string;
+  location_name: string;
+  location_url?: string;
+  description: string;
+  speakers: EventSpeaker[];
+  price: number; // 0 = Gratis
+  quota?: number;
+  registered_count: number;
+  registration_url?: string;
+  banner_url?: string;
+  is_published: boolean;
+  certificate_provided: boolean;
+  order_index: number;
+}
+
+// ============================================================================
+// Interactive Competition Workflow Tree (Pohon Alur Perlombaan)
+// ============================================================================
+
+export type WorkflowNodeStatus = 'upcoming' | 'active' | 'completed' | 'blocked';
+export type WorkflowNodeType =
+  | 'registration'
+  | 'submission'
+  | 'screening'
+  | 'judging'
+  | 'announcement'
+  | 'tm'
+  | 'final'
+  | 'ceremony';
+
+export interface WorkflowNode {
+  id: string;
+  competition_id?: string; // null/undefined = Alur Umum / Global
+  competition_name?: string;
+  title: string;
+  type: WorkflowNodeType;
+  order_index: number;
+  parent_id?: string | null;
+  start_date: string;
+  end_date?: string;
+  status: WorkflowNodeStatus;
+  location: string;
+  instructions: string;
+  is_milestone: boolean;
+  requires_action: boolean;
+}
+
+// ============================================================================
+// Dynamic FAQs
+// ============================================================================
+
+export interface DynamicFaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: 'umum' | 'lomba' | 'pembayaran' | 'teknis' | 'pendaftaran';
+  order_index: number;
+  is_published: boolean;
+}
+
 
 
 

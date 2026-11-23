@@ -4,6 +4,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 
 ## [Unreleased]
 
+### Added
+- Modul Agenda Event & Seminar Nasional (`/dashboard/admin/events` & Landing Page):
+  - CRUD Agenda Seminar, Webinar Teknologi, Workshop, dan Malam Penganugerahan (Awarding Night) di panel admin dengan dukungan Light/Dark mode, manajemen pembicara dinamis, jadwal, kuota, format daring/luring/hybrid, dan tautan pendaftaran.
+  - Section publik `EventsSection` di Landing Page (`src/components/landing/EventsSection.tsx`) dengan kartu pop-art, avatar narasumber, status kuota, dan modal detail interaktif.
+  - Tautan navigasi "Agenda Seminar" pada Navbar atas dan menu "Agenda & Seminar" pada sidebar panel admin.
+- Pohon Alur Perlombaan yang Dapat Diedit (*Editable Competition Workflow Tree*):
+  - Halaman manajemen alur lomba dinamis di panel admin (`/dashboard/admin/alur`) untuk mengatur tahapan alur (registrasi, kurasi, pengumpulan, penjurian, TM, final, awarding), mengubah urutan, menetapkan status (*upcoming, active, completed*), serta menyaring alur per cabang lomba.
+  - Mode tampilan "Pohon Alur (Workflow Tree)" interaktif pada `TimelineSection.tsx` di Landing Page publik, lengkap dengan garis alur vertikal, penanda milestone kunci, dan petunjuk aksi bagi peserta.
+  - Navigasi "Alur Lomba (Workflow)" di grup Penilaian & Lomba pada Sidebar admin.
+
+### Changed
+- Pembersihan data hardcoded secara menyeluruh di seluruh permukaan UI (Landing Page & Dashboard Panel):
+  - Footer (`footer.tsx`): Narahubung WhatsApp, email panitia, akun Instagram Permikomnas & IMPSI, alamat resmi kampus UST, dan daftar link lomba kini membaca secara dinamis dari `systemSettings` dan `competitions`.
+  - Hitung Mundur (`CountdownTimer.tsx`): Target waktu dan label tanggal deadline kini otomatis terhitung dari konfigurasi `systemSettings.registration_close_at`.
+  - Hero Section (`HeroSection.tsx`): Jumlah cabang lomba dan status pendaftaran terbuka membaca dinamis dari state store.
+  - Panduan Pendaftaran (`HowToRegisterSection.tsx`): Jumlah pilihan cabang lomba terhubung secara dinamis.
+  - Tanya Jawab (`FaqSection.tsx` & `src/app/informasi/page.tsx`): Pertanyaan dan jawaban FAQ serta kontak sekretariat membaca langsung dari state `faqs` dan `systemSettings` terpusat.
+
 ### Fixed
 - Audit pra-deployment:
   - Perbaikan 2 error ESLint dan 4 warning: penggantian `any` type pada `src/app/informasi/page.tsx`, perbaikan cascading `setState` dalam effect `src/components/guidebook/PdfViewerModal.tsx` dengan pembungkusan `useCallback`, pembersihan dependensi dan variabel tidak terpakai di `src/components/landing/CompetitionsSection.tsx`, dan penambahan metadata berkas di `src/app/guidebook/page.tsx`.

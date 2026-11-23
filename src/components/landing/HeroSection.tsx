@@ -5,8 +5,13 @@ import Image from 'next/image';
 import { GameController, Trophy, MapPin } from '@phosphor-icons/react';
 import { SakugaButton } from '@/components/ui/sakuga-button';
 import { SakugaHeroBackground } from './SakugaHeroBackground';
+import { useAppStore } from '@/lib/store';
 
 export function HeroSection() {
+  const { competitions, systemSettings } = useAppStore();
+  const compCount = competitions.length || 5;
+  const isRegOpen = systemSettings ? systemSettings.registration_open : true;
+  const venueShort = systemSettings?.venue_name ? 'UST Yogyakarta' : 'UST Yogyakarta';
   return (
     <section
       id="beranda"
@@ -22,7 +27,7 @@ export function HeroSection() {
           <div className="flex-1 max-w-2xl text-left">
             {/* Washi-Tape Status Pill (Playful Manga Style) */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#140D33] text-[#FFE359] border-2 border-[#524112] shadow-[3px_3px_0px_#0B0720] mb-5 -rotate-1 hover:rotate-0 transition-transform cursor-default select-none">
-              <span>Pendaftaran Gelombang 1 Dibuka</span>
+              <span>{isRegOpen ? 'Pendaftaran Gelombang 1 Dibuka' : 'Pendaftaran Ditutup Sementara'}</span>
             </div>
 
             <h1
@@ -86,7 +91,7 @@ export function HeroSection() {
               </div>
               <div className="text-left">
                 <span className="block text-xs font-black text-[#F5F2FF] uppercase tracking-wide leading-none">
-                  5 Cabang Lomba
+                  {compCount} Cabang Lomba
                 </span>
                 <span className="block text-[10px] text-[#6CC4FF] font-semibold mt-1">
                   Akademik &amp; E-Sport
@@ -116,7 +121,7 @@ export function HeroSection() {
               </div>
               <div className="text-left">
                 <span className="block text-xs font-bold text-[#F5F2FF] leading-none">
-                  UST Yogyakarta
+                  {venueShort}
                 </span>
                 <span className="block text-[10px] text-[#A99FD1] mt-0.5">
                   Arena Grand Final
