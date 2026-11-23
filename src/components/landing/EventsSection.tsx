@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/lib/store';
 import { EventItem, EventType, EventFormat } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
+import { createGoogleCalendarUrl, downloadIcsFile } from '@/lib/calendar';
 import {
   Clock,
   MapPin,
@@ -15,6 +16,8 @@ import {
   X,
   Ticket,
   CheckCircle,
+  CalendarPlus,
+  DownloadSimple,
 } from '@phosphor-icons/react';
 
 const EVENT_TYPE_MAP: Record<EventType, { label: string; badgeBg: string; textColor: string }> = {
@@ -66,6 +69,17 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
     } catch {
       return isoStr;
     }
+  };
+
+  const handleDownloadIcs = (item: EventItem) => {
+    downloadIcsFile(`${item.slug}-permifest`, {
+      title: `[Permifest x Deforkafest] ${item.title}`,
+      description: item.description,
+      location: item.location_name,
+      startTime: item.start_time,
+      endTime: item.end_time,
+      url: item.registration_url,
+    });
   };
 
   if (publishedEvents.length === 0) return null;
@@ -197,13 +211,32 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedEvent(item)}
-                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#0B0720] bg-gradient-to-r from-[#C4F15A] to-[#6CC4FF] hover:brightness-110 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_#0B0720] cursor-pointer"
-                >
-                  Detail &amp; Daftar
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <a
+                    href={createGoogleCalendarUrl({
+                      title: `[Permifest x Deforkafest] ${item.title}`,
+                      description: item.description,
+                      location: item.location_name,
+                      startTime: item.start_time,
+                      endTime: item.end_time,
+                      url: item.registration_url,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-xl text-[#A99FD1] hover:text-[#6CC4FF] hover:bg-[#1d1347] border border-[#2E2266] transition-all"
+                    title="Simpan ke Google Calendar"
+                  >
+                    <CalendarPlus size={16} weight="bold" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEvent(item)}
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#0B0720] bg-gradient-to-r from-[#C4F15A] to-[#6CC4FF] hover:brightness-110 active:translate-y-0.5 transition-all shadow-[2px_2px_0px_#0B0720] cursor-pointer"
+                  >
+                    Detail &amp; Daftar
+                  </button>
+                </div>
               </div>
             </article>
           );
@@ -220,7 +253,7 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl rounded-3xl bg-[#140D33] border-2 border-[#2E2266] shadow-[6px_6px_0px_#0B0720,10px_10px_0px_#9B6BF2] overflow-hidden p-6 sm:p-8 space-y-6"
+            className="relative w-full max-w-2xl rounded-3xl bg-[#140D33] border-2 border-[#2E2266] shadow-[6px_6px_0px_#0B0720,10px_10px_0px_#9B6BF2] overflow-hidden p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto"
           >
             {/* Header Modal */}
             <div className="flex items-start justify-between gap-4">
@@ -237,6 +270,7 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
                 type="button"
                 onClick={() => setSelectedEvent(null)}
                 className="p-2 rounded-xl text-[#A99FD1] hover:text-[#F5F2FF] hover:bg-[#2E2266] transition-colors cursor-pointer shrink-0"
+                aria-label="Tutup Detail"
               >
                 <X size={20} weight="bold" />
               </button>
@@ -299,7 +333,7 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-4 border-t border-[#2E2266] flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-[#2E2266] flex flex-wrap items-center justify-between gap-4">
               <div>
                 <span className="text-xs text-[#A99FD1] block">Biaya Investasi:</span>
                 <span className="text-base font-black text-[#FFE359] font-mono">
@@ -307,19 +341,48 @@ export function EventsSection({ id = 'agenda' }: EventsSectionProps) {
                 </span>
               </div>
 
-              {selectedEvent.registration_url ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Tombol Kalender */}
                 <a
-                  href={selectedEvent.registration_url}
+                  href={createGoogleCalendarUrl({
+                    title: `[Permifest x Deforkafest] ${selectedEvent.title}`,
+                    description: selectedEvent.description,
+                    location: selectedEvent.location_name,
+                    startTime: selectedEvent.start_time,
+                    endTime: selectedEvent.end_time,
+                    url: selectedEvent.registration_url,
+                  })}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black text-[#0B0720] bg-gradient-to-r from-[#9B6BF2] via-[#D56BD9] to-[#FFE359] shadow-[3px_3px_0px_#0B0720] hover:brightness-110 active:translate-y-0.5 transition-all"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#6CC4FF] transition-all min-h-[38px]"
+                  title="Simpan langsung ke Google Calendar"
                 >
-                  <span>Daftar Sekarang</span>
-                  <ArrowSquareOut size={16} weight="bold" />
+                  <CalendarPlus size={15} weight="bold" />
+                  <span>Google Cal</span>
                 </a>
-              ) : (
-                <span className="text-xs text-[#A99FD1] italic">Pendaftaran dibuka di tempat</span>
-              )}
+
+                <button
+                  type="button"
+                  onClick={() => handleDownloadIcs(selectedEvent)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#F5F2FF] bg-[#1d1347] border border-[#2E2266] hover:bg-[#25195c] hover:border-[#C4F15A] transition-all min-h-[38px] cursor-pointer"
+                  title="Unduh file .ics kalender"
+                >
+                  <DownloadSimple size={15} weight="bold" />
+                  <span>.ics</span>
+                </button>
+
+                {selectedEvent.registration_url && (
+                  <a
+                    href={selectedEvent.registration_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black text-[#0B0720] bg-gradient-to-r from-[#9B6BF2] via-[#D56BD9] to-[#FFE359] shadow-[3px_3px_0px_#0B0720] hover:brightness-110 active:translate-y-0.5 transition-all min-h-[38px]"
+                  >
+                    <span>Daftar Sekarang</span>
+                    <ArrowSquareOut size={16} weight="bold" />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>

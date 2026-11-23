@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/). Versi: SemV
 ## [Unreleased]
 
 ### Added
+- Integrasi Kalender Acara & Ekspor Mandiri (`src/lib/calendar.ts`):
+  - Generator URL Google Calendar otomatis dan file iCalendar (`.ics`) standar RFC 5545 yang kompatibel langsung dengan Google Calendar, Apple Calendar (iPhone/Mac), dan Microsoft Outlook.
+  - Penyatuan agenda seminar, webinar teknologi, workshop, dan malam penganugerahan ke dalam kalender publik `TimelineSection.tsx` (grid Desember 2026 dan mode daftar terpadu) lengkap dengan tombol ekspor kalender dan filter kategori (*Semua Acara*, *Tahapan Lomba*, *Seminar & Workshop*).
+  - Tombol simpan ke Google Calendar dan unduh file `.ics` pada kartu agenda dan pop-up modal detail di `EventsSection.tsx`.
+- Optimasi SEO & Metadata Social Share:
+  - Konfigurasi `robots.ts` dengan izin crawling rute publik dan pembatasan area dashboard/api privat.
+  - Pembangkitan `sitemap.ts` otomatis untuk seluruh rute publik dan halaman cabang kompetisi (`/kompetisi/[slug]`).
+  - Metadata OpenGraph dan Twitter Card lengkap di `src/app/layout.tsx` dengan banner resmi, deskripsi multibahasa, dan tags pengindeksan Googlebot.
+- Halaman Fallback Interaktif (Pop-Art Style):
+  - Halaman kustom 404 `src/app/not-found.tsx` dengan nuansa pop-art, pesan informatif, dan tombol navigasi kembali ke beranda atau cabang lomba.
+  - Komponen Error Boundary `src/app/error.tsx` untuk penanganan error runtime yang anggun dan opsi muat ulang otomatis.
 - Modul Agenda Event & Seminar Nasional (`/dashboard/admin/events` & Landing Page):
   - CRUD Agenda Seminar, Webinar Teknologi, Workshop, dan Malam Penganugerahan (Awarding Night) di panel admin dengan dukungan Light/Dark mode, manajemen pembicara dinamis, jadwal, kuota, format daring/luring/hybrid, dan tautan pendaftaran.
   - Section publik `EventsSection` di Landing Page (`src/components/landing/EventsSection.tsx`) dengan kartu pop-art, avatar narasumber, status kuota, dan modal detail interaktif.
